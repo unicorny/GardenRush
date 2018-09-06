@@ -26,11 +26,12 @@
 #define __FAIRY_GAMES_GARDEN_RUSH_GARDEN_RUSH_H
 
 #include "cocos2d.h"
+class PlantTypesManager;
 
 class GardenRush : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene();
+    static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager);
 	GardenRush() : mToogleStats(false) {};
 
 
@@ -45,6 +46,7 @@ public:
 
 protected:
 	bool mToogleStats;
+	PlantTypesManager* mPlantTypesManager;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_GARDEN_RUSH_H

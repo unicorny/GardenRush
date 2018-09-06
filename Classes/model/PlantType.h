@@ -23,6 +23,15 @@ enum PlantTypeNeighborType
 	NEIGHBOR_BAD = 4,
 	NEIGHBOR_ERROR = 7
 };
+
+enum PlantTypeFinalPhasis
+{
+	PLANT_FINAL_NEUTRAL = 0,
+	PLANT_FINAL_GOOD = 1,
+	PLANT_FINAL_VERY_GOOD = 2,
+	PLANT_FINAL_BAD = 3,
+	PLANT_FINAL_SIZE = 4
+};
 class PlantNode;
 
 class PlantType
@@ -48,14 +57,23 @@ public:
 	inline void setViewData(IViewData* viewData) { if (mViewData) delete mViewData; mViewData = viewData; }
 	inline PlantNode* createPlantNode() { if (!mViewData) return NULL; return mViewData->createPlantNode(); }
 
+	// called from PlantTypesManager
 	inline void setIndex(u32 index) { mIndex = index; }
+
 	inline u32 getIndex() const { return mIndex; }
+
+	static PlantTypeNeighborType getNeighborTypeFromString(const char* name);
 
 protected:
 	std::string mName;
 	DHASH mNameHash;
 	u32 mIndex;
 	IViewData* mViewData;
+	// seed, after seeded, 3-5 growth phase, 4 different results (neutral, good, very good, bad)
+	IViewData* mSeedView;
+	IViewData* mSeededView;
+	IViewData* mGrowthPhasisViews[5];
+	IViewData* mFinalPhasisViews[PLANT_FINAL_SIZE];
 
 	DRHashList mNeighbors;
 	

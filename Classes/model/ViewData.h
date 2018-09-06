@@ -12,6 +12,7 @@
 #include <string>
 #include "cocos2d.h"
 #include "nodes/PlantNode.h"
+#include "lib/DRHash.hpp"
 
 enum ViewType
 {
@@ -31,6 +32,7 @@ public:
 	virtual cocos2d::Sprite* createSprite() const = 0;
 	virtual cocos2d::Animation* createAnimation() = 0;
 	virtual PlantNode* createPlantNode() = 0;
+	virtual DHASH getHash() = 0;
 
 protected:
 	ViewType mType;
@@ -45,6 +47,7 @@ public:
 	virtual cocos2d::Sprite* createSprite() const;
 	virtual cocos2d::Animation* createAnimation() { return NULL; }
 	virtual PlantNode* createPlantNode();
+	virtual DHASH getHash();
 protected:
 	std::string mTextureName;
 };

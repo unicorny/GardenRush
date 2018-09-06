@@ -63,6 +63,9 @@
     <ClCompile Include="..\Classes\nodes\PlantNode.cpp">
       <Filter>src\nodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\ViewDataManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\nodes\PlantNode.h">
       <Filter>src\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\ViewDataManager.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

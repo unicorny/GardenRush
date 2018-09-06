@@ -120,7 +120,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = GardenRush::createScene();
+    GardenRush* scene = static_cast<GardenRush*>(GardenRush::createScene(&mPlantTypesManager));
+
     //auto scene = HelloWorld::createScene();
 
     // run

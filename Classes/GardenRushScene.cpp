@@ -26,12 +26,17 @@
 #include "SimpleAudioEngine.h"
 #include "nodes/Grid.h"
 #include "model/ViewData.h"
+#include "PlantTypesManager.h"
 
 USING_NS_CC;
 
-Scene* GardenRush::createScene()
+Scene* GardenRush::createScene(PlantTypesManager* plantTypesManager)
 {
-    return GardenRush::create();
+	GardenRush* result = GardenRush::create();
+	result->mPlantTypesManager = plantTypesManager;
+	// init plant types manager
+	result->mPlantTypesManager->loadFromJson("graphics.json");
+	return result;
 }
 
 
@@ -71,6 +76,8 @@ bool GardenRush::init()
     {
         return false;
     }
+
+	
 	
 
     auto visibleSize = Director::getInstance()->getVisibleSize();

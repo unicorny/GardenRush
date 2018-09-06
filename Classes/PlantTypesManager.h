@@ -23,6 +23,9 @@ public:
 		return (PlantTypeNeighborType)mNeigborFastAccessMap[mPlantTypes.getNItems()*mainPlantIndex + neighborPlantIndex];
 	};
 
+	//! \return true if everything is okay
+	bool loadFromJson(const char* filename);
+
 protected:
 	DRHashList mPlantTypes;
 	u8* mNeigborFastAccessMap;

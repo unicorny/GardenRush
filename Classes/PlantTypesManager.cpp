@@ -1,5 +1,9 @@
 #include "PlantTypesManager.h"
 
+#include "json/document.h"
+
+using namespace rapidjson;
+
 PlantTypesManager::PlantTypesManager()
 	: mNeigborFastAccessMap(NULL), mDirty(false)
 {
@@ -52,5 +56,55 @@ bool PlantTypesManager::makeFastAccessMap()
 		}
 	}
 	mDirty = false;
+	return true;
+}
+
+bool PlantTypesManager::loadFromJson(const char* filename)
+{
+	// load json from file and parse
+	std::string content = cocos2d::FileUtils::getInstance()->getStringFromFile(filename);
+	Document document;
+	document.Parse(content.data());
+
+	// interpret json
+	assert(document.IsObject());
+	for (Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr)
+	{
+		// for every plant
+		assert(itr->name.IsString());
+		u32 neighborCount = 0;
+		// count neighbors
+		if (itr->value.HasMember("neighbors")) {
+			for (Value::ConstMemberIterator iNeighbors = itr->value["neighbors"].MemberBegin();
+				iNeighbors != itr->value["neighbors"].MemberEnd(); ++iNeighbors)
+			{
+				neighborCount += iNeighbors->value.Capacity();
+			}
+		}
+
+		PlantType* plant = new PlantType(itr->name.GetString(), neighborCount);
+
+		// add neighbors
+		if (itr->value.HasMember("neighbors")) {
+			for (Value::ConstMemberIterator iNeighbors = itr->value["neighbors"].MemberBegin();
+				iNeighbors != itr->value["neighbors"].MemberEnd(); ++iNeighbors)
+			{
+				assert(iNeighbors->name.IsString());
+				PlantTypeNeighborType type = PlantType::getNeighborTypeFromString(iNeighbors->name.GetString());
+				for (Value::ConstValueIterator iNeighbor = iNeighbors->value.Begin(); iNeighbor != iNeighbors->value.End(); ++iNeighbor) {
+					assert(iNeighbor->IsString());
+					plant->addNeighbor(iNeighbor->GetString(), type);
+				}
+			}
+		}
+
+		// add views
+		if (itr->value.HasMember("graphics")) {
+
+		}
+
+
+	}
+
 	return true;
 }

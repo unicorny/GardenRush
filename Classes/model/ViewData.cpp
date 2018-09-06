@@ -31,3 +31,8 @@ PlantNode* ViewDataSimpleTexture::createPlantNode()
 	}
 	return ret;
 }
+
+DHASH ViewDataSimpleTexture::getHash()
+{
+	return DRMakeFilenameHash(mTextureName.data());
+}
