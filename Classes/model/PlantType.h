@@ -24,13 +24,22 @@ enum PlantTypeNeighborType
 	NEIGHBOR_ERROR = 7
 };
 
-enum PlantTypeFinalPhasis
+
+enum PlantTypePhasisView
 {
-	PLANT_FINAL_NEUTRAL = 0,
-	PLANT_FINAL_GOOD = 1,
-	PLANT_FINAL_VERY_GOOD = 2,
-	PLANT_FINAL_BAD = 3,
-	PLANT_FINAL_SIZE = 4
+	PLANT_PHASIS_SEED,
+	PLANT_PHASIS_SEEDED,
+	PLANT_PHASIS_GROWTH_1,
+	PLANT_PHASIS_GROWTH_2,
+	PLANT_PHASIS_GROWTH_3,
+	PLANT_PHASIS_GROWTH_4,
+	PLANT_PHASIS_GROWTH_5,
+	PLANT_PHASIS_FINAL_NEUTRAL,
+	PLANT_PHASIS_FINAL_GOOD,
+	PLANT_PHASIS_FINAL_VERY_GOOD,
+	PLANT_PHASIS_FINAL_BAD,
+	PLANT_PHASIS_SIZE ,
+	PLANT_PHASIS_ERROR
 };
 class PlantNode;
 
@@ -54,8 +63,7 @@ public:
 		return (PlantTypeNeighborType)((intptr_t)(mNeighbors.findByHash(neighborHash)));
 	}
 	// set view data, PlantType delete pointer after it won't use it anymore
-	inline void setViewData(IViewData* viewData) { if (mViewData) delete mViewData; mViewData = viewData; }
-	inline PlantNode* createPlantNode() { if (!mViewData) return NULL; return mViewData->createPlantNode(); }
+	bool setViewData(IViewData* viewData, PlantTypePhasisView phasis);
 
 	// called from PlantTypesManager
 	inline void setIndex(u32 index) { mIndex = index; }
@@ -63,17 +71,14 @@ public:
 	inline u32 getIndex() const { return mIndex; }
 
 	static PlantTypeNeighborType getNeighborTypeFromString(const char* name);
+	static PlantTypePhasisView getPhasisViewFromString(const char* name);
 
 protected:
 	std::string mName;
 	DHASH mNameHash;
 	u32 mIndex;
-	IViewData* mViewData;
 	// seed, after seeded, 3-5 growth phase, 4 different results (neutral, good, very good, bad)
-	IViewData* mSeedView;
-	IViewData* mSeededView;
-	IViewData* mGrowthPhasisViews[5];
-	IViewData* mFinalPhasisViews[PLANT_FINAL_SIZE];
+	IViewData* mPlantViews[PLANT_PHASIS_SIZE];
 
 	DRHashList mNeighbors;
 	

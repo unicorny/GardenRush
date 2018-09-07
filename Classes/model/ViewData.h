@@ -13,15 +13,17 @@
 #include "cocos2d.h"
 #include "nodes/PlantNode.h"
 #include "lib/DRHash.hpp"
+#include "json/document.h"
 
 enum ViewType
 {
-	VIEW_TYPE_SIMPLE_TEXTUE = 1,
-	VIEW_TYPE_SPRITE_ATLAS = 2,
-	VIEW_TYPE_ANIMATION_SIMPLE_TEXTURE = 3,
-	VIEW_TYPE_ANIMATION_SPRITE_ATLAS = 4
+	VIEW_TYPE_SIMPLE_TEXTUE,
+	VIEW_TYPE_SPRITE_ATLAS,
+	VIEW_TYPE_ANIMATION_SIMPLE_TEXTURE,
+	VIEW_TYPE_ANIMATION_SPRITE_ATLAS,
+	VIEW_TYPE_SIZE,
+	VIEW_TYPE_UNKNOWN
 };
-
 
 class IViewData
 {
@@ -33,6 +35,10 @@ public:
 	virtual cocos2d::Animation* createAnimation() = 0;
 	virtual PlantNode* createPlantNode() = 0;
 	virtual DHASH getHash() = 0;
+
+	static ViewType viewTypeFromString(const char* type);
+	static IViewData* createFromJson(const rapidjson::Value::ConstMemberIterator* itr);
+	static IViewData* createFromJson(const rapidjson::Value::ConstValueIterator* itr);
 
 protected:
 	ViewType mType;

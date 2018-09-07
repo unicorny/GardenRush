@@ -1,6 +1,6 @@
 #include "PlantTypesManager.h"
 
-#include "json/document.h"
+
 
 using namespace rapidjson;
 
@@ -100,7 +100,39 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 
 		// add views
 		if (itr->value.HasMember("graphics")) {
-
+			for (Value::ConstMemberIterator iGraphics = itr->value["graphics"].MemberBegin();
+				iGraphics != itr->value["graphics"].MemberEnd(); ++iGraphics) {
+				assert(iGraphics->name.IsString());
+				IViewData* view = NULL;
+				PlantTypePhasisView type = PlantType::getPhasisViewFromString(iGraphics->name.GetString());
+				if (iGraphics->value.IsString()) {
+					view = IViewData::createFromJson(&iGraphics);
+					plant->setViewData(view, type);
+				}
+				else if (iGraphics->value.IsArray()) {
+					int count = 1;
+					for (Value::ConstValueIterator itrArray = iGraphics->value.Begin(); itrArray != iGraphics->value.End(); ++itrArray) {
+						std::string typeName = iGraphics->name.GetString();
+						typeName += "_" + count;
+						type = PlantType::getPhasisViewFromString(typeName.data());
+						view = IViewData::createFromJson(&itrArray);
+						plant->setViewData(view, type);
+						count++;
+					}
+				}
+				else if (iGraphics->value.IsObject() && strcmp(iGraphics->name.GetString(), "final") == 0) {
+					for (Value::ConstMemberIterator itrObject = iGraphics->value.MemberBegin(); itrObject != iGraphics->value.MemberEnd(); ++itrObject) {
+						assert(itrObject->name.IsString());
+						std::string typeName = iGraphics->name.GetString();
+						typeName += "_";
+						typeName += itrObject->name.GetString();
+						type = PlantType::getPhasisViewFromString(typeName.data());
+						view = IViewData::createFromJson(&itrObject);
+						plant->setViewData(view, type);
+					}
+				}
+				
+			}
 		}
 
 
