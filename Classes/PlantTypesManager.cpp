@@ -68,6 +68,7 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 
 	// interpret json
 	assert(document.IsObject());
+	allocateMemoryForNPlantTypes(document.MemberCount());
 	for (Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr)
 	{
 		// for every plant
@@ -80,7 +81,7 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 			{
 				neighborCount += iNeighbors->value.Capacity();
 			}
-		}
+		}		
 
 		PlantType* plant = new PlantType(itr->name.GetString(), neighborCount);
 
@@ -135,7 +136,7 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 			}
 		}
 
-
+		addPlantType(plant);
 	}
 
 	return true;

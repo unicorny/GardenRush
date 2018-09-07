@@ -36,6 +36,7 @@ Scene* GardenRush::createScene(PlantTypesManager* plantTypesManager)
 	result->mPlantTypesManager = plantTypesManager;
 	// init plant types manager
 	result->mPlantTypesManager->loadFromJson("graphics.json");
+	result->mPlantTypesManager->makeFastAccessMap();
 	return result;
 }
 
