@@ -14,7 +14,14 @@ ViewType IViewData::viewTypeFromString(const char* type)
 IViewData* IViewData::createFromJson(const rapidjson::Value::ConstMemberIterator* itr)
 {
 	if ((*itr)->value.IsString()) {
-		return new ViewDataSimpleTexture((*itr)->value.GetString());
+		const char* filename = (*itr)->value.GetString();
+		if (cocos2d::FileUtils::getInstance()->isFileExist(filename)) {
+			return new ViewDataSimpleTexture((*itr)->value.GetString());
+		}
+		else {
+			ErrorLog::printf("file: %s doesn't exist", filename);
+			LOG_ERROR("file doesn't exist", NULL);
+		}
 	}
 	else {
 		LOG_ERROR("not implemented yet", NULL);
@@ -23,7 +30,14 @@ IViewData* IViewData::createFromJson(const rapidjson::Value::ConstMemberIterator
 IViewData* IViewData::createFromJson(const rapidjson::Value::ConstValueIterator* itr)
 {
 	if ((*itr)->IsString()) {
-		return new ViewDataSimpleTexture((*itr)->GetString());
+		const char* filename = (*itr)->GetString();
+		if (cocos2d::FileUtils::getInstance()->isFileExist(filename)) {
+			return new ViewDataSimpleTexture((*itr)->GetString());
+		}
+		else {
+			ErrorLog::printf("file: %s doesn't exist", filename);
+			LOG_ERROR("file doesn't exist", NULL);
+		}
 	}
 	else {
 		LOG_ERROR("not implemented yet", NULL);

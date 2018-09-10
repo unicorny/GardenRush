@@ -27,16 +27,27 @@
 #include "nodes/Grid.h"
 #include "model/ViewData.h"
 #include "PlantTypesManager.h"
+#include "ErrorLog.h"
 
 USING_NS_CC;
 
 Scene* GardenRush::createScene(PlantTypesManager* plantTypesManager)
 {
+	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
+	profiler->displayTimers();
+	ProfilingBeginTimingBlock("initScene");
 	GardenRush* result = GardenRush::create();
+	ProfilingEndTimingBlock("initScene");
+	ProfilingTimer* timer = profiler->_activeTimers.at("initScene");
+	ErrorLog::printf("init Scene duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
+	ProfilingBeginTimingBlock("init plant types");
 	result->mPlantTypesManager = plantTypesManager;
 	// init plant types manager
 	result->mPlantTypesManager->loadFromJson("graphics.json");
 	result->mPlantTypesManager->makeFastAccessMap();
+	ProfilingEndTimingBlock("init plant types");
+	timer = profiler->_activeTimers.at("init plant types");
+	ErrorLog::printf("init plant types duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
 	return result;
 }
 

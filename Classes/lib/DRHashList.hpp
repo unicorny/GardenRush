@@ -28,6 +28,9 @@
 
 #include "DRHash.hpp"
 
+#define DR_SAVE_DELETE(x) {if(x){delete x; x = nullptr;}}
+#define DR_SAVE_DELETE_ARRAY(x) {if(x){delete [] x; x = nullptr;}}
+
 #ifndef u32
 typedef unsigned long u32;
 #endif 

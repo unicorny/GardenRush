@@ -25,6 +25,9 @@
     <Filter Include="src\scenes">
       <UniqueIdentifier>{38ed8c86-eaa0-42c8-9997-6f239c19d21f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\levelStates">
+      <UniqueIdentifier>{43f9b26d-9a87-4210-89d1-12ba947c2658}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -65,6 +68,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\ViewDataManager.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\LevelStateManager.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\RandomSeed.cpp">
+      <Filter>src\levelStates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\ViewDataManager.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\LevelStateManager.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\RandomSeed.h">
+      <Filter>src\levelStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -153,6 +153,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\ErrorLog.cpp" />
     <ClCompile Include="..\Classes\GardenRushScene.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
+    <ClCompile Include="..\Classes\levelStates\LevelStateManager.cpp" />
+    <ClCompile Include="..\Classes\levelStates\RandomSeed.cpp" />
     <ClCompile Include="..\Classes\lib\DRHashList.cpp" />
     <ClCompile Include="..\Classes\model\PlantType.cpp" />
     <ClCompile Include="..\Classes\model\ViewData.cpp" />
@@ -168,6 +170,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\ErrorLog.h" />
     <ClInclude Include="..\Classes\GardenRushScene.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
+    <ClInclude Include="..\Classes\levelStates\LevelStateManager.h" />
+    <ClInclude Include="..\Classes\levelStates\RandomSeed.h" />
     <ClInclude Include="..\Classes\lib\DRHash.hpp" />
     <ClInclude Include="..\Classes\lib\DRHashList.hpp" />
     <ClInclude Include="..\Classes\model\PlantType.h" />
