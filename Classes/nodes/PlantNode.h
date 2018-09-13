@@ -10,13 +10,15 @@
  *          a texture-atlas
 */
 #include "cocos2d.h"
+#include "lib/DRHash.hpp"
 
 class PlantNode : public cocos2d::Sprite
 {
 public:
-	PlantNode();
+	PlantNode(DHASH plantHash);
 	virtual ~PlantNode();
 protected:
+	DHASH mPlantHash;
 	
 };
 

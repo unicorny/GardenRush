@@ -36,10 +36,12 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/controller/ConfigLoader.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/LevelStateManager.cpp \
-                   $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp
+                   $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp
 
 
 

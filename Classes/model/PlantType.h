@@ -64,6 +64,7 @@ public:
 	}
 	// set view data, PlantType delete pointer after it won't use it anymore
 	bool setViewData(IViewData* viewData, PlantTypePhasisView phasis);
+	inline IViewData* getViewData(PlantTypePhasisView viewType) { assert(viewType < PLANT_PHASIS_SIZE);  return mPlantViews[viewType]; }
 
 	// called from PlantTypesManager
 	inline void setIndex(u32 index) { mIndex = index; }

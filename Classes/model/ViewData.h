@@ -33,7 +33,7 @@ public:
 	inline ViewType getType() const { return mType; }
 	virtual cocos2d::Sprite* createSprite() const = 0;
 	virtual cocos2d::Animation* createAnimation() = 0;
-	virtual PlantNode* createPlantNode() = 0;
+	virtual PlantNode* createPlantNode(DHASH plantHash) = 0;
 	virtual DHASH getHash() = 0;
 
 	static ViewType viewTypeFromString(const char* type);
@@ -52,7 +52,7 @@ public:
 	virtual ~ViewDataSimpleTexture();
 	virtual cocos2d::Sprite* createSprite() const;
 	virtual cocos2d::Animation* createAnimation() { return NULL; }
-	virtual PlantNode* createPlantNode();
+	virtual PlantNode* createPlantNode(DHASH plantHash);
 	virtual DHASH getHash();
 protected:
 	std::string mTextureName;

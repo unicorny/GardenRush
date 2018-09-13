@@ -42,9 +42,6 @@
     <ClCompile Include="..\Classes\ErrorLog.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GardenRushScene.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\PlantTypesManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -75,6 +72,15 @@
     <ClCompile Include="..\Classes\levelStates\RandomSeed.cpp">
       <Filter>src\levelStates</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\model\LevelData.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseSeed.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\MainGameScene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -87,9 +93,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\ErrorLog.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GardenRushScene.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\PlantTypesManager.h">
@@ -124,6 +127,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\levelStates\RandomSeed.h">
       <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\LevelData.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseSeed.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\MainGameScene.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
 #include "LevelStateManager.h"
 #include "ErrorLog.h"
 
-LevelStateManager::LevelStateManager()
-	: mActiveLevelState(nullptr)
+LevelStateManager::LevelStateManager(LevelData* levelData, MainGameScene* mainGameScene, PlantTypesManager* plantTypesManager)
+	: mActiveLevelState(nullptr), mLevelData(levelData), mGameScene(mainGameScene), mPlantTypesManager(plantTypesManager)
 {
 
 }
@@ -24,6 +24,7 @@ bool LevelStateManager::addLevelState(level_state::iLevelState* levelState)
 		ErrorLog::printf("level state with name: %s exist", levelState->getName());
 		LOG_ERROR("level state with this name already exist", false);
 	}
+	levelState->setLevelStateManager(this);
 	return true;
 }
 

@@ -63,9 +63,9 @@ cocos2d::Sprite* ViewDataSimpleTexture::createSprite() const
 	return cocos2d::Sprite::create(mTextureName);
 }
 
-PlantNode* ViewDataSimpleTexture::createPlantNode()
+PlantNode* ViewDataSimpleTexture::createPlantNode(DHASH plantHash)
 {
-	PlantNode * ret = new (std::nothrow) PlantNode();
+	PlantNode * ret = new (std::nothrow) PlantNode(plantHash);
 	if (ret && ret->initWithFile(mTextureName))
 	{
 		ret->autorelease();

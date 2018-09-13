@@ -3,16 +3,22 @@
 
 #include "LevelStateManager.h"
 
+
+
 namespace level_state {
 	class RandomSeed : public iLevelState
 	{
 	public:
-		RandomSeed(LevelStateManager* manager) : iLevelState(manager) {}
+		RandomSeed();
 		virtual ~RandomSeed() {};
 		virtual const char* getName() const { return "RandomSeed"; }
 		virtual bool initState();
 		virtual bool onEnterState();
 		virtual bool onExitState();
+
+		void animationEnd();
+	protected:
+		
 	};
 };
 

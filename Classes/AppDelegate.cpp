@@ -23,7 +23,7 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "GardenRushScene.h"
+#include "MainGameScene.h"
 //#include "HelloWorldScene.h"
 
 // #define USE_AUDIO_ENGINE 1
@@ -120,7 +120,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    GardenRush* scene = static_cast<GardenRush*>(GardenRush::createScene(&mPlantTypesManager));
+    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager));
 
     //auto scene = HelloWorld::createScene();
 
