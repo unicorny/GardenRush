@@ -39,9 +39,13 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
-                   $(LOCAL_PATH)/../../../Classes/levelStates/LevelStateManager.cpp \
+				   $(LOCAL_PATH)/../../../Classes/levelStates/DisplayInfo.cpp \
+				   $(LOCAL_PATH)/../../../Classes/levelStates/DragSeed.cpp \
+				   $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
+				   $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedValid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
-                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
+				   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp 
 
 
 

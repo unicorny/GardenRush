@@ -2,7 +2,7 @@
 #include "ErrorLog.h"
 
 LevelStateManager::LevelStateManager(LevelData* levelData, MainGameScene* mainGameScene, PlantTypesManager* plantTypesManager)
-	: mActiveLevelState(nullptr), mLevelData(levelData), mGameScene(mainGameScene), mPlantTypesManager(plantTypesManager)
+	: mActiveLevelState(nullptr), mLevelData(levelData), mGameScene(mainGameScene), mPlantTypesManager(plantTypesManager), mTargetPlantNode(nullptr)
 {
 
 }

@@ -151,9 +151,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\controller\ConfigLoader.cpp" />
     <ClCompile Include="..\Classes\ErrorLog.cpp" />
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp" />
     <ClCompile Include="..\Classes\MainGameScene.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
-    <ClCompile Include="..\Classes\levelStates\LevelStateManager.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\RandomSeed.cpp" />
     <ClCompile Include="..\Classes\lib\DRHashList.cpp" />
@@ -170,9 +170,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\controller\ConfigLoader.h" />
     <ClInclude Include="..\Classes\ErrorLog.h" />
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeed.h" />
     <ClInclude Include="..\Classes\MainGameScene.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
-    <ClInclude Include="..\Classes\levelStates\LevelStateManager.h" />
+    <ClInclude Include="..\Classes\levelStates\iLevelState.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseSeed.h" />
     <ClInclude Include="..\Classes\levelStates\RandomSeed.h" />
     <ClInclude Include="..\Classes\lib\DRHash.hpp" />

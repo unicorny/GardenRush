@@ -18,6 +18,12 @@ enum GridObstacleType
 	OBSTACLE_DEFAULT = 1
 };
 
+struct GridIndex {
+	GridIndex(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
+	uint8_t x;
+	uint8_t y;
+};
+
 class Grid : public cocos2d::Node
 {
 public:
@@ -30,8 +36,8 @@ public:
 	bool fillBgGridCells(const IViewData* viewData);
 	void reset();
 
-	void listenOnCellTouch(std::function<void(PlantNode*)>);
-	bool onTouchBegan(cocos2d::Vec2 localPosition);
+	PlantNode* isPlantNodeAtPosition(cocos2d::Vec2 localPosition);
+	GridIndex getGridIndex(cocos2d::Vec2 localPosition);
 
 	void setPixelSize(cocos2d::Vec2 pixelSize);
 	inline float getEdgeSize() const {return mPixelSize.x;}
@@ -53,7 +59,6 @@ protected:
 	cocos2d::Vec2 mPixelSize;
 	uint8_t* mObstacleMap;
 	PlantNode** mPlantMap;
-	std::function<void(PlantNode*)> mCellTouchCallback;
 	// geometrie
 
 };

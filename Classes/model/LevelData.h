@@ -11,8 +11,8 @@ public:
 	~LevelData();
 
 	bool addPlantType(const char* name);
-	inline size_t getPlantTypeCount() { return mPlantTypesSize; }
-	inline DHASH getPlantType(size_t index) { assert(index < mPlantTypesSize && index < mPlantTypeCursor); return mPlantTypes[index]; }
+	inline size_t getPlantTypeCount() const { return mPlantTypesSize; }
+	inline DHASH getPlantType(size_t index) const { assert(index < mPlantTypesSize && index < mPlantTypeCursor); return mPlantTypes[index]; }
 	
 protected:
 	// valid plant types for level

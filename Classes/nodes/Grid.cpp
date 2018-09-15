@@ -134,20 +134,23 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 	return true;
 }
 
-void Grid::listenOnCellTouch(std::function<void(PlantNode*)> callMe)
+GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition)
 {
-	mCellTouchCallback = callMe;
-	//auto touchListener = EventListenerTouchOneByOne::create();
-//	touchListener->onTouchBegan = CC_CALLBACK_2(Grid::onTouchBegan, this);
-//	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+	GridIndex index(
+		static_cast<uint8_t>(floor(localPosition.x / mPixelSize.x * mWidth)),
+		static_cast<uint8_t>(floor(localPosition.y / mPixelSize.y * mHeight))
+	);
+	assert(index.x < mWidth && index.y < mHeight);
+	return index;
 }
 
-bool Grid::onTouchBegan(Vec2 localPosition)
-{	
-	uint8_t x = static_cast<uint8_t>(floor(localPosition.x / mPixelSize.x * mWidth));
-	uint8_t y = static_cast<uint8_t>(floor(localPosition.y / mPixelSize.y * mHeight));
-	//assert(x < mWidth && y < mHeight);
-	ErrorLog::printf("x: %d, y: %d\n", x, y);
-
-	return true;
+PlantNode* Grid::isPlantNodeAtPosition(cocos2d::Vec2 localPosition)
+{
+	GridIndex i = getGridIndex(localPosition);
+	size_t index = i.x * mWidth + i.y;
+	//ErrorLog::printf("x: %d, y: %d\n", x, y);
+	if (mPlantMap[index]) {
+		return mPlantMap[index];
+	}
+	return nullptr;
 }

@@ -1,7 +1,7 @@
 #ifndef __FAIRY_GAMES_GARDEN_RUSH_LEVEL_STATES_LEVEL_PLAYER_CHOOSE_SEED_H
 #define __FAIRY_GAMES_GARDEN_RUSH_LEVEL_STATES_LEVEL_PLAYER_CHOOSE_SEED_H
 
-#include "LevelStateManager.h"
+#include "iLevelState.h"
 
 class PlantNode;
 
@@ -16,7 +16,7 @@ namespace level_state {
 		virtual bool onEnterState();
 		virtual bool onExitState();
 
-		bool touchPlant(PlantNode*);
+		virtual void onTouchBegan(PlantNode* plantNode);
 	protected:
 
 	};

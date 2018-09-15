@@ -66,9 +66,6 @@
     <ClCompile Include="..\Classes\ViewDataManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\levelStates\LevelStateManager.cpp">
-      <Filter>src\levelStates</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\levelStates\RandomSeed.cpp">
       <Filter>src\levelStates</Filter>
     </ClCompile>
@@ -80,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\MainGameScene.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp">
+      <Filter>src\levelStates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,9 +122,6 @@
     <ClInclude Include="..\Classes\ViewDataManager.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\levelStates\LevelStateManager.h">
-      <Filter>src\levelStates</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\levelStates\RandomSeed.h">
       <Filter>src\levelStates</Filter>
     </ClInclude>
@@ -136,6 +133,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\MainGameScene.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeed.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\iLevelState.h">
+      <Filter>src\levelStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
