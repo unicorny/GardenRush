@@ -11,14 +11,29 @@
 */
 #include "cocos2d.h"
 #include "lib/DRHash.hpp"
+#include "nodes/Grid.h"
+
+struct GridIndex;
 
 class PlantNode : public cocos2d::Sprite
 {
 public:
 	PlantNode(DHASH plantHash);
 	virtual ~PlantNode();
+
+	inline void setGridIndex(const GridIndex& index) { mGridIndex = index; }
+	inline GridIndex getGridIndex() const { return mGridIndex; }
+
+	inline void setParentGrid(Grid* grid) { mParentGrid = grid; }
+	inline Grid* getParentGrid() const { return mParentGrid; }
+
+	inline DHASH getHash() const { return mPlantHash; }
+
+	bool removeFromGrid();
 protected:
 	DHASH mPlantHash;
+	GridIndex mGridIndex;
+	Grid*	  mParentGrid;
 	
 };
 

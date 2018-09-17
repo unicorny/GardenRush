@@ -33,7 +33,7 @@ namespace level_state
 
 		virtual void onTouchBegan(PlantNode* plantNode) { };
 		virtual void onTouchMoved(float deltaX, float deltaY) {};
-		virtual void onTouchEnded(MainGridType type, uint8_t x, uint8_t y) { };
+		virtual void onTouchEnded(GridType type, uint8_t x, uint8_t y) { };
 		virtual void onTouchCancelled() { };
 
 	protected:

@@ -81,6 +81,21 @@
     <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp">
       <Filter>src\levelStates</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\DisplayInfo.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\DragSeed.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\DropSeedInvalid.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\DropSeedValid.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\PlantSeed.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -138,6 +153,21 @@
       <Filter>src\levelStates</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\levelStates\iLevelState.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\DisplayInfo.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\DragSeed.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\DropSeedInvalid.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\DropSeedValid.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\PlantSeed.h">
       <Filter>src\levelStates</Filter>
     </ClInclude>
   </ItemGroup>

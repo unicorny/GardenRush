@@ -22,29 +22,32 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+// Infos for Android Build from command line:
+// https://android.jlelse.eu/how-i-reduced-my-android-build-times-by-89-4242e51ce946
+// gradlew assembleDebug
+// gradlew installDebug
+
+
 #ifndef  __FAIRY_GAMES_GARDEN_RUSH_MAIN_GAME_SCENE_H
 #define  __FAIRY_GAMES_GARDEN_RUSH_MAIN_GAME_SCENE_H
 
+#define _FAIRY_DEBUG_
+
 #include "cocos2d.h"
 #include "lib/DRHashList.hpp"
+#include "nodes/Grid.h"
 
 class PlantTypesManager;
 class LevelStateManager;
 class LevelData;
 class PlantNode;
-class Grid;
+//class Grid;
+
 
 namespace level_state {
 	class iLevelState;
 }
 
-enum MainGridType {
-	GRID_MAIN,
-	GRID_INVENTORY,
-	GRID_BUCKET,
-	GRID_SIZE,
-	GRID_ERROR
-};
 
 enum EnabledTouchType {
 	ENABLED_TOUCH_NONE = 0,
@@ -63,22 +66,22 @@ inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)
 class MainGameScene : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager);
+	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager);
 	MainGameScene();
 	~MainGameScene();
 
-    virtual bool init();
+	virtual bool init();
 	bool initAfterCreate();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
+
+	// a selector callback
+	void menuCloseCallback(cocos2d::Ref* pSender);
 	void menuToggleStatsCallback(cocos2d::Ref* pSender);
 
 	// global events
-	bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-	void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
-	void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-	void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
+	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
+	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
+	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
+	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
 
 #ifdef _MSC_VER
 	void onMouseMove(cocos2d::Event *event);
@@ -87,12 +90,13 @@ public:
 	// enable/disable touch
 
 	// getter for level state
-	inline Grid* getGrid(const MainGridType type) const { assert(type < GRID_SIZE); return mGameGrids[type]; }
+	inline Grid* getGrid(const GridType type) const { assert(type < GRID_SIZE); return mGameGrids[type]; }
 	inline const LevelData* getLevelData() const { return mLevelData; }
 	inline const PlantTypesManager* getPlantTypesManager() const { return mPlantTypesManager; }
 
 	inline void setEnabledTouchType(EnabledTouchType type) { mEnabledTouchTypes = type; }
 	inline void setTargetPlantNode(PlantNode* target) { mTargetPlantNode = target; }
+	inline PlantNode* getTargetPlantNode() { return mTargetPlantNode; }
 	
 	bool transitTo(DHASH levelStateId);
 	inline bool transitTo(const char* levelStateName) { return transitTo(DRMakeStringHash(levelStateName)); }
@@ -102,15 +106,14 @@ public:
 
 protected:
 
-	bool touchBeganIfInsideGrid(cocos2d::Vec2 pos, MainGridType type); 
-	bool touchEndIfInsideGrid(cocos2d::Vec2 pos, MainGridType type);
-	bool isInsideGrid(cocos2d::Vec2 pos, MainGridType type);
+	bool touchBeganIfInsideGrid(cocos2d::Vec2 pos, GridType type);
+	bool touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type);
+	bool isInsideGrid(cocos2d::Vec2 pos, GridType type);
 	bool addLevelState(level_state::iLevelState* levelState);
 
 	bool mToogleStats;
 	PlantTypesManager* mPlantTypesManager;
 	LevelData* mLevelData;
-	LevelStateManager* mLevelStateManager;
 	Grid* mGameGrids[GRID_SIZE];
 	// bounding box array for better cache use by touch point check
 	// position x left, y bottom, edge size 
@@ -119,6 +122,9 @@ protected:
 #ifdef _MSC_VER
 	cocos2d::Label* mMousePosLabel;
 #endif
+#ifdef _FAIRY_DEBUG_
+	cocos2d::Label* mCurrentGameStateLabel;
+#endif 
 
 	// level state
 	DRHashList mLevelStates;

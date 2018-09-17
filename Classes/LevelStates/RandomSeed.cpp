@@ -39,13 +39,18 @@ namespace level_state {
 			cocos2d::CallFunc::create(CC_CALLBACK_0(RandomSeed::animationEnd, this)),
 			nullptr);
 		plantNode->runAction(plantNodeSequence);
-
+		mMainGameScene->setTargetPlantNode(plantNode);
 
 		return true;
 	}
 
 	void RandomSeed::animationEnd()
 	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		plantNode->setAnchorPoint(cocos2d::Vec2::ZERO);
+		auto pos = plantNode->getPosition();
+		plantNode->setPosition(pos - plantNode->getContentSize()*0.5f);
+		mMainGameScene->setTargetPlantNode(nullptr);
 		mMainGameScene->transitTo("PlayerChooseSeed");
 	}
 	bool RandomSeed::onExitState()

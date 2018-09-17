@@ -1,4 +1,8 @@
 #include "DragSeed.h"
+#include "MainGameScene.h"
+#include "nodes/Grid.h"
+#include "nodes/PlantNode.h"
+#include "cocos2d.h"
 
 namespace level_state {
 	bool DragSeed::initState()
@@ -8,6 +12,12 @@ namespace level_state {
 	bool DragSeed::onEnterState()
 	{
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED | ENABLED_TOUCH_MOVE);
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		auto grid = plantNode->getParentGrid();
+		auto pos = grid->fromLocalToWorld(plantNode->getPosition());
+		plantNode->removeFromGrid();
+		mMainGameScene->addChild(plantNode, 20);
+		plantNode->setPosition(pos);
 		return true;
 	}
 	bool DragSeed::onExitState()
@@ -16,16 +26,43 @@ namespace level_state {
 		return true;
 	}
 
-	void DragSeed::onTouchEnded(MainGridType type, uint8_t x, uint8_t y)
+	void DragSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		if (plantNode->getReferenceCount() == 1) {
+			plantNode->retain();
+		}
+		mMainGameScene->removeChild(plantNode, false);
+		auto pos = plantNode->getPosition();
 
+		if (GRID_ERROR == type || GRID_BUCKET == type || !mMainGameScene->getGrid(type)->isCellEmptyAndFree(x, y)) {
+			auto grid = plantNode->getParentGrid();
+			auto gridIndex = plantNode->getGridIndex();
+			grid->addGridCell(plantNode, gridIndex.x, gridIndex.y);
+			plantNode->setPosition(grid->fromWorldToLocal(pos));
+			if (GRID_BUCKET == type) {
+				plantNode->setGlobalZOrder(1.0f);
+			}
+			mMainGameScene->transitTo("DropSeedInvalid");
+		}
+		else {
+			auto grid = mMainGameScene->getGrid(type);
+			
+			//plantNode->removeFromGrid();
+			grid->addGridCell(plantNode, x, y);
+			plantNode->setPosition(grid->fromWorldToLocal(pos));
+			plantNode->setParentGrid(mMainGameScene->getGrid(type));
+			mMainGameScene->transitTo("DropSeedValid");
+		}
 	}
 	void DragSeed::onTouchCancelled()
 	{
-
+		mMainGameScene->transitTo("DropSeedInvalid");
 	}
 	void DragSeed::onTouchMoved(float deltaX, float deltaY)
 	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		plantNode->setPosition(plantNode->getPosition() + cocos2d::Vec2(deltaX, -deltaY));
 
 	}
 }

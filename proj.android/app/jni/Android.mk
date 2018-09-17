@@ -28,25 +28,23 @@ LOCAL_MODULE_FILENAME := libMyGame
 
 LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/AppDelegate.cpp \
-                   $(LOCAL_PATH)/../../../Classes/HelloWorldScene.cpp \
                    $(LOCAL_PATH)/../../../Classes/ErrorLog.cpp \
-                   $(LOCAL_PATH)/../../../Classes/GardenRushScene.cpp \
-                   $(LOCAL_PATH)/../../../Classes/PlantTypesManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/DRHashList.cpp \
-                   $(LOCAL_PATH)/../../../Classes/controller/ConfigLoader.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
-				   $(LOCAL_PATH)/../../../Classes/levelStates/DisplayInfo.cpp \
-				   $(LOCAL_PATH)/../../../Classes/levelStates/DragSeed.cpp \
-				   $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
-				   $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedValid.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
+                   $(LOCAL_PATH)/../../../Classes/PlantTypesManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/MainGameScene.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/DisplayInfo.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/DragSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedValid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlantSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
-				   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp 
-
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp
 
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes

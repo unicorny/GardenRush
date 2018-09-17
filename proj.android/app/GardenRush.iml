@@ -36,18 +36,6 @@
     <content url="file://$MODULE_DIR$/../../Classes">
       <sourceFolder url="file://$MODULE_DIR$/../../Classes" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/../../Classes/controller">
-      <sourceFolder url="file://$MODULE_DIR$/../../Classes/controller" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../Classes/lib">
-      <sourceFolder url="file://$MODULE_DIR$/../../Classes/lib" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../Classes/model">
-      <sourceFolder url="file://$MODULE_DIR$/../../Classes/model" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../../Classes/nodes">
-      <sourceFolder url="file://$MODULE_DIR$/../../Classes/nodes" isTestSource="false" />
-    </content>
     <content url="file://$MODULE_DIR$/../../Resources">
       <sourceFolder url="file://$MODULE_DIR$/../../Resources" type="java-resource" />
     </content>
@@ -371,16 +359,17 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-runtime-classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental-verifier" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-apk" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-resources" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaPrecompile" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifest-checker" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/ndkBuild" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/prebuild" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/split-apk" />

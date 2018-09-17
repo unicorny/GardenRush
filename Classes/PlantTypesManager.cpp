@@ -114,7 +114,8 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 					int count = 1;
 					for (Value::ConstValueIterator itrArray = iGraphics->value.Begin(); itrArray != iGraphics->value.End(); ++itrArray) {
 						std::string typeName = iGraphics->name.GetString();
-						typeName += "_" + count;
+						typeName += "_";
+						typeName += count;
 						type = PlantType::getPhasisViewFromString(typeName.data());
 						view = IViewData::createFromJson(&itrArray);
 						plant->setViewData(view, type);

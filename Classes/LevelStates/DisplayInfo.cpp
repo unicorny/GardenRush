@@ -8,10 +8,21 @@ namespace level_state {
 	}
 	bool DisplayInfo::onEnterState()
 	{
+		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED);
 		return true;
 	}
 	bool DisplayInfo::onExitState()
 	{
+		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
 		return true;
+	}
+
+	void DisplayInfo::onTouchEnded(GridType type, uint8_t x, uint8_t y)
+	{
+		mMainGameScene->transitTo("PlayerChooseSeed");
+	}
+	void DisplayInfo::onTouchCancelled()
+	{
+		mMainGameScene->transitTo("PlayerChooseSeed");
 	}
 }

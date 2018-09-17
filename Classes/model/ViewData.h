@@ -34,7 +34,9 @@ public:
 	virtual cocos2d::Sprite* createSprite() const = 0;
 	virtual cocos2d::Animation* createAnimation() = 0;
 	virtual PlantNode* createPlantNode(DHASH plantHash) = 0;
+	virtual bool changePlantNodeSprite(PlantNode* plantNode) = 0;
 	virtual DHASH getHash() = 0;
+	
 
 	static ViewType viewTypeFromString(const char* type);
 	static IViewData* createFromJson(const rapidjson::Value::ConstMemberIterator* itr);
@@ -53,6 +55,7 @@ public:
 	virtual cocos2d::Sprite* createSprite() const;
 	virtual cocos2d::Animation* createAnimation() { return NULL; }
 	virtual PlantNode* createPlantNode(DHASH plantHash);
+	virtual bool changePlantNodeSprite(PlantNode* plantNode);
 	virtual DHASH getHash();
 protected:
 	std::string mTextureName;

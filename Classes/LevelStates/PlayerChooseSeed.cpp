@@ -34,8 +34,10 @@ namespace level_state {
 	void PlayerChooseSeed::onTouchBegan(PlantNode* plantNode)
 	{
 		//ErrorLog::printf("touchPlant");
-		mMainGameScene->setTargetPlantNode(plantNode);
-		mMainGameScene->transitTo("PlayerChooseActionWithSeed");
+		if (plantNode) {
+			mMainGameScene->setTargetPlantNode(plantNode);
+			mMainGameScene->transitTo("PlayerChooseActionWithSeed");
+		}
 	}
 
 };

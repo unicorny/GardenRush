@@ -77,6 +77,12 @@ PlantNode* ViewDataSimpleTexture::createPlantNode(DHASH plantHash)
 	return ret;
 }
 
+bool ViewDataSimpleTexture::changePlantNodeSprite(PlantNode* plantNode)
+{
+	plantNode->setTexture(mTextureName);
+	return true;
+}
+
 DHASH ViewDataSimpleTexture::getHash()
 {
 	return DRMakeFilenameHash(mTextureName.data());

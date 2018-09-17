@@ -16,6 +16,7 @@ namespace level_state {
 		virtual bool onEnterState();
 		virtual bool onExitState();
 
+		void animationEnd();
 
 	protected:
 

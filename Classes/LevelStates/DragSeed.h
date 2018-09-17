@@ -16,7 +16,7 @@ namespace level_state {
 		virtual bool onEnterState();
 		virtual bool onExitState();
 
-		virtual void onTouchEnded(MainGridType type, uint8_t x, uint8_t y);
+		virtual void onTouchEnded(GridType type, uint8_t x, uint8_t y);
 		virtual void onTouchCancelled();
 		virtual void onTouchMoved(float deltaX, float deltaY);
 

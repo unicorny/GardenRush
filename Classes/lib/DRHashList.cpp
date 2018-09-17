@@ -4,9 +4,10 @@
 
 #include "DRHashList.hpp"
 
-using namespace std;
 #include <cstdlib>
 #include <cstring>
+
+using namespace std;
 
 //------------------------------------------------------------------
 //	DRStaticHashList

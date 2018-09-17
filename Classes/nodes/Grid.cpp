@@ -1,11 +1,12 @@
 #include "nodes/Grid.h"
 #include "model/ViewData.h"
 #include "ErrorLog.h"
+#include "PlantTypesManager.h"
 
 using namespace cocos2d;
 
-Grid::Grid(uint8_t width, uint8_t height)
-	: mWidth(width), mHeight(height), mPixelSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr)
+Grid::Grid(uint8_t width, uint8_t height, GridType type)
+	: mWidth(width), mHeight(height), mType(type), mPixelSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
@@ -19,9 +20,9 @@ Grid::~Grid()
 	free(mPlantMap);
 }
 
-Grid * Grid::create(uint8_t width, uint8_t height)
+Grid * Grid::create(uint8_t width, uint8_t height, GridType type)
 {
-	Grid * ret = new (std::nothrow) Grid(width, height);
+	Grid * ret = new (std::nothrow) Grid(width, height, type);
 	if (ret && ret->init())
 	{
 		ret->autorelease();
@@ -87,7 +88,25 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 		return false;
 	}
 	mPlantMap[x * mWidth + y] = viewData;
-	return addCellSprite(viewData, x, y, 10);
+	bool result = addCellSprite(viewData, x, y, 10);
+	if (result) {
+		viewData->setGridIndex(GridIndex(x, y));
+		viewData->setParentGrid(this);
+		return result;
+	}
+	return false;
+}
+
+
+bool Grid::updateParentsOfPlantOnIndex(GridIndex index, PlantTypesManager* plantTypesManager)
+{
+	assert(mType == GRID_MAIN);
+	assert(mPlantMap[index.x * mWidth + index.y]);
+	auto mainPlantType = plantTypesManager->findPlantType(mPlantMap[index.x * mWidth + index.y]->getHash());
+	assert(mainPlantType);
+
+	// 9 possible neighbors, 3 above, 1 left, one right, 3 at bottom
+	// 
 }
 
 bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
@@ -134,7 +153,7 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 	return true;
 }
 
-GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition)
+GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 {
 	GridIndex index(
 		static_cast<uint8_t>(floor(localPosition.x / mPixelSize.x * mWidth)),
@@ -144,7 +163,27 @@ GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition)
 	return index;
 }
 
-PlantNode* Grid::isPlantNodeAtPosition(cocos2d::Vec2 localPosition)
+cocos2d::Vec2 Grid::fromWorldToLocal(cocos2d::Vec2 worldCoords) const
+{
+	return worldCoords - _position;
+}
+
+cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const
+{
+	return _position + localCoords;
+}
+
+cocos2d::Vec2 Grid::getOriginPosition(PlantNode* viewNode)
+{
+	auto gridIndex = viewNode->getGridIndex();
+	auto pos = cocos2d::Vec2(
+		static_cast<float>(gridIndex.x) * (mPixelSize.x / static_cast<float>(mWidth)),
+		static_cast<float>(gridIndex.y) * (mPixelSize.y / static_cast<float>(mHeight))
+	);
+	return pos;
+}
+
+PlantNode* Grid::isPlantNodeAtPosition(cocos2d::Vec2 localPosition) const
 {
 	GridIndex i = getGridIndex(localPosition);
 	size_t index = i.x * mWidth + i.y;
@@ -153,4 +192,17 @@ PlantNode* Grid::isPlantNodeAtPosition(cocos2d::Vec2 localPosition)
 		return mPlantMap[index];
 	}
 	return nullptr;
+}
+
+bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const
+{
+	uint8_t index = x * mWidth + y;
+	if (mObstacleMap[index] == OBSTACLE_DEFAULT) {
+		return false;
+	}
+	if (mPlantMap[index]) {
+		return false;
+	}
+	return true;
+
 }

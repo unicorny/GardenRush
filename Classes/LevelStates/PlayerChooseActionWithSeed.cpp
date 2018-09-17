@@ -1,6 +1,7 @@
 #include "PlayerChooseActionWithSeed.h"
 #include "levelStates/iLevelState.h"
 #include "nodes/Grid.h"
+#include "nodes/PlantNode.h"
 #include "cocos2d.h"
 #include "MainGameScene.h"
 
@@ -32,7 +33,7 @@ namespace level_state {
 		return true;
 	}
 
-	void PlayerChooseActionWithSeed::onTouchEnded(MainGridType type, uint8_t x, uint8_t y)
+	void PlayerChooseActionWithSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
 		//if (mMovedSum.x < 1.0f && mMovedSum.y < 1.0f) {
 			mMainGameScene->transitTo("DisplayInfo");
@@ -46,6 +47,8 @@ namespace level_state {
 	void PlayerChooseActionWithSeed::onTouchMoved(float deltaX, float deltaY)
 	{
 		//mMovedSum += Vec2(deltaX, deltaY);
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		
 		mMainGameScene->transitTo("DragSeed");
 	}
 

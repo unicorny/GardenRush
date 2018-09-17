@@ -24,7 +24,7 @@
 
 #include "MainGameScene.h"
 #include "SimpleAudioEngine.h"
-#include "nodes/Grid.h"
+//#include "nodes/Grid.h"
 #include "model/ViewData.h"
 #include "PlantTypesManager.h"
 #include "levelStates/DisplayInfo.h"
@@ -33,6 +33,7 @@
 #include "levelStates/DropSeedValid.h"
 #include "levelStates/iLevelState.h"
 #include "levelStates/RandomSeed.h"
+#include "levelStates/PlantSeed.h"
 #include "levelStates/PlayerChooseSeed.h"
 #include "levelStates/PlayerChooseActionWithSeed.h"
 #include "model/LevelData.h"
@@ -65,7 +66,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager)
 
 MainGameScene::MainGameScene()
 	: mToogleStats(false), mPlantTypesManager(nullptr),
- mLevelData(nullptr), mLevelStateManager(nullptr), mActiveLevelState(nullptr), mTargetPlantNode(nullptr), mEnabledTouchTypes(ENABLED_TOUCH_NONE)
+ mLevelData(nullptr), mActiveLevelState(nullptr), mTargetPlantNode(nullptr), mEnabledTouchTypes(ENABLED_TOUCH_NONE)
 {
 	memset(mGameGrids, 0, GRID_SIZE * sizeof(Grid*));
 	mLevelData = new LevelData(5);
@@ -82,7 +83,6 @@ MainGameScene::~MainGameScene()
 		mGameGrids[i] = nullptr;
 	}
 
-	DR_SAVE_DELETE(mLevelStateManager);
 	DR_SAVE_DELETE(mLevelData);	
 }
 
@@ -202,7 +202,7 @@ bool MainGameScene::init()
 	ViewDataSimpleTexture view("gridCell.png");
 	float gridDimension = visibleSize.height * 0.9f;
 	float cellSize = gridDimension / 8.0f;
-	auto grid = Grid::create(8, 8);
+	auto grid = Grid::create(8, 8, GRID_MAIN);
 	if (grid == nullptr) {
 		problemLoading("Grid");
 	} else {
@@ -218,7 +218,7 @@ bool MainGameScene::init()
 	}
 
 	// add second grid as inventory
-	auto inventory_grid = Grid::create(2, 2);
+	auto inventory_grid = Grid::create(2, 2, GRID_INVENTORY);
 	if (inventory_grid == nullptr) {
 		problemLoading("inventory Grid");
 	}
@@ -235,7 +235,7 @@ bool MainGameScene::init()
 	}
 
 	// add third grid as 
-	auto bucket_grid = Grid::create(1, 1);
+	auto bucket_grid = Grid::create(1, 1, GRID_BUCKET);
 	if (bucket_grid == nullptr) {
 		problemLoading("bucket grid");
 	}
@@ -259,6 +259,7 @@ bool MainGameScene::init()
 	addLevelState(new level_state::DragSeed);
 	addLevelState(new level_state::DropSeedInvalid);
 	addLevelState(new level_state::DropSeedValid);
+	addLevelState(new level_state::PlantSeed);
 
 	// global touch listener
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -268,6 +269,9 @@ bool MainGameScene::init()
 	touchListener->onTouchCancelled = CC_CALLBACK_2(MainGameScene::onTouchEnded, this);
 	
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+
+ 
 
 	// mouse for debugging
 #ifdef _MSC_VER
@@ -289,28 +293,55 @@ bool MainGameScene::init()
 	_mouseListener->onMouseMove = CC_CALLBACK_1(MainGameScene::onMouseMove, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_mouseListener, this);
 #endif
+
+	// label for debugging
+#ifdef _FAIRY_DEBUG_
+	mCurrentGameStateLabel = Label::createWithTTF("RandomSeed", "fonts/Marker Felt.ttf", 24);
+	if (mCurrentGameStateLabel == nullptr) {
+		problemLoading("current game state 'fonts/Marker Felt.ttf'");
+	}
+	else {
+		auto gameStateLabelPos = Vec2(origin.x,
+			origin.y + visibleSize.height - mCurrentGameStateLabel->getContentSize().height
+		);
+#ifdef _MSC_VER
+		gameStateLabelPos.y -= mMousePosLabel->getContentSize().height;
+#endif 
+		mCurrentGameStateLabel->setPosition(gameStateLabelPos);
+		mCurrentGameStateLabel->setAnchorPoint(Vec2::ZERO);
+		// add to layer
+		this->addChild(mCurrentGameStateLabel, 2);
+	}
+#endif
    
     return true;
 }
-bool MainGameScene::touchBeganIfInsideGrid(cocos2d::Vec2 pos, MainGridType type)
+bool MainGameScene::touchBeganIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
 	if(isInsideGrid(pos, type)) {
 		PlantNode* plantNode = mGameGrids[type]->isPlantNodeAtPosition(Vec2(pos.x - mGridBoundingBoxes[type * 3], pos.y - mGridBoundingBoxes[type * 3 + 1]));
 		mActiveLevelState->onTouchBegan(plantNode);
+		return true;
 	}
 	return false;
 }
 
-bool MainGameScene::touchEndIfInsideGrid(cocos2d::Vec2 pos, MainGridType type)
+bool MainGameScene::touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
 	if (isInsideGrid(pos, type)) {
-		GridIndex i = mGameGrids[type]->getGridIndex(pos);
+		auto grid = mGameGrids[type];
+		GridIndex i = grid->getGridIndex(grid->fromWorldToLocal(pos));
 		mActiveLevelState->onTouchEnded(type, i.x, i.y);
+		return true;
 	}
+	else {
+		mActiveLevelState->onTouchEnded(GRID_ERROR, 0, 0);
+	}
+
 	return false;
 }
 
-bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, MainGridType type)
+bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
 	// if inside grid
 	if (pos.x >= mGridBoundingBoxes[type * 3] &&
@@ -330,24 +361,25 @@ bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 	// global pos
 	Vec2 pos = touch->getLocationInView();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-	// touch y seems reversed at least under windows
-#ifdef _MSC_VER
+	// touch y seems reversed at windows and android, but also in iOs?
+//#ifdef _MSC_VER
 	pos.y = visibleSize.height - pos.y;
-#endif
+//#endif
 	// if lay on left screen size
 	if (pos.x < mGridBoundingBoxes[GRID_INVENTORY * 3]) {
-		touchBeganIfInsideGrid(pos, GRID_MAIN);
+		return touchBeganIfInsideGrid(pos, GRID_MAIN);
 	}
 	else {
 		if (pos.y > mGridBoundingBoxes[GRID_BUCKET * 3 + 1]) {
 			// if inside BUCKET
-			touchBeganIfInsideGrid(pos, GRID_BUCKET);
+			return touchBeganIfInsideGrid(pos, GRID_BUCKET);
 		}
 		else {
 			// if inside INVENTORY
-			touchBeganIfInsideGrid(pos, GRID_INVENTORY);
+			return touchBeganIfInsideGrid(pos, GRID_INVENTORY);
 		}
 	}
+	return true;
 
 }
 
@@ -359,7 +391,6 @@ void MainGameScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 	Vec2 pos = touch->getLocationInView();
 	Vec2 diff = pos - prevPos;
 	mActiveLevelState->onTouchMoved(diff.x, diff.y);
-
 }
 void MainGameScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 {
@@ -368,24 +399,28 @@ void MainGameScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 
 	Vec2 pos = touch->getLocationInView();
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-	// touch y seems reversed at least under windows
-#ifdef _MSC_VER
+	// touch y seems reversed at windows and android, but also in iOs?
+//#ifdef _MSC_VER
 	pos.y = visibleSize.height - pos.y;
-#endif
+//#endif
 	// if lay on left screen size
 	if (pos.x < mGridBoundingBoxes[GRID_INVENTORY * 3]) {
 		touchEndIfInsideGrid(pos, GRID_MAIN);
+		return;
 	}
 	else {
 		if (pos.y > mGridBoundingBoxes[GRID_BUCKET * 3 + 1]) {
 			// if inside BUCKET
 			touchEndIfInsideGrid(pos, GRID_BUCKET);
+			return;
 		}
 		else {
 			// if inside INVENTORY
 			touchEndIfInsideGrid(pos, GRID_INVENTORY);
+			return;
 		}
 	}
+	mActiveLevelState->onTouchCancelled();
 }
 
 void MainGameScene::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -396,6 +431,7 @@ void MainGameScene::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* even
 	mActiveLevelState->onTouchCancelled();
 }
 
+#ifdef _MSC_VER
 void MainGameScene::onMouseMove(Event *event)
 {
 	// to illustrate the event....
@@ -404,6 +440,7 @@ void MainGameScene::onMouseMove(Event *event)
 	os << "MousePosition X:" << e->getCursorX() << " Y:" << e->getCursorY();
 	mMousePosLabel->setString(os.str());
 }
+#endif
 
 void MainGameScene::menuCloseCallback(Ref* pSender)
 {
@@ -460,6 +497,9 @@ bool MainGameScene::transitTo(DHASH levelStateId)
 		ErrorLog::printf("error enter state: %s", mActiveLevelState->getName());
 		LOG_ERROR("error enter state", false);
 	}
+#ifdef _FAIRY_DEBUG_
+	mCurrentGameStateLabel->setString(mActiveLevelState->getName());
+#endif
 
 	return true;
 }
