@@ -50,6 +50,19 @@ PlantTypePhasisView PlantType::getPhasisViewFromString(const char* name)
 	return PLANT_PHASIS_ERROR;
 }
 
+PlantTypePhasisView PlantType::getGrowPhasisViewFromInt(int growPhasis)
+{
+	if (growPhasis < 0 || growPhasis > 5) return PLANT_PHASIS_ERROR;
+	switch (growPhasis) {
+	case 0: return PLANT_PHASIS_SEEDED;
+	case 1: return PLANT_PHASIS_GROWTH_1;
+	case 2: return PLANT_PHASIS_GROWTH_2;
+	case 3: return PLANT_PHASIS_GROWTH_3;
+	case 4: return PLANT_PHASIS_GROWTH_4;
+	case 5: return PLANT_PHASIS_GROWTH_5;
+	}
+
+}
 
 
 bool PlantType::setViewData(IViewData* viewData, PlantTypePhasisView phasis)

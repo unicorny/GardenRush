@@ -13,34 +13,8 @@
 #include "cocos2d.h"
 #include "../lib/DRHashList.hpp"
 #include "ViewData.h"
+#include "Enums.h"
 
-enum PlantTypeNeighborType
-{
-	// neutral must be zero
-	NEIGHBOR_NEUTRAL = 0,
-	NEIGHBOR_GOOD = 1,
-	NEIGHBOR_REALLY_GOOD = 2,
-	NEIGHBOR_BAD = 4,
-	NEIGHBOR_ERROR = 7
-};
-
-
-enum PlantTypePhasisView
-{
-	PLANT_PHASIS_SEED,
-	PLANT_PHASIS_SEEDED,
-	PLANT_PHASIS_GROWTH_1,
-	PLANT_PHASIS_GROWTH_2,
-	PLANT_PHASIS_GROWTH_3,
-	PLANT_PHASIS_GROWTH_4,
-	PLANT_PHASIS_GROWTH_5,
-	PLANT_PHASIS_FINAL_NEUTRAL,
-	PLANT_PHASIS_FINAL_GOOD,
-	PLANT_PHASIS_FINAL_VERY_GOOD,
-	PLANT_PHASIS_FINAL_BAD,
-	PLANT_PHASIS_SIZE ,
-	PLANT_PHASIS_ERROR
-};
 class PlantNode;
 
 class PlantType
@@ -64,7 +38,7 @@ public:
 	}
 	// set view data, PlantType delete pointer after it won't use it anymore
 	bool setViewData(IViewData* viewData, PlantTypePhasisView phasis);
-	inline IViewData* getViewData(PlantTypePhasisView viewType) { assert(viewType < PLANT_PHASIS_SIZE);  return mPlantViews[viewType]; }
+	inline const IViewData* getViewData(PlantTypePhasisView viewType) const { assert(viewType < PLANT_PHASIS_SIZE);  return mPlantViews[viewType]; }
 
 	// called from PlantTypesManager
 	inline void setIndex(u32 index) { mIndex = index; }
@@ -73,6 +47,7 @@ public:
 
 	static PlantTypeNeighborType getNeighborTypeFromString(const char* name);
 	static PlantTypePhasisView getPhasisViewFromString(const char* name);
+	static PlantTypePhasisView getGrowPhasisViewFromInt(int growPhasis);
 
 protected:
 	std::string mName;

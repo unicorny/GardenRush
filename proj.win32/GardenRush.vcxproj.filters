@@ -96,6 +96,9 @@
     <ClCompile Include="..\Classes\levelStates\PlantSeed.cpp">
       <Filter>src\levelStates</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\model\Points.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -169,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\levelStates\PlantSeed.h">
       <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\Points.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Enums.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

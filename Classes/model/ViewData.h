@@ -33,9 +33,9 @@ public:
 	inline ViewType getType() const { return mType; }
 	virtual cocos2d::Sprite* createSprite() const = 0;
 	virtual cocos2d::Animation* createAnimation() = 0;
-	virtual PlantNode* createPlantNode(DHASH plantHash) = 0;
-	virtual bool changePlantNodeSprite(PlantNode* plantNode) = 0;
-	virtual DHASH getHash() = 0;
+	virtual PlantNode* createPlantNode(PlantType* plantType) const = 0;
+	virtual bool changePlantNodeSprite(PlantNode* plantNode) const = 0;
+	virtual DHASH getHash() const = 0;
 	
 
 	static ViewType viewTypeFromString(const char* type);
@@ -54,9 +54,9 @@ public:
 	virtual ~ViewDataSimpleTexture();
 	virtual cocos2d::Sprite* createSprite() const;
 	virtual cocos2d::Animation* createAnimation() { return NULL; }
-	virtual PlantNode* createPlantNode(DHASH plantHash);
-	virtual bool changePlantNodeSprite(PlantNode* plantNode);
-	virtual DHASH getHash();
+	virtual PlantNode* createPlantNode(PlantType* plantType) const;
+	virtual bool changePlantNodeSprite(PlantNode* plantNode) const;
+	virtual DHASH getHash() const;
 protected:
 	std::string mTextureName;
 };

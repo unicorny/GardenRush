@@ -37,7 +37,12 @@ namespace level_state {
 			mMainGameScene->transitTo("PlantSeed");
 		}
 		else if (GRID_INVENTORY == gridType) {
-			mMainGameScene->transitTo("RandomSeed");
+			if (mMainGameScene->getGrid(GRID_BUCKET)->isCellEmptyAndFree(0, 0)) {
+				mMainGameScene->transitTo("RandomSeed");
+			}
+			else {
+				mMainGameScene->transitTo("PlayerChooseSeed");
+			}
 		}
 		
 	}

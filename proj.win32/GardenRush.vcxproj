@@ -164,6 +164,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\lib\DRHashList.cpp" />
     <ClCompile Include="..\Classes\model\LevelData.cpp" />
     <ClCompile Include="..\Classes\model\PlantType.cpp" />
+    <ClCompile Include="..\Classes\model\Points.cpp" />
     <ClCompile Include="..\Classes\model\ViewData.cpp" />
     <ClCompile Include="..\Classes\nodes\Grid.cpp" />
     <ClCompile Include="..\Classes\nodes\PlantNode.cpp" />
@@ -174,6 +175,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\controller\ConfigLoader.h" />
+    <ClInclude Include="..\Classes\Enums.h" />
     <ClInclude Include="..\Classes\ErrorLog.h" />
     <ClInclude Include="..\Classes\levelStates\DisplayInfo.h" />
     <ClInclude Include="..\Classes\levelStates\DragSeed.h" />
@@ -190,6 +192,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\lib\DRHashList.hpp" />
     <ClInclude Include="..\Classes\model\LevelData.h" />
     <ClInclude Include="..\Classes\model\PlantType.h" />
+    <ClInclude Include="..\Classes\model\Points.h" />
     <ClInclude Include="..\Classes\model\ViewData.h" />
     <ClInclude Include="..\Classes\nodes\Grid.h" />
     <ClInclude Include="..\Classes\nodes\PlantNode.h" />

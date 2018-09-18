@@ -26,7 +26,7 @@ namespace level_state {
 		DHASH plantTypeHash = levelData->getPlantType(seedPlantTypeIndex);
 		auto plantType = mMainGameScene->getPlantTypesManager()->findPlantType(plantTypeHash);
 		auto plantView = plantType->getViewData(PLANT_PHASIS_SEED);
-		auto plantNode = plantView->createPlantNode(plantTypeHash);
+		auto plantNode = plantView->createPlantNode(plantType);
 		mMainGameScene->getGrid(GRID_BUCKET)->addGridCell(plantNode, 0, 0);
 		auto scale = cocos2d::Point(plantNode->getScaleX(), plantNode->getScaleY());
 		plantNode->setScale(0.0f, 0.0f);

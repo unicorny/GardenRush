@@ -44,7 +44,8 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlantSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
-                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp
 
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes

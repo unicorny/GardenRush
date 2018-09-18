@@ -63,9 +63,9 @@ cocos2d::Sprite* ViewDataSimpleTexture::createSprite() const
 	return cocos2d::Sprite::create(mTextureName);
 }
 
-PlantNode* ViewDataSimpleTexture::createPlantNode(DHASH plantHash)
+PlantNode* ViewDataSimpleTexture::createPlantNode(PlantType* plantType) const
 {
-	PlantNode * ret = new (std::nothrow) PlantNode(plantHash);
+	PlantNode * ret = new (std::nothrow) PlantNode(plantType);
 	if (ret && ret->initWithFile(mTextureName))
 	{
 		ret->autorelease();
@@ -77,13 +77,14 @@ PlantNode* ViewDataSimpleTexture::createPlantNode(DHASH plantHash)
 	return ret;
 }
 
-bool ViewDataSimpleTexture::changePlantNodeSprite(PlantNode* plantNode)
+bool ViewDataSimpleTexture::changePlantNodeSprite(PlantNode* plantNode) const
 {
+	
 	plantNode->setTexture(mTextureName);
 	return true;
 }
 
-DHASH ViewDataSimpleTexture::getHash()
+DHASH ViewDataSimpleTexture::getHash() const
 {
 	return DRMakeFilenameHash(mTextureName.data());
 }

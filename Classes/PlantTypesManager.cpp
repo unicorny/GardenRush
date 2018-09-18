@@ -115,8 +115,9 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 					for (Value::ConstValueIterator itrArray = iGraphics->value.Begin(); itrArray != iGraphics->value.End(); ++itrArray) {
 						std::string typeName = iGraphics->name.GetString();
 						typeName += "_";
-						typeName += count;
+						typeName += std::to_string(count);
 						type = PlantType::getPhasisViewFromString(typeName.data());
+						assert(type < PLANT_PHASIS_SIZE);
 						view = IViewData::createFromJson(&itrArray);
 						plant->setViewData(view, type);
 						count++;
@@ -129,6 +130,7 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 						typeName += "_";
 						typeName += itrObject->name.GetString();
 						type = PlantType::getPhasisViewFromString(typeName.data());
+						assert(type < PLANT_PHASIS_SIZE);
 						view = IViewData::createFromJson(&itrObject);
 						plant->setViewData(view, type);
 					}

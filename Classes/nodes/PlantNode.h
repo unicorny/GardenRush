@@ -10,15 +10,17 @@
  *          a texture-atlas
 */
 #include "cocos2d.h"
-#include "lib/DRHash.hpp"
+#include "lib/DRHashlist.hpp"
 #include "nodes/Grid.h"
+#include "enums.h"
 
 struct GridIndex;
+class PlantType;
 
 class PlantNode : public cocos2d::Sprite
 {
 public:
-	PlantNode(DHASH plantHash);
+	PlantNode(PlantType* plantType);
 	virtual ~PlantNode();
 
 	inline void setGridIndex(const GridIndex& index) { mGridIndex = index; }
@@ -27,14 +29,25 @@ public:
 	inline void setParentGrid(Grid* grid) { mParentGrid = grid; }
 	inline Grid* getParentGrid() const { return mParentGrid; }
 
-	inline DHASH getHash() const { return mPlantHash; }
+	//inline DHASH getHash() const { return mPlantType->getNameHash(); }
+	inline const PlantType* getPlantType() const { return mPlantType; }
 
 	bool removeFromGrid();
+
+	inline float getPointsMultiplicator() const { return mPointsMultiplicator; }
+	inline void multPoints(float points) { mPointsMultiplicator *= points; }
+
+	inline void setGrowPhasis(PlantTypePhasisView growPhasis) { mGrowPhasis = growPhasis; }
+
+	// return true if growth above max
+	bool countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
 protected:
-	DHASH mPlantHash;
+	PlantType* mPlantType;
 	GridIndex mGridIndex;
 	Grid*	  mParentGrid;
-	
+	float	  mPointsMultiplicator;
+	PlantTypePhasisView		  mGrowPhasis;
+	DRHashList mCountedNeighborForDiversity;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_VIEW_SPRITE_VIEW_H

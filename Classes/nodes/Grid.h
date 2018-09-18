@@ -48,7 +48,7 @@ public:
 	bool addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y);
 	//! \return false if an obstacle is at this position
 	bool addGridCell(PlantNode* viewNode, uint8_t x, uint8_t y);
-	bool updateParentsOfPlantOnIndex(GridIndex index, PlantTypesManager* plantTypesManager);
+	bool updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager);
 
 	PlantNode* removeGridCell(uint8_t x, uint8_t y);
 	cocos2d::Vec2 getOriginPosition(PlantNode* viewNode);

@@ -9,6 +9,7 @@ namespace level_state {
 	bool DisplayInfo::onEnterState()
 	{
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED);
+		mMainGameScene->transitTo("PlayerChooseSeed");
 		return true;
 	}
 	bool DisplayInfo::onExitState()

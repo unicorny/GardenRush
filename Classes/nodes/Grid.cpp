@@ -98,15 +98,49 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 }
 
 
-bool Grid::updateParentsOfPlantOnIndex(GridIndex index, PlantTypesManager* plantTypesManager)
+bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager)
 {
 	assert(mType == GRID_MAIN);
 	assert(mPlantMap[index.x * mWidth + index.y]);
-	auto mainPlantType = plantTypesManager->findPlantType(mPlantMap[index.x * mWidth + index.y]->getHash());
-	assert(mainPlantType);
+	auto mainPlantNode = mPlantMap[index.x * mWidth + index.y];
+	auto mainPlantType = mainPlantNode->getPlantType();
+	auto mainPlantTypeHash = mainPlantType->getNameHash();
+	
+	auto mainPlantTypeIndex = mainPlantType->getIndex();
 
-	// 9 possible neighbors, 3 above, 1 left, one right, 3 at bottom
+	assert(mainPlantType && mainPlantTypeHash);
+
+	// 8 possible neighbors, 3 above, 1 left, 1 right, 3 at bottom
 	// 
+	for (int x = index.x - 1; x <= index.x + 1; x++) {
+		if (x < 0 || x >= mWidth) continue;
+		for (int y = index.y - 1; y <= index.y + 1; y++) {
+			if(y < 0 || y >= mHeight) continue;
+			// we don't need ourselves
+			if (x == index.x && y == index.y) continue;
+
+			// left above, right above, bottom left or bottom right
+			bool edge = false;
+
+			if (index.x == x || index.y == y) {
+				// above, bottom, left or right
+				edge = true;
+			}
+			auto neighborPlant = mPlantMap[x * mWidth + y];
+			if (neighborPlant) {
+				auto neighborPlantType = neighborPlant->getPlantType();
+				if (neighborPlant->countNewNeighbor(
+						mainPlantTypeHash, 
+						plantTypesManager->getNeighborType(mainPlantTypeIndex, neighborPlantType->getIndex()), 
+						edge
+					)) {
+					// plant has out grown
+
+				}
+			}
+		}
+	}
+	return true;
 }
 
 bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)

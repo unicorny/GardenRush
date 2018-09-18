@@ -3,6 +3,7 @@
 #include "nodes/Grid.h"
 #include "cocos2d.h"
 #include "MainGameScene.h"
+#include "nodes/PlantNode.h"
 
 #include "ErrorLog.h"
 using namespace cocos2d;
@@ -36,7 +37,12 @@ namespace level_state {
 		//ErrorLog::printf("touchPlant");
 		if (plantNode) {
 			mMainGameScene->setTargetPlantNode(plantNode);
-			mMainGameScene->transitTo("PlayerChooseActionWithSeed");
+			if (GRID_MAIN == plantNode->getParentGrid()->getType()) {
+				mMainGameScene->transitTo("DisplayInfo");
+			}
+			else {
+				mMainGameScene->transitTo("PlayerChooseActionWithSeed");
+			}
 		}
 	}
 
