@@ -120,7 +120,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager));
+    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints));
 
     //auto scene = HelloWorld::createScene();
 

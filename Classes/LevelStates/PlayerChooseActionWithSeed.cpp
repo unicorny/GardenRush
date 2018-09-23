@@ -52,5 +52,10 @@ namespace level_state {
 		mMainGameScene->transitTo("DragSeed");
 	}
 
+	void PlayerChooseActionWithSeed::onCancelState()
+	{
+
+	}
+
 
 };

@@ -20,7 +20,7 @@ namespace level_state {
 		// change sprite
 		plantType->getViewData(PLANT_PHASIS_SEEDED)->changePlantNodeSprite(plantNode);
 		plantNode->setGrowPhasis(PLANT_PHASIS_SEEDED);
-		grid->updateParentsOfPlantOnIndex(gridIndex, plantTypesManager);
+		grid->updateParentsOfPlantOnIndex(gridIndex, plantTypesManager, mMainGameScene->getLevelData(), mMainGameScene->getPoints());
 
 		if (mMainGameScene->getGrid(GRID_BUCKET)->isCellEmptyAndFree(0, 0)) {
 			mMainGameScene->transitTo("RandomSeed");
@@ -33,5 +33,10 @@ namespace level_state {
 	bool PlantSeed::onExitState()
 	{
 		return true;
+	}
+
+	void PlantSeed::onCancelState()
+	{
+
 	}
 }

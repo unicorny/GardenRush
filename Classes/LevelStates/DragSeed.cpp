@@ -25,6 +25,12 @@ namespace level_state {
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
 		return true;
 	}
+	void DragSeed::putBackPlantNode()
+	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		auto gridIndex = plantNode->getGridIndex();
+		plantNode->getParentGrid()->addGridCell(plantNode, gridIndex.x, gridIndex.y);
+	}
 
 	void DragSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
@@ -36,10 +42,8 @@ namespace level_state {
 		auto pos = plantNode->getPosition();
 
 		if (GRID_ERROR == type || GRID_BUCKET == type || !mMainGameScene->getGrid(type)->isCellEmptyAndFree(x, y)) {
-			auto grid = plantNode->getParentGrid();
-			auto gridIndex = plantNode->getGridIndex();
-			grid->addGridCell(plantNode, gridIndex.x, gridIndex.y);
-			plantNode->setPosition(grid->fromWorldToLocal(pos));
+			putBackPlantNode();
+			plantNode->setPosition(plantNode->getParentGrid()->fromWorldToLocal(pos));
 			if (GRID_BUCKET == type) {
 				plantNode->setGlobalZOrder(1.0f);
 			}
@@ -57,7 +61,15 @@ namespace level_state {
 	}
 	void DragSeed::onTouchCancelled()
 	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		putBackPlantNode();
+		plantNode->setPosition(plantNode->getParentGrid()->fromWorldToLocal(plantNode->getPosition()));
 		mMainGameScene->transitTo("DropSeedInvalid");
+	}
+	void DragSeed::onCancelState()
+	{
+		putBackPlantNode();
+		auto plantNode = mMainGameScene->getTargetPlantNode();
 	}
 	void DragSeed::onTouchMoved(float deltaX, float deltaY)
 	{

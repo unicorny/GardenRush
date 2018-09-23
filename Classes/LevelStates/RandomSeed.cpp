@@ -33,7 +33,6 @@ namespace level_state {
 		auto pos = plantNode->getPosition();
 		plantNode->setAnchorPoint(cocos2d::Vec2(0.5f, 0.5f));
 		plantNode->setPosition(pos + plantNode->getContentSize()*0.5f);
-		auto plantNodeAction = cocos2d::ScaleTo::create(1.0f, scale.x, scale.y);
 		auto plantNodeSequence = cocos2d::Sequence::create(
 			cocos2d::EaseBounceInOut::create(cocos2d::ScaleTo::create(1.5f, scale.x, scale.y)),
 			cocos2d::CallFunc::create(CC_CALLBACK_0(RandomSeed::animationEnd, this)),
@@ -57,5 +56,17 @@ namespace level_state {
 	{
 		return true;
 	}
+	void RandomSeed::onCancelState()
+	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		plantNode->stopAllActions();
+		auto size = plantNode->getContentSize();
+		auto cellSize = plantNode->getParentGrid()->getCellSize();
+		plantNode->setScale(
+			size.width / cellSize.x,
+			size.height / cellSize.y
+		);
+	}
+
 
 };

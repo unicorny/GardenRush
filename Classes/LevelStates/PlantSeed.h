@@ -14,7 +14,7 @@ namespace level_state {
 		virtual bool initState();
 		virtual bool onEnterState();
 		virtual bool onExitState();
-
+		virtual void onCancelState();
 
 	protected:
 

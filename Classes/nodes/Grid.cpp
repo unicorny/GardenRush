@@ -1,5 +1,7 @@
 #include "nodes/Grid.h"
 #include "model/ViewData.h"
+#include "model/LevelData.h"
+#include "model/Points.h"
 #include "ErrorLog.h"
 #include "PlantTypesManager.h"
 
@@ -98,7 +100,7 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 }
 
 
-bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager)
+bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager, const LevelData* levelData, Points* points)
 {
 	assert(mType == GRID_MAIN);
 	assert(mPlantMap[index.x * mWidth + index.y]);
@@ -129,19 +131,28 @@ bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager*
 			auto neighborPlant = mPlantMap[x * mWidth + y];
 			if (neighborPlant) {
 				auto neighborPlantType = neighborPlant->getPlantType();
-				if (neighborPlant->countNewNeighbor(
-						mainPlantTypeHash, 
-						plantTypesManager->getNeighborType(mainPlantTypeIndex, neighborPlantType->getIndex()), 
-						edge
-					)) {
-					// plant has out grown
-
+				int growPhasis = neighborPlant->countNewNeighbor(
+					mainPlantTypeHash,
+					plantTypesManager->getNeighborType(mainPlantTypeIndex, neighborPlantType->getIndex()),
+					edge
+				);
+				// plant has out grown
+				if (growPhasis >= levelData->getMaxGrowthPhasis()) {
+					if (levelData->isAutoHarvesting()) {
+						auto cellSize = getCellSize();
+						auto pos = fromLocalToWorld(Vec2((static_cast<float>(x)+0.5f) * cellSize.x, y * cellSize.y));
+						points->addPoints(100 * neighborPlant->getPointsMultiplicator() * neighborPlant->getDiversityBonus(), pos);
+						removeGridCell(x, y);
+						neighborPlant = NULL;
+					}
 				}
+				
 			}
 		}
 	}
 	return true;
 }
+
 
 bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 {
@@ -169,6 +180,16 @@ PlantNode* Grid::removeGridCell(uint8_t x, uint8_t y)
 	this->removeChild(plantNode, false);
 	mPlantMap[x * mWidth + y] = NULL;
 	return plantNode;
+}
+
+void Grid::removeAllGridCells()
+{
+	for (int i = 0; i < mWidth * mHeight; i++) {
+		if (mPlantMap[i]) {
+			this->removeChild(mPlantMap[i], true);
+			mPlantMap[i] = NULL;
+		}
+	}
 }
 
 bool Grid::fillBgGridCells(const IViewData* viewData)

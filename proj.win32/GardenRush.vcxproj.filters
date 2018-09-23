@@ -28,6 +28,9 @@
     <Filter Include="src\levelStates">
       <UniqueIdentifier>{43f9b26d-9a87-4210-89d1-12ba947c2658}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ui">
+      <UniqueIdentifier>{feed646a-a49e-4e91-b091-f481e9a6a8c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\model\Points.cpp">
       <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\ui\SwitchButton.cpp">
+      <Filter>src\ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Enums.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\ui\SwitchButton.h">
+      <Filter>src\ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

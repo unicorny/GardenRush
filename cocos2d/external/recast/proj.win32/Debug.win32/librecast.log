@@ -1,14 +1,14 @@
 ﻿  DebugDraw.cpp
   DetourDebugDraw.cpp
-  DetourCrowd.cpp
   DetourLocalBoundary.cpp
+  DetourCrowd.cpp
   DetourObstacleAvoidance.cpp
   DetourPathCorridor.cpp
   DetourPathQueue.cpp
   DetourProximityGrid.cpp
-..\DetourCrowd\DetourObstacleAvoidance.cpp(334): warning C4244: "Initialisierung": Konvertierung von "double" in "float", möglicher Datenverlust
   DetourTileCache.cpp
   DetourTileCacheBuilder.cpp
+..\DetourCrowd\DetourObstacleAvoidance.cpp(334): warning C4244: "Initialisierung": Konvertierung von "double" in "float", möglicher Datenverlust
   DetourAlloc.cpp
   DetourCommon.cpp
   DetourNavMesh.cpp

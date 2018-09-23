@@ -30,17 +30,17 @@
   SkeletonData.c
   SkeletonJson.c
   Skin.c
+  Slot.c
+  SlotData.c
 i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(310): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
 i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(372): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
 i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(484): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
-i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(649): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
-i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(652): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
-  Slot.c
-  SlotData.c
+i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonjson.c(97): warning C4018: ">=": Konflikt zwischen "signed" und "unsigned"
   TransformConstraint.c
   TransformConstraintData.c
+i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(649): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
+i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonbinary.c(652): warning C4018: "<": Konflikt zwischen "signed" und "unsigned"
   Triangulator.c
-i:\code\c++\eigene_spiele\gardenrush\cocos2d\cocos\editor-support\spine\skeletonjson.c(97): warning C4018: ">=": Konflikt zwischen "signed" und "unsigned"
   VertexAttachment.c
   VertexEffect.c
   AttachmentVertices.cpp

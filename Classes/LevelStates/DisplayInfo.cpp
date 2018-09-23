@@ -18,6 +18,11 @@ namespace level_state {
 		return true;
 	}
 
+	void DisplayInfo::onCancelState()
+	{
+		
+	}
+
 	void DisplayInfo::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
 		mMainGameScene->transitTo("PlayerChooseSeed");

@@ -46,4 +46,9 @@ namespace level_state {
 		}
 	}
 
+	void PlayerChooseSeed::onCancelState()
+	{
+
+	}
+
 };

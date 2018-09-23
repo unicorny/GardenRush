@@ -27,6 +27,7 @@
 
 #include "cocos2d.h"
 #include "PlantTypesManager.h"
+#include "model/Points.h"
 
 /**
 @brief    The cocos2d Application.
@@ -62,6 +63,7 @@ public:
 
 protected:
 	PlantTypesManager mPlantTypesManager;
+	Points			  mPlayerPoints;
 };
 
 #endif // _APP_DELEGATE_H_

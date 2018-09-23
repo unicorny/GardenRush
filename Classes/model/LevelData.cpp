@@ -2,7 +2,7 @@
 
 
 LevelData::LevelData(size_t plantTypeSize)
-	: mPlantTypes(nullptr), mPlantTypesSize(plantTypeSize), mPlantTypeCursor(0)
+	: mPlantTypes(nullptr), mPlantTypesSize(plantTypeSize), mPlantTypeCursor(0), mAutoHarvesting(false), mMaxGrowthPhasis(5)
 {
 	mPlantTypes = new DHASH[plantTypeSize];
 }

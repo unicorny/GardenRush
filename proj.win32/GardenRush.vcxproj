@@ -169,6 +169,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\nodes\Grid.cpp" />
     <ClCompile Include="..\Classes\nodes\PlantNode.cpp" />
     <ClCompile Include="..\Classes\PlantTypesManager.cpp" />
+    <ClCompile Include="..\Classes\ui\SwitchButton.cpp" />
     <ClCompile Include="..\Classes\ViewDataManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -197,6 +198,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\nodes\Grid.h" />
     <ClInclude Include="..\Classes\nodes\PlantNode.h" />
     <ClInclude Include="..\Classes\PlantTypesManager.h" />
+    <ClInclude Include="..\Classes\ui\SwitchButton.h" />
     <ClInclude Include="..\Classes\ViewDataManager.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>

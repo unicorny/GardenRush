@@ -35,18 +35,21 @@ public:
 	bool removeFromGrid();
 
 	inline float getPointsMultiplicator() const { return mPointsMultiplicator; }
+	inline float getDiversityBonus() const { return mDiversityBonus; }
 	inline void multPoints(float points) { mPointsMultiplicator *= points; }
 
 	inline void setGrowPhasis(PlantTypePhasisView growPhasis) { mGrowPhasis = growPhasis; }
 
-	// return true if growth above max
-	bool countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
+	// return growth phasis
+	int countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
 protected:
 	PlantType* mPlantType;
 	GridIndex mGridIndex;
 	Grid*	  mParentGrid;
 	float	  mPointsMultiplicator;
+	float	  mDiversityBonus;
 	PlantTypePhasisView		  mGrowPhasis;
+	bool	  mHalfGrow;
 	DRHashList mCountedNeighborForDiversity;
 };
 

@@ -37,11 +37,12 @@
 #include "levelStates/PlayerChooseSeed.h"
 #include "levelStates/PlayerChooseActionWithSeed.h"
 #include "model/LevelData.h"
+#include "model/Points.h"
 #include "ErrorLog.h"
 
 USING_NS_CC;
 
-Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager)
+Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points)
 {
 	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
 	profiler->displayTimers();
@@ -52,6 +53,8 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager)
 	ErrorLog::printf("init Scene duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
 	ProfilingBeginTimingBlock("init plant types");
 	result->mPlantTypesManager = plantTypesManager;
+	result->mPoints = points;
+	points->addPointChangeCallback(result, "main");
 	// init plant types manager
 	result->mPlantTypesManager->loadFromJson("graphics.json");
 	result->mPlantTypesManager->makeFastAccessMap();
@@ -65,7 +68,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager)
 }
 
 MainGameScene::MainGameScene()
-	: mToogleStats(false), mPlantTypesManager(nullptr),
+	: mToogleStats(false), mPlantTypesManager(nullptr), mPoints(nullptr),
  mLevelData(nullptr), mActiveLevelState(nullptr), mTargetPlantNode(nullptr), mEnabledTouchTypes(ENABLED_TOUCH_NONE)
 {
 	memset(mGameGrids, 0, GRID_SIZE * sizeof(Grid*));
@@ -75,6 +78,9 @@ MainGameScene::MainGameScene()
 	mLevelData->addPlantType("leek");
 	mLevelData->addPlantType("pea");
 	mLevelData->addPlantType("strawberry");
+	mLevelData->enableAutoHarvesting();
+	mLevelData->setMaxGrowthPhasis(PLANT_PHASIS_GROWTH_3);
+	
 }
 
 MainGameScene::~MainGameScene() 
@@ -169,10 +175,38 @@ bool MainGameScene::init()
 		toggleItem->setPosition(Vec2(x, y));
 	}
 
+	auto resetItem = MenuItemImage::create(
+		"ResetNormal.png", "ResetSelected.png", CC_CALLBACK_1(MainGameScene::menuResetCallback, this)
+	);
+	if (resetItem == nullptr ||
+		resetItem->getContentSize().width <= 0 ||
+		resetItem->getContentSize().height <= 0)
+	{
+		problemLoading("'ResetNormal.png' and 'ResetNormal.png'");
+	}
+	else
+	{
+		float x = origin.x + visibleSize.width - resetItem->getContentSize().width / 2 - toggleItem->getContentSize().width - closeItem->getContentSize().width;
+		float y = origin.y + resetItem->getContentSize().height / 2;
+		resetItem->setPosition(Vec2(x, y));
+	}
+	
     // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, toggleItem, NULL);
+    auto menu = Menu::create(closeItem, toggleItem, resetItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
+
+
+	// //////////////////////////
+	// bg
+	// 
+	auto bg = Sprite::create("bg1.png");
+	
+	if (bg) {
+		bg->setAnchorPoint(Vec2(0.0f, 0.0f));
+		//bg->setScale(4.0f);	
+		this->addChild(bg, 0);
+	}
 
 
     /////////////////////////////
@@ -195,14 +229,34 @@ bool MainGameScene::init()
         // add the label as a child to this layer
         this->addChild(label, 2);
     }
+	auto fontCfg = label->getTTFConfig();
 
+	mPointsLabel = Label::createWithTTF(fontCfg, "Punkte: 0");
+	if (mPointsLabel == nullptr)
+	{
+		problemLoading("'fonts/Marker Felt.ttf'");
+	}
+	else
+	{
+		// position the label on the center of the screen
+		mPointsLabel->setPosition(Vec2(
+			origin.x + visibleSize.width / 2,
+			origin.y + visibleSize.height - mPointsLabel->getContentSize().height - label->getContentSize().height));
+		mPointsLabel->setColor(Color3B(0,0,0));
+		// add the label as a child to this layer
+		this->addChild(mPointsLabel, 2);
+	}
+	mMovingPointsLabel = Label::createWithTTF(fontCfg, "");
+	if (mMovingPointsLabel) {
+		this->addChild(mMovingPointsLabel, 3);
+	}
 
 	// add grid
 	///*
 	ViewDataSimpleTexture view("gridCell.png");
-	float gridDimension = visibleSize.height * 0.9f;
-	float cellSize = gridDimension / 8.0f;
-	auto grid = Grid::create(8, 8, GRID_MAIN);
+	float gridDimension = visibleSize.height * 0.9f *0.5f;
+	float cellSize = gridDimension / 4.0f;
+	auto grid = Grid::create(4, 4, GRID_MAIN);
 	if (grid == nullptr) {
 		problemLoading("Grid");
 	} else {
@@ -260,7 +314,7 @@ bool MainGameScene::init()
 	addLevelState(new level_state::DropSeedInvalid);
 	addLevelState(new level_state::DropSeedValid);
 	addLevelState(new level_state::PlantSeed);
-
+	
 	// global touch listener
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(MainGameScene::onTouchBegan, this);
@@ -270,12 +324,12 @@ bool MainGameScene::init()
 	
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-
+	
  
 
 	// mouse for debugging
 #ifdef _MSC_VER
-	mMousePosLabel = Label::createWithTTF("Mouse:", "fonts/Marker Felt.ttf", 24);
+	mMousePosLabel = Label::createWithTTF(fontCfg, "Mouse:");
 	if (mMousePosLabel == nullptr)
 	{
 		problemLoading("mouse label 'fonts/Marker Felt.ttf'");
@@ -296,7 +350,7 @@ bool MainGameScene::init()
 
 	// label for debugging
 #ifdef _FAIRY_DEBUG_
-	mCurrentGameStateLabel = Label::createWithTTF("RandomSeed", "fonts/Marker Felt.ttf", 24);
+	mCurrentGameStateLabel = Label::createWithTTF(fontCfg, "RandomSeed");
 	if (mCurrentGameStateLabel == nullptr) {
 		problemLoading("current game state 'fonts/Marker Felt.ttf'");
 	}
@@ -339,6 +393,33 @@ bool MainGameScene::touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 	}
 
 	return false;
+}
+
+void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 worldPosition)
+{
+	std::stringstream sstream,sstream2;
+	sstream << "Punkte: " << static_cast<int>(pointsSum);
+	mPointsLabel->setString(sstream.str());
+	//sstream.
+	sstream2 << static_cast<int>(pointDifference);
+	mMovingPointsLabel->stopAllActions();
+	mMovingPointsLabel->setPosition(worldPosition);
+	mMovingPointsLabel->setString(sstream2.str());
+	cocos2d::Color3B color(255, 0, 0);
+	if (pointDifference > 150) {
+		color = Color3B(0, 0, 255);
+	}
+	else if(pointDifference >= 100) {
+		color = Color3B(0, 255, 0);
+	}
+	mMovingPointsLabel->setColor(color);
+	mMovingPointsLabel->setScale(2.0f);
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	auto sequence = cocos2d::Sequence::create(
+		cocos2d::EaseOut::create(MoveTo::create(1.3f, Vec2(visibleSize.width / 2.0f, visibleSize.height + mMovingPointsLabel->getContentSize().height)), 2.0f),
+		cocos2d::EaseSineInOut::create(ScaleTo::create(1.2f, 1.0f)),
+		nullptr);
+	mMovingPointsLabel->runAction(sequence);
 }
 
 bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
@@ -466,6 +547,24 @@ void MainGameScene::menuToggleStatsCallback(cocos2d::Ref* pSender)
 	director->setDisplayStats(mToogleStats);
 }
 
+void MainGameScene::menuResetCallback(cocos2d::Ref* pSender)
+{
+	setEnabledTouchType(ENABLED_TOUCH_NONE);
+	mActiveLevelState->onCancelState();
+	mActiveLevelState->onExitState();
+	mActiveLevelState = NULL;
+
+	// reset grids
+	for (int i = 0; i < GRID_SIZE; i++) {
+		mGameGrids[i]->removeAllGridCells();
+	}
+
+	// reset points
+	mPoints->reset();
+	mPointsLabel->setString("Punkte: 0");
+
+	transitTo("RandomSeed");
+}
 
 bool MainGameScene::addLevelState(level_state::iLevelState* levelState)
 {

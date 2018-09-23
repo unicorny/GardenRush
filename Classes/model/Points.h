@@ -11,11 +11,23 @@
 */
 
 #include "Enums.h"
+#include "lib/DRHashList.hpp"
+#include "cocos2d.h"
+
+
+class iPointsUpdate
+{
+public:
+	virtual void updatePoints(float pointDifference, float pointsSum, cocos2d::Vec2 worldPosition) = 0;
+};
 
 class Points
 {
 public:
 	
+	Points();
+	~Points();
+
 	static float diversityBonus(bool edge = true) {
 		if (edge) return 1.05f;
 		return 1.045f;
@@ -37,9 +49,30 @@ public:
 		return 0.0f;
 	}
 
-protected:
+	inline float getPoints() { return mPoints; }
+	void addPoints(float points, cocos2d::Vec2 position);
+	inline void reset() { mPoints = 0.0f; }
 	
+	//! \return true if entry has exist and was removed
+	bool removePointsChangeCallback(DHASH nameId);
+	//! \return true if entry has exist and was removed
+	inline bool removePointsChangeCallback(const char* name) {
+		return removePointsChangeCallback(DRMakeStringHash(name));
+	}
+	//! \param callback function will be called with two arguments, float points changed and float new points sum
+	//! \return true if callback could add and false if callback couldn't add (hash already exist)
+	bool addPointChangeCallback(iPointsUpdate* callback, DHASH nameId);
+	//! \param callback function will be called with two arguments, float points changed and float new points sum
+	//! \return true if callback could add and false if callback couldn't add (hash already exist)
+	inline bool addPointChangeCallback(iPointsUpdate* callback, const char* name) {
+		return addPointChangeCallback(callback, DRMakeStringHash(name));
+	}
+
+protected:
+	float		mPoints;
+	DRHashList mPointChangeCallbacks;
 
 };
+
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_MODEL_POINTS_H

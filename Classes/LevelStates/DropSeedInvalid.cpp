@@ -28,6 +28,14 @@ namespace level_state {
 		return true;
 	}
 
+	void DropSeedInvalid::onCancelState()
+	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		plantNode->stopAllActions();
+		plantNode->setPosition(plantNode->getParentGrid()->getOriginPosition(plantNode));
+		plantNode->setGlobalZOrder(0.0f);
+	}
+
 	void DropSeedInvalid::animationEnd()
 	{
 		mMainGameScene->getTargetPlantNode()->setGlobalZOrder(0.0f);

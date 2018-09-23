@@ -12,7 +12,9 @@
 //#include "PlantNode.h"
 class IViewData;
 class PlantNode;
+class LevelData;
 class PlantTypesManager;
+class Points;
 
 enum GridObstacleType
 {
@@ -48,9 +50,11 @@ public:
 	bool addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y);
 	//! \return false if an obstacle is at this position
 	bool addGridCell(PlantNode* viewNode, uint8_t x, uint8_t y);
-	bool updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager);
+	
+	bool updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager, const LevelData* levelData, Points* points);
 
 	PlantNode* removeGridCell(uint8_t x, uint8_t y);
+	void removeAllGridCells();
 	cocos2d::Vec2 getOriginPosition(PlantNode* viewNode);
 
 	
@@ -60,6 +64,7 @@ public:
 	PlantNode* isPlantNodeAtPosition(cocos2d::Vec2 localPosition) const;
 	bool isCellEmptyAndFree(uint8_t x, uint8_t y) const;
 	GridIndex getGridIndex(cocos2d::Vec2 localPosition) const;
+	cocos2d::Vec2 getCellSize() const { return cocos2d::Vec2(mPixelSize.x / static_cast<float>(mWidth), mPixelSize.y / static_cast<float>(mHeight)); }
 	cocos2d::Vec2 fromWorldToLocal(cocos2d::Vec2 worldCoords) const;
 	cocos2d::Vec2 fromLocalToWorld(cocos2d::Vec2 localCoords) const;
 	inline GridType getType() const { return mType; }

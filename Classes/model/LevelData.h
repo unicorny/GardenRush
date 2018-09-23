@@ -14,11 +14,20 @@ public:
 	inline size_t getPlantTypeCount() const { return mPlantTypesSize; }
 	inline DHASH getPlantType(size_t index) const { assert(index < mPlantTypesSize && index < mPlantTypeCursor); return mPlantTypes[index]; }
 	
+	inline void enableAutoHarvesting() { mAutoHarvesting = true; }
+	inline bool isAutoHarvesting() const { return mAutoHarvesting; }
+
+	inline void setMaxGrowthPhasis(int maxGrowthPhasis) { mMaxGrowthPhasis = maxGrowthPhasis; }
+	inline int getMaxGrowthPhasis() const { return mMaxGrowthPhasis; }
+
 protected:
 	// valid plant types for level
 	DHASH* mPlantTypes;
 	size_t mPlantTypesSize;
 	size_t mPlantTypeCursor;
+
+	bool   mAutoHarvesting;
+	int    mMaxGrowthPhasis;
 
 };
 

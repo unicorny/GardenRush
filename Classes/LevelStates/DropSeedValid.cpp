@@ -30,6 +30,13 @@ namespace level_state {
 		return true;
 	}
 
+	void DropSeedValid::onCancelState()
+	{
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		plantNode->stopAllActions();
+		plantNode->setPosition(plantNode->getParentGrid()->getOriginPosition(plantNode));
+	}
+
 	void DropSeedValid::animationEnd()
 	{
 		auto gridType = mMainGameScene->getTargetPlantNode()->getParentGrid()->getType();

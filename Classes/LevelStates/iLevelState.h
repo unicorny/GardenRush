@@ -30,6 +30,7 @@ namespace level_state
 		virtual bool initState() = 0;
 		virtual bool onEnterState() = 0;
 		virtual bool onExitState() = 0;
+		virtual void onCancelState() = 0;
 
 		virtual void onTouchBegan(PlantNode* plantNode) { };
 		virtual void onTouchMoved(float deltaX, float deltaY) {};

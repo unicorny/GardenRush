@@ -36,11 +36,13 @@
 #include "cocos2d.h"
 #include "lib/DRHashList.hpp"
 #include "nodes/Grid.h"
+#include "model/Points.h"
 
 class PlantTypesManager;
 class LevelStateManager;
 class LevelData;
 class PlantNode;
+class Points;
 //class Grid;
 
 
@@ -63,10 +65,10 @@ inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)
 }
 
 
-class MainGameScene : public cocos2d::Scene
+class MainGameScene : public cocos2d::Scene, public iPointsUpdate
 {
 public:
-	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager);
+	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager , Points* points);
 	MainGameScene();
 	~MainGameScene();
 
@@ -76,12 +78,16 @@ public:
 	// a selector callback
 	void menuCloseCallback(cocos2d::Ref* pSender);
 	void menuToggleStatsCallback(cocos2d::Ref* pSender);
+	void menuResetCallback(cocos2d::Ref* pSender);
 
 	// global events
 	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
+
+	// user defined events
+	void updatePoints(float pointDifference, float pointsSum, cocos2d::Vec2 worldPosition);
 
 #ifdef _MSC_VER
 	void onMouseMove(cocos2d::Event *event);
@@ -93,6 +99,7 @@ public:
 	inline Grid* getGrid(const GridType type) const { assert(type < GRID_SIZE); return mGameGrids[type]; }
 	inline const LevelData* getLevelData() const { return mLevelData; }
 	inline const PlantTypesManager* getPlantTypesManager() const { return mPlantTypesManager; }
+	inline Points* getPoints() { return mPoints; }
 
 	inline void setEnabledTouchType(EnabledTouchType type) { mEnabledTouchTypes = type; }
 	inline void setTargetPlantNode(PlantNode* target) { mTargetPlantNode = target; }
@@ -113,6 +120,7 @@ protected:
 
 	bool mToogleStats;
 	PlantTypesManager* mPlantTypesManager;
+	Points*			   mPoints;
 	LevelData* mLevelData;
 	Grid* mGameGrids[GRID_SIZE];
 	// bounding box array for better cache use by touch point check
@@ -125,6 +133,8 @@ protected:
 #ifdef _FAIRY_DEBUG_
 	cocos2d::Label* mCurrentGameStateLabel;
 #endif 
+	cocos2d::Label* mPointsLabel;
+	cocos2d::Label* mMovingPointsLabel;
 
 	// level state
 	DRHashList mLevelStates;
