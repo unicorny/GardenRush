@@ -8,7 +8,7 @@
 using namespace cocos2d;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
-	: mWidth(width), mHeight(height), mType(type), mPixelSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr)
+	: mWidth(width), mHeight(height), mType(type), mPixelSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
@@ -164,8 +164,8 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 	Size size = sprite->getContentSize();
 	sprite->setAnchorPoint(Vec2::ZERO);
 	sprite->setScale(
-		size.width / ((float)mPixelSize.x / (float)mWidth),
-		size.height / ((float)mPixelSize.y / (float)mHeight)
+		(static_cast<float>(mPixelSize.x) / static_cast<float>(mWidth)) / size.width,
+		(static_cast<float>(mPixelSize.y) / static_cast<float>(mHeight)) / size.height
 	);
 	sprite->setLocalZOrder(zIndex);
 	this->addChild(sprite);
@@ -220,12 +220,22 @@ GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 
 cocos2d::Vec2 Grid::fromWorldToLocal(cocos2d::Vec2 worldCoords) const
 {
-	return worldCoords - _position;
+	return convertToNodeSpace(worldCoords);
+	//return worldCoords - _position;
 }
 
 cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const
 {
-	return _position + localCoords;
+	return convertToWorldSpace(localCoords);
+	//return _position + localCoords;
+}
+
+bool Grid::isInsideGrid(const cocos2d::Vec2& worldCoords) const
+{
+	auto localCoords = fromWorldToLocal(worldCoords);
+	if (localCoords.x < 0.0f || localCoords.y < 0.0f) return false;
+	if (localCoords.x > mPixelSize.x || localCoords.y > mPixelSize.y) return false;
+	return true;
 }
 
 cocos2d::Vec2 Grid::getOriginPosition(PlantNode* viewNode)

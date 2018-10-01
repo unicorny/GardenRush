@@ -43,6 +43,7 @@ public:
 	// init
 	static Grid * create(uint8_t width, uint8_t height, GridType type);
 	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode);
+	void setIsometric() { mIsIsometric = true; }
 	void setPixelSize(cocos2d::Vec2 pixelSize);
 	bool fillBgGridCells(const IViewData* viewData);
 
@@ -57,7 +58,7 @@ public:
 	void removeAllGridCells();
 	cocos2d::Vec2 getOriginPosition(PlantNode* viewNode);
 
-	
+	void rescale();
 	void reset();
 
 	// infos
@@ -67,8 +68,13 @@ public:
 	cocos2d::Vec2 getCellSize() const { return cocos2d::Vec2(mPixelSize.x / static_cast<float>(mWidth), mPixelSize.y / static_cast<float>(mHeight)); }
 	cocos2d::Vec2 fromWorldToLocal(cocos2d::Vec2 worldCoords) const;
 	cocos2d::Vec2 fromLocalToWorld(cocos2d::Vec2 localCoords) const;
+	bool isInsideGrid(const cocos2d::Vec2& worldCoords) const;
 	inline GridType getType() const { return mType; }
 	inline float getEdgeSize() const {return mPixelSize.x;}
+
+	inline bool isIsometric() const { return mIsIsometric; }
+
+
 	
 CC_CONSTRUCTOR_ACCESS:
 	// Nodes should be created using create();
@@ -84,11 +90,13 @@ protected:
 	uint8_t mWidth;
 	uint8_t mHeight;
 	GridType mType;
-	// cell size in Pixel
+	// whole grid size in Pixel
 	cocos2d::Vec2 mPixelSize;
 	uint8_t* mObstacleMap;
 	PlantNode** mPlantMap;
 	// geometrie
+
+	bool mIsIsometric;
 
 };
 

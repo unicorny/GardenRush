@@ -131,11 +131,10 @@ bool MainGameScene::init()
     }
 
 	
-	
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
+	mResolution = visibleSize;
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
@@ -205,9 +204,11 @@ bool MainGameScene::init()
 	if (bg) {
 		bg->setAnchorPoint(Vec2(0.0f, 0.0f));
 		//bg->setScale(4.0f);	
-		this->addChild(bg, 0);
+		auto size = bg->getContentSize();
+		bg->setScale(mResolution.width / size.width, mResolution.height / size.height);
+		this->addChild(bg, 0, "bg");
 	}
-
+	//*/
 
     /////////////////////////////
     // 3. add your codes below...
@@ -261,10 +262,27 @@ bool MainGameScene::init()
 		problemLoading("Grid");
 	} else {
 		auto position = Vec2(
-			origin.x + (visibleSize.width) * 0.2f,
-			origin.y + visibleSize.height * 0.05f
+			origin.x + (visibleSize.width) * 0.1f,
+			origin.y + visibleSize.height * 0.05f + gridDimension * 0.5f
 		);
 		grid->setup(gridDimension, position, &view, this);
+		grid->setIsometric();
+		//grid->setRotationSkewX(45);
+		//grid->setRotationSkewY(45);
+		grid->setAnchorPoint(Vec2(0.5f, 0.5f));
+
+		// SSR 30 Grad 
+		// https://medium.com/gravitdesigner/designers-guide-to-isometric-projection-6bfd66934fc7
+		// 86,6 % = cos(30 grad)
+		grid->setScaleY(0.866f * grid->getScaleY());
+		grid->setSkewX(30.0f);
+		grid->setRotation(30.0f);
+
+		//grid->setRotationY(45.0f);
+		//grid->setRotation3D(Vec3(45.0f, 45.0f, 0.0f));
+		//grid->setScale(sqrt(5.0f) / 2.0f, sqrt(5.0f) / 2.0f);
+		
+		//grid->setScaleY(grid->getScaleY()*0.5f);
 		mGameGrids[GRID_MAIN] = grid;
 		mGridBoundingBoxes[GRID_MAIN * 3] = position.x;
 		mGridBoundingBoxes[GRID_MAIN * 3 + 1] = position.y;
@@ -278,7 +296,7 @@ bool MainGameScene::init()
 	}
 	else {
 		auto position = Vec2(
-			origin.x + gridDimension + visibleSize.width * 0.3f,
+			origin.x + gridDimension * 1.5f + visibleSize.width * 0.3f,
 			origin.y + visibleSize.height * 0.05f
 		);
 		inventory_grid->setup(cellSize * 2.0f, position, &view, this);
@@ -295,7 +313,7 @@ bool MainGameScene::init()
 	}
 	else {
 		auto position = Vec2(
-			origin.x + gridDimension + visibleSize.width * 0.3f + cellSize * 0.5f,
+			origin.x + gridDimension * 1.5f + visibleSize.width * 0.3f + cellSize * 0.5f,
 			origin.y + visibleSize.height * 0.15f + cellSize * 2.0f
 		);
 		bucket_grid->setup(cellSize, position, &view, this);
@@ -370,6 +388,20 @@ bool MainGameScene::init()
    
     return true;
 }
+
+// every frame
+void MainGameScene::update(float delta)
+{
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	if (visibleSize.width != mResolution.width || visibleSize.height != mResolution.height) {
+		// rescale
+		auto bg = getChildByName("bg");
+		auto size = bg->getContentSize();
+		mResolution = visibleSize;
+		bg->setScale(size.width / mResolution.width, size.height / mResolution.height);
+	}
+}
+
 bool MainGameScene::touchBeganIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
 	if(isInsideGrid(pos, type)) {
@@ -424,12 +456,18 @@ void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 wo
 
 bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
-	// if inside grid
-	if (pos.x >= mGridBoundingBoxes[type * 3] &&
-		pos.x <= mGridBoundingBoxes[type * 3] + mGridBoundingBoxes[type * 3 + 2] &&
-		pos.y >= mGridBoundingBoxes[type * 3 + 1] &&
-		pos.y <= mGridBoundingBoxes[type * 3 + 1] + mGridBoundingBoxes[type * 3 + 2]) {
-		return true;
+	if (mGameGrids[type]->isIsometric()) {
+		return mGameGrids[type]->isInsideGrid(pos);
+	}
+	else {
+		// don't work with isometric grids
+		// if inside grid
+		if (pos.x >= mGridBoundingBoxes[type * 3] &&
+			pos.x <= mGridBoundingBoxes[type * 3] + mGridBoundingBoxes[type * 3 + 2] &&
+			pos.y >= mGridBoundingBoxes[type * 3 + 1] &&
+			pos.y <= mGridBoundingBoxes[type * 3 + 1] + mGridBoundingBoxes[type * 3 + 2]) {
+			return true;
+		}
 	}
 	return false;
 }

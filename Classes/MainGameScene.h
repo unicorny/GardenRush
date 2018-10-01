@@ -93,6 +93,8 @@ public:
 	void onMouseMove(cocos2d::Event *event);
 #endif
 
+	virtual void update(float delta);
+
 	// enable/disable touch
 
 	// getter for level state
@@ -141,6 +143,9 @@ protected:
 	level_state::iLevelState* mActiveLevelState;
 	PlantNode*	mTargetPlantNode;
 	EnabledTouchType mEnabledTouchTypes;
+
+	// window size state
+	cocos2d::Size mResolution;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_MAIN_GAME_SCENE_H
