@@ -60,6 +60,20 @@ bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, c
 
 	return true;
 }
+
+bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, const IViewData** bgTiles, int bgTileCount, cocos2d::Node* parentNode)
+{
+	setAnchorPoint(Vec2::ZERO);
+	mPixelSize = Vec2(edge_size_pixels, edge_size_pixels);
+	setPosition(pos);
+	bool ret = fillBgGridCellsRandom(bgTiles, bgTileCount);
+	if (!ret) {
+		LOG_ERROR("fill bg grid", false);
+	}
+	parentNode->addChild(this, 1);
+
+	return true;
+}
 void Grid::setPixelSize(Vec2 pixelSize)
 {
 	mPixelSize = pixelSize;
@@ -94,6 +108,16 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 	if (result) {
 		viewData->setGridIndex(GridIndex(x, y));
 		viewData->setParentGrid(this);
+		if (isIsometric()) {
+			viewData->setAnchorPoint(Vec2(0.5f, 0.5f));
+			//sprite->setPosition(Vec2(x * (mPixelSize.x / mWidth), y * (mPixelSize.y / mHeight)));
+			viewData->setScaleX(viewData->getScaleX() * 1.8f);
+			viewData->setScaleY(viewData->getScaleY() * 2.4f);
+			//viewData->setScaleY((1.0f/0.866f)* viewData->getScaleY());
+			viewData->setSkewX(-30.0f);
+			viewData->setRotation(-30.0f);
+			viewData->setPositionX(viewData->getPositionX() + mPixelSize.x / static_cast<float>(mWidth));
+		}
 		return result;
 	}
 	return false;
@@ -163,10 +187,10 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 	sprite->setPosition(Vec2(x * (mPixelSize.x / mWidth), y * (mPixelSize.y / mHeight)));
 	Size size = sprite->getContentSize();
 	sprite->setAnchorPoint(Vec2::ZERO);
-	sprite->setScale(
+	/*sprite->setScale(
 		(static_cast<float>(mPixelSize.x) / static_cast<float>(mWidth)) / size.width,
 		(static_cast<float>(mPixelSize.y) / static_cast<float>(mHeight)) / size.height
-	);
+	);*/
 	sprite->setLocalZOrder(zIndex);
 	this->addChild(sprite);
 
@@ -208,6 +232,24 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 	return true;
 }
 
+bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)
+{
+	assert(mPixelSize.x > 0 && mPixelSize.y > 0);
+	assert(mWidth > 0 && mHeight > 0);
+	assert(viewData != NULL && countViewData > 0);
+
+	for (int i = 0; i < mWidth; i++) {
+		for (int j = 0; j < mHeight; j++) {
+			auto t = viewData[RandomHelper::random_int(0, countViewData - 1)];
+			bool ret = addBgGridCell(t, false, i, j);
+			if (!ret) {
+				LOG_ERROR("add bg grid cell", false);
+			}
+		}
+	}
+	return true;
+}
+
 GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 {
 	GridIndex index(
@@ -222,6 +264,22 @@ cocos2d::Vec2 Grid::fromWorldToLocal(cocos2d::Vec2 worldCoords) const
 {
 	return convertToNodeSpace(worldCoords);
 	//return worldCoords - _position;
+}
+
+Vec2 Grid::isoToFlat(const Vec2& point)
+{
+	return Vec2(
+		(2.0f * point.y + point.x) / 2.0f,
+		(2.0f * point.y - point.x) / 2.0f
+	);
+}
+
+Vec2 Grid::flatToIso(const Vec2& point)
+{
+	return Vec2(
+		point.x - point.y,
+		(point.x + point.y) / 2.0f
+	);
 }
 
 cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const

@@ -43,9 +43,11 @@ public:
 	// init
 	static Grid * create(uint8_t width, uint8_t height, GridType type);
 	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode);
+	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, const IViewData** bgTiles, int bgTileCount, cocos2d::Node* parentNode);
 	void setIsometric() { mIsIsometric = true; }
 	void setPixelSize(cocos2d::Vec2 pixelSize);
 	bool fillBgGridCells(const IViewData* viewData);
+	bool fillBgGridCellsRandom(const IViewData** viewData, int countViewData);
 
 	// actions
 	bool addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y);
@@ -84,6 +86,11 @@ CC_CONSTRUCTOR_ACCESS:
 	virtual bool init();
 
 protected:
+
+	// coordinate transformation into and from isometric space
+	// Quelle: https://gamedevelopment.tutsplus.com/tutorials/creating-isometric-worlds-a-primer-for-game-developers--gamedev-6511
+	cocos2d::Vec2 isoToFlat(const cocos2d::Vec2& point);
+	cocos2d::Vec2 flatToIso(const cocos2d::Vec2& point);
 
 	bool addCellSprite(cocos2d::Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex);
 

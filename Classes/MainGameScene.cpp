@@ -255,6 +255,12 @@ bool MainGameScene::init()
 	// add grid
 	///*
 	ViewDataSimpleTexture view("gridCell.png");
+	// multiple bgs 
+	IViewData** bg_cells = new IViewData*[3];
+	bg_cells[0] = new ViewDataSimpleTexture("bg/boden0.png");
+	bg_cells[1] = new ViewDataSimpleTexture("bg/boden1.png");
+	bg_cells[2] = new ViewDataSimpleTexture("bg/boden2.png");
+
 	float gridDimension = visibleSize.height * 0.9f *0.5f;
 	float cellSize = gridDimension / 4.0f;
 	auto grid = Grid::create(4, 4, GRID_MAIN);
@@ -265,7 +271,7 @@ bool MainGameScene::init()
 			origin.x + (visibleSize.width) * 0.1f,
 			origin.y + visibleSize.height * 0.05f + gridDimension * 0.5f
 		);
-		grid->setup(gridDimension, position, &view, this);
+		grid->setup(gridDimension, position, const_cast<const IViewData**>(bg_cells), 3, this);
 		grid->setIsometric();
 		//grid->setRotationSkewX(45);
 		//grid->setRotationSkewY(45);
@@ -288,6 +294,10 @@ bool MainGameScene::init()
 		mGridBoundingBoxes[GRID_MAIN * 3 + 1] = position.y;
 		mGridBoundingBoxes[GRID_MAIN * 3 + 2] = gridDimension;
 	}
+	for (int i = 0; i < 3; i++) {
+		DR_SAVE_DELETE(bg_cells[i])
+	}
+	DR_SAVE_DELETE_ARRAY(bg_cells);
 
 	// add second grid as inventory
 	auto inventory_grid = Grid::create(2, 2, GRID_INVENTORY);
