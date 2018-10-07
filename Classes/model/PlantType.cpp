@@ -61,6 +61,7 @@ PlantTypePhasisView PlantType::getGrowPhasisViewFromInt(int growPhasis)
 	case 4: return PLANT_PHASIS_GROWTH_4;
 	case 5: return PLANT_PHASIS_GROWTH_5;
 	}
+	return PLANT_PHASIS_ERROR;
 
 }
 

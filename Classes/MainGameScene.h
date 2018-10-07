@@ -125,9 +125,6 @@ protected:
 	Points*			   mPoints;
 	LevelData* mLevelData;
 	Grid* mGameGrids[GRID_SIZE];
-	// bounding box array for better cache use by touch point check
-	// position x left, y bottom, edge size 
-	uint16_t mGridBoundingBoxes[GRID_SIZE*3];
 
 #ifdef _MSC_VER
 	cocos2d::Label* mMousePosLabel;

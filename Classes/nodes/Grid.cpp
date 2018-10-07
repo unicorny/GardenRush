@@ -8,7 +8,7 @@
 using namespace cocos2d;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
-	: mWidth(width), mHeight(height), mType(type), mPixelSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
+	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
@@ -49,34 +49,47 @@ bool Grid::init()
 
 bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode)
 {
-	setAnchorPoint(Vec2::ZERO);
-	mPixelSize = Vec2(edge_size_pixels, edge_size_pixels);
-	setPosition(pos); 
-	bool ret = fillBgGridCells(bgTile);
-	if (!ret) {
-		LOG_ERROR("fill bg grid", false);
-	}
-	parentNode->addChild(this, 1);
+	mBoundingBoxSize = Vec2(edge_size_pixels, edge_size_pixels);
+	std::vector<IViewData*> viewData;
+	viewData.push_back(bgTile);
 
-	return true;
+	return _setup(pos, viewData, parentNode);
 }
 
-bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, const IViewData** bgTiles, int bgTileCount, cocos2d::Node* parentNode)
+
+bool Grid::setup(const Vec2& edgeSizes, const Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, Node* parentNode)
+{
+	setIsometric();
+	mBoundingBoxSize = edgeSizes;
+	return _setup(leftTopPosition, tiles, parentNode);
+}
+bool Grid::setup(float edgeSizes, const Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, Node* parentNode)
+{
+	mBoundingBoxSize = Vec2(edgeSizes, edgeSizes);
+	return _setup(leftTopPosition, tiles, parentNode);
+}
+
+bool Grid::_setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode)
 {
 	setAnchorPoint(Vec2::ZERO);
-	mPixelSize = Vec2(edge_size_pixels, edge_size_pixels);
-	setPosition(pos);
-	bool ret = fillBgGridCellsRandom(bgTiles, bgTileCount);
+	setPosition(leftTopPosition);
+	bool ret = false;
+	if (tiles.size() > 1) {
+		ret = fillBgGridCellsRandom(tiles);
+	}
+	else {
+		ret = fillBgGridCells(tiles.front());
+	}
 	if (!ret) {
 		LOG_ERROR("fill bg grid", false);
 	}
 	parentNode->addChild(this, 1);
-
 	return true;
 }
+
 void Grid::setPixelSize(Vec2 pixelSize)
 {
-	mPixelSize = pixelSize;
+	mBoundingBoxSize = pixelSize;
 
 }
 
@@ -89,7 +102,7 @@ void Grid::reset()
 bool Grid::addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y)
 {
 	assert(x < mWidth && y < mHeight);
-	assert(mPixelSize.x > 0 && mPixelSize.y > 0);
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	if (obstacle) {
 		mObstacleMap[x * mWidth + y] = OBSTACLE_DEFAULT;
 	}
@@ -99,7 +112,7 @@ bool Grid::addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, ui
 bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 {
 	assert(x < mWidth && y < mHeight);
-	assert(mPixelSize.x > 0 && mPixelSize.y > 0);
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	if (OBSTACLE_DEFAULT == mObstacleMap[x * mWidth + y]) {
 		return false;
 	}
@@ -111,12 +124,12 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 		if (isIsometric()) {
 			viewData->setAnchorPoint(Vec2(0.5f, 0.5f));
 			//sprite->setPosition(Vec2(x * (mPixelSize.x / mWidth), y * (mPixelSize.y / mHeight)));
-			viewData->setScaleX(viewData->getScaleX() * 1.8f);
-			viewData->setScaleY(viewData->getScaleY() * 2.4f);
+			//viewData->setScaleX(viewData->getScaleX() * 1.8f);
+			//viewData->setScaleY(viewData->getScaleY() * 2.4f);
 			//viewData->setScaleY((1.0f/0.866f)* viewData->getScaleY());
-			viewData->setSkewX(-30.0f);
-			viewData->setRotation(-30.0f);
-			viewData->setPositionX(viewData->getPositionX() + mPixelSize.x / static_cast<float>(mWidth));
+			//viewData->setSkewX(-30.0f);
+			//viewData->setRotation(-30.0f);
+			viewData->setPositionX(viewData->getPositionX() + mBoundingBoxSize.x / static_cast<float>(mWidth));
 		}
 		return result;
 	}
@@ -184,9 +197,39 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 	if (!sprite) {
 		LOG_ERROR("creating sprite", false);
 	}
-	sprite->setPosition(Vec2(x * (mPixelSize.x / mWidth), y * (mPixelSize.y / mHeight)));
-	Size size = sprite->getContentSize();
+	
+	auto cellSize = getCellSize();
+	Size spriteSize = sprite->getContentSize();
+	auto pos = Vec2(
+		static_cast<float>(x) * cellSize.x,
+		static_cast<float>(y) * cellSize.y
+	);
 	sprite->setAnchorPoint(Vec2::ZERO);
+
+	if (isIsometric()) {
+		//ErrorLog::printf("pos: %f, %f\n", pos.x, pos.y);
+		//pos.x += 0.5f * cellSize.x;
+		//pos.y += 0.5f * cellSize.y;
+		//pos = flatToIso(pos);
+		// origin : x = grid bounding box / 2
+		//          y = 0
+		// pos.x = origin.x + (x-y)/2 * cellWidth
+		// pos.y = (x+y)/2 * cellHeight
+		pos = Vec2(
+			mBoundingBoxSize.x / 2.0f + ((static_cast<float>(x - y)) / 2.0f - 0.5f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+			((static_cast<float>(x + y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
+		);
+		
+		ErrorLog::printf("flat pos: (%d)%f, (%d)%f\n", x, pos.x, y, pos.y);
+		//sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
+		//sprite->setScale(0.25f);
+	} else {
+		
+	}
+	sprite->setPosition(pos);
+	sprite->setScale(cellSize.x / spriteSize.width, cellSize.y / spriteSize.height);
+	//sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
+	//
 	/*sprite->setScale(
 		(static_cast<float>(mPixelSize.x) / static_cast<float>(mWidth)) / size.width,
 		(static_cast<float>(mPixelSize.y) / static_cast<float>(mHeight)) / size.height
@@ -218,7 +261,7 @@ void Grid::removeAllGridCells()
 
 bool Grid::fillBgGridCells(const IViewData* viewData)
 {
-	assert(mPixelSize.x > 0 && mPixelSize.y > 0);
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	assert(mWidth > 0 && mHeight > 0);
 
 	for (int i = 0; i < mWidth; i++) {
@@ -234,7 +277,7 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 
 bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)
 {
-	assert(mPixelSize.x > 0 && mPixelSize.y > 0);
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	assert(mWidth > 0 && mHeight > 0);
 	assert(viewData != NULL && countViewData > 0);
 
@@ -250,11 +293,29 @@ bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)
 	return true;
 }
 
+bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
+{
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
+	assert(mWidth > 0 && mHeight > 0);
+	assert(tiles.size() > 0);
+
+	for (int i = 0; i < mWidth; i++) {
+		for (int j = 0; j < mHeight; j++) {
+			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
+			bool ret = addBgGridCell(t, false, i, j);
+			if (!ret) {
+				LOG_ERROR("add bg grid cell", false);
+			}
+		}
+	}
+	return true;
+}
+
 GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 {
 	GridIndex index(
-		static_cast<uint8_t>(floor(localPosition.x / mPixelSize.x * mWidth)),
-		static_cast<uint8_t>(floor(localPosition.y / mPixelSize.y * mHeight))
+		static_cast<uint8_t>(floor(localPosition.x / mBoundingBoxSize.x * mWidth)),
+		static_cast<uint8_t>(floor(localPosition.y / mBoundingBoxSize.y * mHeight))
 	);
 	assert(index.x < mWidth && index.y < mHeight);
 	return index;
@@ -262,11 +323,15 @@ GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 
 cocos2d::Vec2 Grid::fromWorldToLocal(cocos2d::Vec2 worldCoords) const
 {
-	return convertToNodeSpace(worldCoords);
+	auto local = convertToNodeSpace(worldCoords);
+	if (isIsometric()) {
+		return isoToFlat(local);
+	}
+	return local;
 	//return worldCoords - _position;
 }
 
-Vec2 Grid::isoToFlat(const Vec2& point)
+Vec2 Grid::isoToFlat(const Vec2& point) const
 {
 	return Vec2(
 		(2.0f * point.y + point.x) / 2.0f,
@@ -274,7 +339,7 @@ Vec2 Grid::isoToFlat(const Vec2& point)
 	);
 }
 
-Vec2 Grid::flatToIso(const Vec2& point)
+Vec2 Grid::flatToIso(const Vec2& point) const
 {
 	return Vec2(
 		point.x - point.y,
@@ -284,6 +349,9 @@ Vec2 Grid::flatToIso(const Vec2& point)
 
 cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const
 {
+	if (isIsometric()) {
+		localCoords = flatToIso(localCoords);
+	}
 	return convertToWorldSpace(localCoords);
 	//return _position + localCoords;
 }
@@ -292,7 +360,7 @@ bool Grid::isInsideGrid(const cocos2d::Vec2& worldCoords) const
 {
 	auto localCoords = fromWorldToLocal(worldCoords);
 	if (localCoords.x < 0.0f || localCoords.y < 0.0f) return false;
-	if (localCoords.x > mPixelSize.x || localCoords.y > mPixelSize.y) return false;
+	if (localCoords.x > mBoundingBoxSize.x || localCoords.y > mBoundingBoxSize.y) return false;
 	return true;
 }
 
@@ -300,8 +368,8 @@ cocos2d::Vec2 Grid::getOriginPosition(PlantNode* viewNode)
 {
 	auto gridIndex = viewNode->getGridIndex();
 	auto pos = cocos2d::Vec2(
-		static_cast<float>(gridIndex.x) * (mPixelSize.x / static_cast<float>(mWidth)),
-		static_cast<float>(gridIndex.y) * (mPixelSize.y / static_cast<float>(mHeight))
+		static_cast<float>(gridIndex.x) * (mBoundingBoxSize.x / static_cast<float>(mWidth)),
+		static_cast<float>(gridIndex.y) * (mBoundingBoxSize.y / static_cast<float>(mHeight))
 	);
 	return pos;
 }
@@ -315,6 +383,19 @@ PlantNode* Grid::isPlantNodeAtPosition(cocos2d::Vec2 localPosition) const
 		return mPlantMap[index];
 	}
 	return nullptr;
+}
+
+PlantNode* Grid::getPlantNodeAtWorldPosition(cocos2d::Vec2 worldPosition) const
+{
+	auto localPosition = fromWorldToLocal(worldPosition);
+	GridIndex i = getGridIndex(localPosition);
+	size_t index = i.x * mWidth + i.y;
+	//ErrorLog::printf("x: %d, y: %d\n", x, y);
+	if (mPlantMap[index]) {
+		return mPlantMap[index];
+	}
+	return nullptr;
+
 }
 
 bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const

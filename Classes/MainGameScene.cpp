@@ -193,7 +193,7 @@ bool MainGameScene::init()
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, toggleItem, resetItem, NULL);
     menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+    //this->addChild(menu, 1);
 
 
 	// //////////////////////////
@@ -252,37 +252,55 @@ bool MainGameScene::init()
 		this->addChild(mMovingPointsLabel, 3);
 	}
 
+	std::vector<IViewData*> mGroundCells;
 	// add grid
 	///*
 	ViewDataSimpleTexture view("gridCell.png");
 	// multiple bgs 
-	IViewData** bg_cells = new IViewData*[3];
-	bg_cells[0] = new ViewDataSimpleTexture("bg/boden0.png");
-	bg_cells[1] = new ViewDataSimpleTexture("bg/boden1.png");
-	bg_cells[2] = new ViewDataSimpleTexture("bg/boden2.png");
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0.png"));
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden1.png"));
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden2.png"));
 
-	float gridDimension = visibleSize.height * 0.9f *0.5f;
-	float cellSize = gridDimension / 4.0f;
-	auto grid = Grid::create(4, 4, GRID_MAIN);
+	//*/
+	//bg_cells[0] = new ViewDataSimpleTexture("gridCell.png");
+	// Layout
+	float flatCellSize = (visibleSize.height * 0.9f) / 8.0f;
+	float xBorder = visibleSize.width * 0.01f;
+	float isoEdgeWidth = visibleSize.width - 2.0f * xBorder;// -2.0f * flatCellSize;
+	float isoEdgeHeight = isoEdgeWidth / 2.0f;
+	
+	float yBorder = (visibleSize.height - isoEdgeHeight) / 2.0f;
+	assert(yBorder >= 0.0f);
+
+	//float gridDimension = visibleSize.height * 0.9f;
+	//float cellSize = gridDimension / 8.0f;
+	uint8_t levelMainGridCellCount = 8;
+	Vec2 isoBoundingBoxSize = Vec2(
+		(isoEdgeWidth  / 8.0f) * static_cast<float>(levelMainGridCellCount),
+		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
+	);
+	auto grid = Grid::create(levelMainGridCellCount, levelMainGridCellCount, GRID_MAIN);
+	auto mainGridPosition = Vec2(
+		origin.x + xBorder,
+		origin.y + yBorder
+	);
 	if (grid == nullptr) {
 		problemLoading("Grid");
 	} else {
-		auto position = Vec2(
-			origin.x + (visibleSize.width) * 0.1f,
-			origin.y + visibleSize.height * 0.05f + gridDimension * 0.5f
-		);
-		grid->setup(gridDimension, position, const_cast<const IViewData**>(bg_cells), 3, this);
-		grid->setIsometric();
+		ErrorLog::printf("position: %f/%f, boundingBoxSize: %f/%f\n", 
+			mainGridPosition.x, mainGridPosition.y, isoBoundingBoxSize.x, isoBoundingBoxSize.y);
+
+		grid->setup(isoBoundingBoxSize, mainGridPosition, mGroundCells, this);
 		//grid->setRotationSkewX(45);
 		//grid->setRotationSkewY(45);
-		grid->setAnchorPoint(Vec2(0.5f, 0.5f));
+		//grid->setAnchorPoint(Vec2(0.5f, 0.5f));
 
 		// SSR 30 Grad 
 		// https://medium.com/gravitdesigner/designers-guide-to-isometric-projection-6bfd66934fc7
 		// 86,6 % = cos(30 grad)
-		grid->setScaleY(0.866f * grid->getScaleY());
-		grid->setSkewX(30.0f);
-		grid->setRotation(30.0f);
+		//grid->setScaleY(0.866f * grid->getScaleY());
+		//grid->setSkewX(30.0f);
+		//grid->setRotation(30.0f);
 
 		//grid->setRotationY(45.0f);
 		//grid->setRotation3D(Vec3(45.0f, 45.0f, 0.0f));
@@ -290,30 +308,36 @@ bool MainGameScene::init()
 		
 		//grid->setScaleY(grid->getScaleY()*0.5f);
 		mGameGrids[GRID_MAIN] = grid;
-		mGridBoundingBoxes[GRID_MAIN * 3] = position.x;
-		mGridBoundingBoxes[GRID_MAIN * 3 + 1] = position.y;
-		mGridBoundingBoxes[GRID_MAIN * 3 + 2] = gridDimension;
 	}
-	for (int i = 0; i < 3; i++) {
-		DR_SAVE_DELETE(bg_cells[i])
-	}
-	DR_SAVE_DELETE_ARRAY(bg_cells);
-
+	
+	// vector from 0/0 to center of left bottom border line of iso grid
+	auto v = Vec2(
+		mainGridPosition.x + isoEdgeWidth * 0.25f,
+		mainGridPosition.y + isoEdgeHeight * 0.25f
+	);
+	auto vLength = v.getLength();
+	auto cellDiagonal = Vec2(flatCellSize, flatCellSize).getLength();
 	// add second grid as inventory
 	auto inventory_grid = Grid::create(2, 2, GRID_INVENTORY);
 	if (inventory_grid == nullptr) {
 		problemLoading("inventory Grid");
 	}
 	else {
-		auto position = Vec2(
-			origin.x + gridDimension * 1.5f + visibleSize.width * 0.3f,
-			origin.y + visibleSize.height * 0.05f
+		// vector from right edge to right bottom border line of iso grid
+		auto v2 = Vec2(
+			-v.x,
+			v.y
 		);
-		inventory_grid->setup(cellSize * 2.0f, position, &view, this);
+		auto percent = cellDiagonal * 2 / vLength;
+		auto position = Vec2(
+			//origin.x + visibleSize.width - flatCellSize * 2.0f - xBorder,
+			//origin.y + visibleSize.height * 0.15f
+			visibleSize.width + v2.x * 0.8f,
+			v2.y * 0.8f - flatCellSize * 2.0f
+		);
+		inventory_grid->setup(flatCellSize * 2.0f, position, &view, this);
 		mGameGrids[GRID_INVENTORY] = inventory_grid;
-		mGridBoundingBoxes[GRID_INVENTORY * 3] = position.x;
-		mGridBoundingBoxes[GRID_INVENTORY * 3 + 1] = position.y;
-		mGridBoundingBoxes[GRID_INVENTORY * 3 + 2] = cellSize * 2.0f;
+		
 	}
 
 	// add third grid as 
@@ -322,15 +346,15 @@ bool MainGameScene::init()
 		problemLoading("bucket grid");
 	}
 	else {
+		
+		auto percent = cellDiagonal / vLength;
+		auto factor = (1.0f - percent) / 2.0f;// +percent;
 		auto position = Vec2(
-			origin.x + gridDimension * 1.5f + visibleSize.width * 0.3f + cellSize * 0.5f,
-			origin.y + visibleSize.height * 0.15f + cellSize * 2.0f
+			origin.x + v.x * factor,
+			origin.y + v.y * factor
 		);
-		bucket_grid->setup(cellSize, position, &view, this);
+		bucket_grid->setup(flatCellSize, position, &view, this);
 		mGameGrids[GRID_BUCKET] = bucket_grid;
-		mGridBoundingBoxes[GRID_BUCKET * 3] = position.x;
-		mGridBoundingBoxes[GRID_BUCKET * 3 + 1] = position.y;
-		mGridBoundingBoxes[GRID_BUCKET * 3 + 2] = cellSize;
 	}
 	//*/
 	
@@ -412,15 +436,6 @@ void MainGameScene::update(float delta)
 	}
 }
 
-bool MainGameScene::touchBeganIfInsideGrid(cocos2d::Vec2 pos, GridType type)
-{
-	if(isInsideGrid(pos, type)) {
-		PlantNode* plantNode = mGameGrids[type]->isPlantNodeAtPosition(Vec2(pos.x - mGridBoundingBoxes[type * 3], pos.y - mGridBoundingBoxes[type * 3 + 1]));
-		mActiveLevelState->onTouchBegan(plantNode);
-		return true;
-	}
-	return false;
-}
 
 bool MainGameScene::touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
@@ -466,20 +481,7 @@ void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 wo
 
 bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
-	if (mGameGrids[type]->isIsometric()) {
-		return mGameGrids[type]->isInsideGrid(pos);
-	}
-	else {
-		// don't work with isometric grids
-		// if inside grid
-		if (pos.x >= mGridBoundingBoxes[type * 3] &&
-			pos.x <= mGridBoundingBoxes[type * 3] + mGridBoundingBoxes[type * 3 + 2] &&
-			pos.y >= mGridBoundingBoxes[type * 3 + 1] &&
-			pos.y <= mGridBoundingBoxes[type * 3 + 1] + mGridBoundingBoxes[type * 3 + 2]) {
-			return true;
-		}
-	}
-	return false;
+	return mGameGrids[type]->isInsideGrid(pos);
 }
 
 bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
@@ -494,18 +496,13 @@ bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 //#ifdef _MSC_VER
 	pos.y = visibleSize.height - pos.y;
 //#endif
-	// if lay on left screen size
-	if (pos.x < mGridBoundingBoxes[GRID_INVENTORY * 3]) {
-		return touchBeganIfInsideGrid(pos, GRID_MAIN);
-	}
-	else {
-		if (pos.y > mGridBoundingBoxes[GRID_BUCKET * 3 + 1]) {
-			// if inside BUCKET
-			return touchBeganIfInsideGrid(pos, GRID_BUCKET);
-		}
-		else {
-			// if inside INVENTORY
-			return touchBeganIfInsideGrid(pos, GRID_INVENTORY);
+
+	for (int i = 0; i < GRID_SIZE; i++) {
+		GridType type = static_cast<GridType>(i);
+		if (isInsideGrid(pos, type)) {
+			PlantNode* plantNode = mGameGrids[type]->getPlantNodeAtWorldPosition(pos);
+			mActiveLevelState->onTouchBegan(plantNode);
+			break;
 		}
 	}
 	return true;
@@ -532,24 +529,23 @@ void MainGameScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //#ifdef _MSC_VER
 	pos.y = visibleSize.height - pos.y;
 //#endif
-	// if lay on left screen size
-	if (pos.x < mGridBoundingBoxes[GRID_INVENTORY * 3]) {
-		touchEndIfInsideGrid(pos, GRID_MAIN);
-		return;
-	}
-	else {
-		if (pos.y > mGridBoundingBoxes[GRID_BUCKET * 3 + 1]) {
-			// if inside BUCKET
-			touchEndIfInsideGrid(pos, GRID_BUCKET);
-			return;
-		}
-		else {
-			// if inside INVENTORY
-			touchEndIfInsideGrid(pos, GRID_INVENTORY);
-			return;
+
+	bool found = false;
+	for (int i = 0; i < GRID_SIZE; i++) {
+		GridType type = static_cast<GridType>(i);
+		if (isInsideGrid(pos, type)) {
+			auto grid = mGameGrids[type];
+			GridIndex i = grid->getGridIndex(grid->fromWorldToLocal(pos));
+			mActiveLevelState->onTouchEnded(type, i.x, i.y);
+			found = true;
+			break;
 		}
 	}
-	mActiveLevelState->onTouchCancelled();
+	if (!found) {
+	//	mActiveLevelState->onTouchEnded(GRID_ERROR, 0, 0);
+		mActiveLevelState->onTouchCancelled();
+	}
+	
 }
 
 void MainGameScene::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event)
