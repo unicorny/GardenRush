@@ -269,7 +269,7 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 			bool ret = addBgGridCell(viewData, false, i, j);
 			if (!ret) {
 				LOG_ERROR("add bg grid cell", false);
-			}
+			}	
 		}
 	}
 	return true;
@@ -306,6 +306,8 @@ bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
 			if (!ret) {
 				LOG_ERROR("add bg grid cell", false);
 			}
+			//if (j == 1) return true;
+			//return true;
 		}
 	}
 	return true;
@@ -331,12 +333,23 @@ cocos2d::Vec2 Grid::fromWorldToLocal(cocos2d::Vec2 worldCoords) const
 	//return worldCoords - _position;
 }
 
-Vec2 Grid::isoToFlat(const Vec2& point) const
+Vec2 Grid::isoToFlat(const Vec2& pointIso) const
 {
-	return Vec2(
-		(2.0f * point.y + point.x) / 2.0f,
-		(2.0f * point.y - point.x) / 2.0f
+	// origin : x = grid bounding box / 2
+	//          y = 0
+
+	auto transformed = Vec2(
+		pointIso.x / (mBoundingBoxSize.x / static_cast<float>(mWidth) ),
+		pointIso.y / (mBoundingBoxSize.y / static_cast<float>(mHeight) )
 	);
+	// - origin.x
+	transformed.x -= static_cast<float>(mWidth) / 2.0f;
+
+	return Vec2(
+		transformed.x + transformed.y,
+		transformed.y - transformed.x
+	);
+
 }
 
 Vec2 Grid::flatToIso(const Vec2& point) const
@@ -359,8 +372,18 @@ cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const
 bool Grid::isInsideGrid(const cocos2d::Vec2& worldCoords) const
 {
 	auto localCoords = fromWorldToLocal(worldCoords);
+	
 	if (localCoords.x < 0.0f || localCoords.y < 0.0f) return false;
-	if (localCoords.x > mBoundingBoxSize.x || localCoords.y > mBoundingBoxSize.y) return false;
+	
+	if (isIsometric()) {
+		// visible area
+		if (localCoords.x > static_cast<float>(mWidth) || localCoords.y > static_cast<float>(mHeight))
+			return false;
+	} else {
+		// outer bounding box
+		if (localCoords.x > mBoundingBoxSize.x || localCoords.y > mBoundingBoxSize.y) 
+			return false;
+	}
 	return true;
 }
 

@@ -500,6 +500,7 @@ bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 	for (int i = 0; i < GRID_SIZE; i++) {
 		GridType type = static_cast<GridType>(i);
 		if (isInsideGrid(pos, type)) {
+			ErrorLog::printf("inside grid\n");
 			PlantNode* plantNode = mGameGrids[type]->getPlantNodeAtWorldPosition(pos);
 			mActiveLevelState->onTouchBegan(plantNode);
 			break;
