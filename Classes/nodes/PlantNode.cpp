@@ -2,7 +2,7 @@
 #include "model/Points.h"
 #include "model/PlantType.h"
 
-PlantNode::PlantNode(PlantType* plantType)
+PlantNode::PlantNode(const PlantType* plantType)
 	: mPlantType(plantType), mParentGrid(nullptr), mPointsMultiplicator(1.0f), mDiversityBonus(1.0f), 
 	mGrowPhasis(PLANT_PHASIS_SEED), mHalfGrow(false)
 {

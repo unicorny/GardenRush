@@ -20,7 +20,7 @@ class PlantType;
 class PlantNode : public cocos2d::Sprite
 {
 public:
-	PlantNode(PlantType* plantType);
+	PlantNode(const PlantType* plantType);
 	virtual ~PlantNode();
 
 	inline void setGridIndex(const GridIndex& index) { mGridIndex = index; }
@@ -43,7 +43,7 @@ public:
 	// return growth phasis
 	int countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
 protected:
-	PlantType* mPlantType;
+	const PlantType* mPlantType;
 	GridIndex mGridIndex;
 	Grid*	  mParentGrid;
 	float	  mPointsMultiplicator;

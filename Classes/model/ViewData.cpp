@@ -63,7 +63,7 @@ cocos2d::Sprite* ViewDataSimpleTexture::createSprite() const
 	return cocos2d::Sprite::create(mTextureName);
 }
 
-PlantNode* ViewDataSimpleTexture::createPlantNode(PlantType* plantType) const
+PlantNode* ViewDataSimpleTexture::createPlantNode(const PlantType* plantType) const
 {
 	PlantNode * ret = new (std::nothrow) PlantNode(plantType);
 	if (ret && ret->initWithFile(mTextureName))

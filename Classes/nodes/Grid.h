@@ -93,7 +93,7 @@ protected:
 
 	// coordinate transformation into and from isometric space
 	// Quelle: https://gamedevelopment.tutsplus.com/tutorials/creating-isometric-worlds-a-primer-for-game-developers--gamedev-6511
-	cocos2d::Vec2 isoToFlat(const cocos2d::Vec2& point) const;
+	cocos2d::Vec2 isoLocalToFlatGrid(const cocos2d::Vec2& point) const;
 	cocos2d::Vec2 flatToIso(const cocos2d::Vec2& point) const;
 
 	bool addCellSprite(cocos2d::Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex);

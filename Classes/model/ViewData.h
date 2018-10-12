@@ -33,7 +33,7 @@ public:
 	inline ViewType getType() const { return mType; }
 	virtual cocos2d::Sprite* createSprite() const = 0;
 	virtual cocos2d::Animation* createAnimation() = 0;
-	virtual PlantNode* createPlantNode(PlantType* plantType) const = 0;
+	virtual PlantNode* createPlantNode(const PlantType* plantType) const = 0;
 	virtual bool changePlantNodeSprite(PlantNode* plantNode) const = 0;
 	virtual DHASH getHash() const = 0;
 	
@@ -54,7 +54,7 @@ public:
 	virtual ~ViewDataSimpleTexture();
 	virtual cocos2d::Sprite* createSprite() const;
 	virtual cocos2d::Animation* createAnimation() { return NULL; }
-	virtual PlantNode* createPlantNode(PlantType* plantType) const;
+	virtual PlantNode* createPlantNode(const PlantType* plantType) const;
 	virtual bool changePlantNodeSprite(PlantNode* plantNode) const;
 	virtual DHASH getHash() const;
 protected:

@@ -2,7 +2,10 @@
 #include "MainGameScene.h"
 #include "nodes/Grid.h"
 #include "nodes/PlantNode.h"
+#include "model/PlantType.h"
 #include "cocos2d.h"
+
+using namespace cocos2d;
 
 namespace level_state {
 	bool DragSeed::initState()
@@ -38,10 +41,11 @@ namespace level_state {
 		if (plantNode->getReferenceCount() == 1) {
 			plantNode->retain();
 		}
-		mMainGameScene->removeChild(plantNode, false);
+		
 		auto pos = plantNode->getPosition();
 
 		if (GRID_ERROR == type || GRID_BUCKET == type || !mMainGameScene->getGrid(type)->isCellEmptyAndFree(x, y)) {
+			mMainGameScene->removeChild(plantNode, false);
 			putBackPlantNode();
 			plantNode->setPosition(plantNode->getParentGrid()->fromWorldToLocal(pos));
 			if (GRID_BUCKET == type) {
@@ -53,17 +57,46 @@ namespace level_state {
 			auto grid = mMainGameScene->getGrid(type);
 			
 			//plantNode->removeFromGrid();
-			grid->addGridCell(plantNode, x, y);
-			plantNode->setPosition(grid->fromWorldToLocal(pos));
-			plantNode->setParentGrid(mMainGameScene->getGrid(type));
-			mMainGameScene->transitTo("DropSeedValid");
+			// instead of adding, we fade it out and fade in the new state
+			if (GRID_MAIN == type) {
+				auto plantType = plantNode->getPlantType();// ->getViewData(PLANT_PHASIS_SEEDED);
+				auto seededPlantNode = plantType->getViewData(PLANT_PHASIS_SEEDED)->createPlantNode(plantType);
+				mMainGameScene->getGrid(GRID_MAIN)->addGridCell(seededPlantNode, x, y);
+				seededPlantNode->setOpacity(0);		
+
+				auto seededPlantNodeSequence = Sequence::create(
+					FadeIn::create(1.0f),
+					CallFunc::create(CC_CALLBACK_0(DragSeed::animationEnd, this)),
+					nullptr);
+				seededPlantNode->runAction(seededPlantNodeSequence);
+				mMainGameScene->setTargetPlantNode(seededPlantNode);
+
+				auto plantNodeSequence = Sequence::create(
+					FadeOut::create(1.0f),
+					RemoveSelf::create(true),
+					nullptr);
+				plantNode->runAction(plantNodeSequence);
+			}
+			else if (GRID_INVENTORY == type) {
+				mMainGameScene->removeChild(plantNode, false);
+				grid->addGridCell(plantNode, x, y);
+				plantNode->setPosition(grid->fromWorldToLocal(pos));
+				plantNode->setParentGrid(mMainGameScene->getGrid(type));
+				mMainGameScene->transitTo("DropSeedValid");
+			}
+			//mMainGameScene->transitTo("RandomSeed");
 		}
 	}
 	void DragSeed::onTouchCancelled()
 	{
 		auto plantNode = mMainGameScene->getTargetPlantNode();
+		if (plantNode->getReferenceCount() == 1) {
+			plantNode->retain();
+		}
+		mMainGameScene->removeChild(plantNode, false);
+		auto pos = plantNode->getPosition();
 		putBackPlantNode();
-		plantNode->setPosition(plantNode->getParentGrid()->fromWorldToLocal(plantNode->getPosition()));
+		plantNode->setPosition(plantNode->getParentGrid()->fromWorldToLocal(pos));
 		mMainGameScene->transitTo("DropSeedInvalid");
 	}
 	void DragSeed::onCancelState()
@@ -76,5 +109,10 @@ namespace level_state {
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		plantNode->setPosition(plantNode->getPosition() + cocos2d::Vec2(deltaX, -deltaY));
 
+	}
+
+	void DragSeed::animationEnd()
+	{
+		mMainGameScene->transitTo("PlantSeed");
 	}
 }

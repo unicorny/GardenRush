@@ -122,14 +122,14 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 		viewData->setGridIndex(GridIndex(x, y));
 		viewData->setParentGrid(this);
 		if (isIsometric()) {
-			viewData->setAnchorPoint(Vec2(0.5f, 0.5f));
+	//		viewData->setAnchorPoint(Vec2(0.5f, 0.5f));
 			//sprite->setPosition(Vec2(x * (mPixelSize.x / mWidth), y * (mPixelSize.y / mHeight)));
 			//viewData->setScaleX(viewData->getScaleX() * 1.8f);
 			//viewData->setScaleY(viewData->getScaleY() * 2.4f);
 			//viewData->setScaleY((1.0f/0.866f)* viewData->getScaleY());
 			//viewData->setSkewX(-30.0f);
 			//viewData->setRotation(-30.0f);
-			viewData->setPositionX(viewData->getPositionX() + mBoundingBoxSize.x / static_cast<float>(mWidth));
+//			viewData->setPositionX(viewData->getPositionX() + mBoundingBoxSize.x / static_cast<float>(mWidth));
 		}
 		return result;
 	}
@@ -216,7 +216,7 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 		// pos.x = origin.x + (x-y)/2 * cellWidth
 		// pos.y = (x+y)/2 * cellHeight
 		pos = Vec2(
-			mBoundingBoxSize.x / 2.0f + ((static_cast<float>(x - y)) / 2.0f - 0.5f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+			((static_cast<float>(x - y) + static_cast<float>(mWidth)) / 2.0f - 0.5f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
 			((static_cast<float>(x + y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
 		);
 		
@@ -315,25 +315,32 @@ bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
 
 GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 {
+	if(!isIsometric()) {
+		localPosition.x = (localPosition.x / mBoundingBoxSize.x) * mWidth;
+		localPosition.y = (localPosition.y / mBoundingBoxSize.y) * mHeight;
+	} else {
+		localPosition = isoLocalToFlatGrid(localPosition);
+	}
 	GridIndex index(
-		static_cast<uint8_t>(floor(localPosition.x / mBoundingBoxSize.x * mWidth)),
-		static_cast<uint8_t>(floor(localPosition.y / mBoundingBoxSize.y * mHeight))
+		static_cast<uint8_t>(floor(localPosition.x)),
+		static_cast<uint8_t>(floor(localPosition.y))
 	);
 	assert(index.x < mWidth && index.y < mHeight);
+	//ErrorLog::printf("GridIndex: %dx%d", index.x, index.y);
 	return index;
 }
 
 cocos2d::Vec2 Grid::fromWorldToLocal(cocos2d::Vec2 worldCoords) const
 {
 	auto local = convertToNodeSpace(worldCoords);
-	if (isIsometric()) {
+	/*if (isIsometric()) {
 		return isoToFlat(local);
-	}
+	}*/
 	return local;
 	//return worldCoords - _position;
 }
 
-Vec2 Grid::isoToFlat(const Vec2& pointIso) const
+Vec2 Grid::isoLocalToFlatGrid(const Vec2& pointIso) const
 {
 	// origin : x = grid bounding box / 2
 	//          y = 0
@@ -346,25 +353,30 @@ Vec2 Grid::isoToFlat(const Vec2& pointIso) const
 	transformed.x -= static_cast<float>(mWidth) / 2.0f;
 
 	return Vec2(
-		transformed.x + transformed.y,
-		transformed.y - transformed.x
+		(transformed.x + transformed.y),// * static_cast<float>(mWidth),
+		(transformed.y - transformed.x)// * static_cast<float>(mHeight)
 	);
 
 }
 
 Vec2 Grid::flatToIso(const Vec2& point) const
 {
+	
+	//((static_cast<float>(x - y) + static_cast<float>(mWidth)) / 2.0f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+	//((static_cast<float>(x + y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
+
+
 	return Vec2(
-		point.x - point.y,
-		(point.x + point.y) / 2.0f
+		((point.x - point.y + static_cast<float>(mWidth)) / 2.0f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+		((point.x + point.y) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
 	);
 }
 
 cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const
 {
-	if (isIsometric()) {
+/*	if (isIsometric()) {
 		localCoords = flatToIso(localCoords);
-	}
+	}*/
 	return convertToWorldSpace(localCoords);
 	//return _position + localCoords;
 }
@@ -372,6 +384,9 @@ cocos2d::Vec2 Grid::fromLocalToWorld(cocos2d::Vec2 localCoords) const
 bool Grid::isInsideGrid(const cocos2d::Vec2& worldCoords) const
 {
 	auto localCoords = fromWorldToLocal(worldCoords);
+	if (isIsometric()) {
+		localCoords = isoLocalToFlatGrid(localCoords);
+	}
 	
 	if (localCoords.x < 0.0f || localCoords.y < 0.0f) return false;
 	
@@ -413,7 +428,7 @@ PlantNode* Grid::getPlantNodeAtWorldPosition(cocos2d::Vec2 worldPosition) const
 	auto localPosition = fromWorldToLocal(worldPosition);
 	GridIndex i = getGridIndex(localPosition);
 	size_t index = i.x * mWidth + i.y;
-	//ErrorLog::printf("x: %d, y: %d\n", x, y);
+	//ErrorLog::printf("x: %d, y: %d\n", i.x, i.y);
 	if (mPlantMap[index]) {
 		return mPlantMap[index];
 	}

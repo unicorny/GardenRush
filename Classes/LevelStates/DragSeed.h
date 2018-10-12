@@ -21,6 +21,8 @@ namespace level_state {
 		virtual void onTouchCancelled();
 		virtual void onTouchMoved(float deltaX, float deltaY);
 
+		void animationEnd();
+
 	protected:
 		void putBackPlantNode();
 

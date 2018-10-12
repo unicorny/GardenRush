@@ -193,7 +193,7 @@ bool MainGameScene::init()
     // create menu, it's an autorelease object
     auto menu = Menu::create(closeItem, toggleItem, resetItem, NULL);
     menu->setPosition(Vec2::ZERO);
-    //this->addChild(menu, 1);
+    this->addChild(menu, 3);
 
 
 	// //////////////////////////
@@ -216,17 +216,18 @@ bool MainGameScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
 
-    auto label = Label::createWithTTF("Garden Rush Prototype", "fonts/Marker Felt.ttf", 24);
+    auto label = Label::createWithTTF("Garden Rush Prototype", "fonts/Charmonman-Regular.ttf", 24);
     if (label == nullptr)
     {
-        problemLoading("'fonts/Marker Felt.ttf'");
+        problemLoading("'fonts/Charmonman-Regular.ttf'");
     }
     else
     {
         // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
+        label->setPosition(Vec2(origin.x + visibleSize.width,
                                 origin.y + visibleSize.height - label->getContentSize().height));
-
+		label->setAnchorPoint(Vec2(1.0f, 0.0f));
+		label->setColor(Color3B(0, 0, 0));
         // add the label as a child to this layer
         this->addChild(label, 2);
     }
@@ -239,11 +240,12 @@ bool MainGameScene::init()
 	}
 	else
 	{
-		// position the label on the center of the screen
+		// position the label on the right side of the screen
 		mPointsLabel->setPosition(Vec2(
-			origin.x + visibleSize.width / 2,
+			origin.x + visibleSize.width * 0.9f,
 			origin.y + visibleSize.height - mPointsLabel->getContentSize().height - label->getContentSize().height));
 		mPointsLabel->setColor(Color3B(0,0,0));
+		mPointsLabel->setAnchorPoint(Vec2(1.0f, 0.0f));
 		// add the label as a child to this layer
 		this->addChild(mPointsLabel, 2);
 	}
