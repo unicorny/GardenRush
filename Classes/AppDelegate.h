@@ -27,6 +27,8 @@
 
 #include "cocos2d.h"
 #include "PlantTypesManager.h"
+#include "model/SpriteAnimationState.h"
+#include "lib/TemplateMemoryManager.h"
 #include "model/Points.h"
 
 /**
@@ -63,6 +65,7 @@ public:
 
 protected:
 	PlantTypesManager mPlantTypesManager;
+	TemplateMemoryManager<SpriteAnimationState> mAnimationStateMemoryManager;
 	Points			  mPlayerPoints;
 };
 

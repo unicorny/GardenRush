@@ -9,7 +9,7 @@
  *  \brief: Class for store sprite view, if it a single texture, animation or sprites in 
  *          a texture-atlas
 */
-#include "cocos2d.h"
+#include "CustomAnimationSprite.h"
 #include "lib/DRHashlist.hpp"
 #include "nodes/Grid.h"
 #include "enums.h"
@@ -17,7 +17,9 @@
 struct GridIndex;
 class PlantType;
 
-class PlantNode : public cocos2d::Sprite
+
+
+class PlantNode : public CustomAnimationSprite
 {
 public:
 	PlantNode(const PlantType* plantType);
@@ -42,6 +44,9 @@ public:
 
 	// return growth phasis
 	int countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
+
+	
+
 protected:
 	const PlantType* mPlantType;
 	GridIndex mGridIndex;
@@ -51,6 +56,8 @@ protected:
 	PlantTypePhasisView		  mGrowPhasis;
 	bool	  mHalfGrow;
 	DRHashList mCountedNeighborForDiversity;
+
+	
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_VIEW_SPRITE_VIEW_H

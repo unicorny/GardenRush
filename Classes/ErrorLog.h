@@ -8,5 +8,6 @@ public:
 };
 
 #define LOG_ERROR(text, ret) {ErrorLog::printf("FEHLER: %s (%s, Zeile %d, Funktion %s)", text, __FILE__, __LINE__, __FUNCTION__); return ret;}
+#define LOG_ERROR_VOID(text) {ErrorLog::printf("FEHLER: %s (%s, Zeile %d, Funktion %s)", text, __FILE__, __LINE__, __FUNCTION__);}
 
 #endif //__FAIRY_GAMES_GARDEN_RUSH_ERROR_LOG_H

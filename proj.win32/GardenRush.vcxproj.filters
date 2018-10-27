@@ -105,6 +105,18 @@
     <ClCompile Include="..\Classes\ui\SwitchButton.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\RandomSeedAnimation.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\model\SpriteAnimationState.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lib\TemplateMemoryManager.cpp">
+      <Filter>src\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\nodes\CustomAnimationSprite.cpp">
+      <Filter>src\nodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -187,6 +199,18 @@
     </ClInclude>
     <ClInclude Include="..\Classes\ui\SwitchButton.h">
       <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\RandomSeedAnimation.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\SpriteAnimationState.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lib\TemplateMemoryManager.h">
+      <Filter>src\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\nodes\CustomAnimationSprite.h">
+      <Filter>src\nodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

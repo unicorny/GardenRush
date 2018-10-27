@@ -52,6 +52,7 @@ static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
 AppDelegate::AppDelegate()
 {
+	mAnimationStateMemoryManager.init(6);
 }
 
 AppDelegate::~AppDelegate() 
@@ -123,7 +124,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints));
+    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager));
 
     //auto scene = HelloWorld::createScene();
 

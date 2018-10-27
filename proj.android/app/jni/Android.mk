@@ -30,8 +30,11 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/AppDelegate.cpp \
                    $(LOCAL_PATH)/../../../Classes/ErrorLog.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/DRHashList.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/TemplateMemoryManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
@@ -42,6 +45,7 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedValid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeedAnimation.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlantSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp \

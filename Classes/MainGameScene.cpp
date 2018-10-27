@@ -33,6 +33,7 @@
 #include "levelStates/DropSeedValid.h"
 #include "levelStates/iLevelState.h"
 #include "levelStates/RandomSeed.h"
+#include "levelStates/RandomSeedAnimation.h"
 #include "levelStates/PlantSeed.h"
 #include "levelStates/PlayerChooseSeed.h"
 #include "levelStates/PlayerChooseActionWithSeed.h"
@@ -42,8 +43,9 @@
 
 USING_NS_CC;
 
-Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points)
+Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager)
 {
+	
 	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
 	profiler->displayTimers();
 	ProfilingBeginTimingBlock("initScene");
@@ -54,6 +56,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 	ProfilingBeginTimingBlock("init plant types");
 	result->mPlantTypesManager = plantTypesManager;
 	result->mPoints = points;
+	result->mAnimationStateMemoryManager = animationStateMemorymanager;
 	points->addPointChangeCallback(result, "main");
 	// init plant types manager
 	result->mPlantTypesManager->loadFromJson("graphics.json");
@@ -68,7 +71,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 }
 
 MainGameScene::MainGameScene()
-	: mToogleStats(false), mPlantTypesManager(nullptr), mPoints(nullptr),
+	: mToogleStats(false), mPlantTypesManager(nullptr), mAnimationStateMemoryManager(nullptr), mPoints(nullptr),
  mLevelData(nullptr), mActiveLevelState(nullptr), mTargetPlantNode(nullptr), mEnabledTouchTypes(ENABLED_TOUCH_NONE)
 {
 	memset(mGameGrids, 0, GRID_SIZE * sizeof(Grid*));
@@ -209,7 +212,7 @@ bool MainGameScene::init()
 		this->addChild(bg, 0, "bg");
 	}
 	//*/
-
+	
     /////////////////////////////
     // 3. add your codes below...
 
@@ -217,6 +220,7 @@ bool MainGameScene::init()
     // create and initialize a label
 
     auto label = Label::createWithTTF("Garden Rush Prototype", "fonts/Charmonman-Regular.ttf", 24);
+	
     if (label == nullptr)
     {
         problemLoading("'fonts/Charmonman-Regular.ttf'");
@@ -253,7 +257,7 @@ bool MainGameScene::init()
 	if (mMovingPointsLabel) {
 		this->addChild(mMovingPointsLabel, 3);
 	}
-
+	
 	std::vector<IViewData*> mGroundCells;
 	// add grid
 	///*
@@ -361,6 +365,7 @@ bool MainGameScene::init()
 	//*/
 	
 	addLevelState(new level_state::RandomSeed);
+	addLevelState(new level_state::RandomSeedAnimation);
 	addLevelState(new level_state::PlayerChooseSeed);
 	addLevelState(new level_state::PlayerChooseActionWithSeed);
 	addLevelState(new level_state::DisplayInfo);

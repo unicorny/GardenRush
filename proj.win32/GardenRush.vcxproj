@@ -157,6 +157,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\levelStates\DropSeedValid.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlantSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp" />
+    <ClCompile Include="..\Classes\levelStates\RandomSeedAnimation.cpp" />
+    <ClCompile Include="..\Classes\lib\TemplateMemoryManager.cpp" />
     <ClCompile Include="..\Classes\MainGameScene.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseSeed.cpp" />
@@ -165,7 +167,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\model\LevelData.cpp" />
     <ClCompile Include="..\Classes\model\PlantType.cpp" />
     <ClCompile Include="..\Classes\model\Points.cpp" />
+    <ClCompile Include="..\Classes\model\SpriteAnimationState.cpp" />
     <ClCompile Include="..\Classes\model\ViewData.cpp" />
+    <ClCompile Include="..\Classes\nodes\CustomAnimationSprite.cpp" />
     <ClCompile Include="..\Classes\nodes\Grid.cpp" />
     <ClCompile Include="..\Classes\nodes\PlantNode.cpp" />
     <ClCompile Include="..\Classes\PlantTypesManager.cpp" />
@@ -184,6 +188,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\levelStates\DropSeedValid.h" />
     <ClInclude Include="..\Classes\levelStates\PlantSeed.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeed.h" />
+    <ClInclude Include="..\Classes\levelStates\RandomSeedAnimation.h" />
+    <ClInclude Include="..\Classes\lib\TemplateMemoryManager.h" />
     <ClInclude Include="..\Classes\MainGameScene.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\levelStates\iLevelState.h" />
@@ -194,7 +200,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\model\LevelData.h" />
     <ClInclude Include="..\Classes\model\PlantType.h" />
     <ClInclude Include="..\Classes\model\Points.h" />
+    <ClInclude Include="..\Classes\model\SpriteAnimationState.h" />
     <ClInclude Include="..\Classes\model\ViewData.h" />
+    <ClInclude Include="..\Classes\nodes\CustomAnimationSprite.h" />
     <ClInclude Include="..\Classes\nodes\Grid.h" />
     <ClInclude Include="..\Classes\nodes\PlantNode.h" />
     <ClInclude Include="..\Classes\PlantTypesManager.h" />

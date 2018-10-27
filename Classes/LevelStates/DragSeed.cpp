@@ -64,15 +64,17 @@ namespace level_state {
 				mMainGameScene->getGrid(GRID_MAIN)->addGridCell(seededPlantNode, x, y);
 				seededPlantNode->setOpacity(0);		
 
+				const float fadeTime = 0.5f;
+
 				auto seededPlantNodeSequence = Sequence::create(
-					FadeIn::create(1.0f),
+					FadeIn::create(fadeTime),
 					CallFunc::create(CC_CALLBACK_0(DragSeed::animationEnd, this)),
 					nullptr);
 				seededPlantNode->runAction(seededPlantNodeSequence);
 				mMainGameScene->setTargetPlantNode(seededPlantNode);
 
 				auto plantNodeSequence = Sequence::create(
-					FadeOut::create(1.0f),
+					FadeOut::create(fadeTime),
 					RemoveSelf::create(true),
 					nullptr);
 				plantNode->runAction(plantNodeSequence);

@@ -71,4 +71,3 @@ int PlantNode::countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighbo
 	}
 	return mGrowPhasis;
 }
-
