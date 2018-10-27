@@ -19,10 +19,16 @@ public:
 	CustomAnimationSprite() : mAnimationState(nullptr) {}
 	virtual ~CustomAnimationSprite();
 
+	inline void stopAllAnimations() {
+		if (mAnimationState) {
+			mAnimationState->animationStop(SPRITE_ANIMATION_ALL);
+		}
+	}
+
 	inline void allAnimationsEnd() {
 		if (mAnimationState) {
 			mAnimationState->free();
-			mAnimationState = NULL;
+			mAnimationState = nullptr;
 		}
 	}
 	inline SpriteAnimationState* getAnimationState(TemplateMemoryManager<SpriteAnimationState>* animationStateMemoryManager) {

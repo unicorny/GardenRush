@@ -33,7 +33,6 @@
 #include "levelStates/DropSeedValid.h"
 #include "levelStates/iLevelState.h"
 #include "levelStates/RandomSeed.h"
-#include "levelStates/RandomSeedAnimation.h"
 #include "levelStates/PlantSeed.h"
 #include "levelStates/PlayerChooseSeed.h"
 #include "levelStates/PlayerChooseActionWithSeed.h"
@@ -365,7 +364,6 @@ bool MainGameScene::init()
 	//*/
 	
 	addLevelState(new level_state::RandomSeed);
-	addLevelState(new level_state::RandomSeedAnimation);
 	addLevelState(new level_state::PlayerChooseSeed);
 	addLevelState(new level_state::PlayerChooseActionWithSeed);
 	addLevelState(new level_state::DisplayInfo);

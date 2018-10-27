@@ -253,6 +253,7 @@ void Grid::removeAllGridCells()
 {
 	for (int i = 0; i < mWidth * mHeight; i++) {
 		if (mPlantMap[i]) {
+			mPlantMap[i]->stopAllAnimations();
 			this->removeChild(mPlantMap[i], true);
 			mPlantMap[i] = NULL;
 		}

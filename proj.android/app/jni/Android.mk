@@ -45,7 +45,6 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedValid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
-                   $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeedAnimation.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlantSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp \

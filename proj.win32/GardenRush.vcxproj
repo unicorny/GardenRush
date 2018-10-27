@@ -157,7 +157,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\levelStates\DropSeedValid.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlantSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp" />
-    <ClCompile Include="..\Classes\levelStates\RandomSeedAnimation.cpp" />
     <ClCompile Include="..\Classes\lib\TemplateMemoryManager.cpp" />
     <ClCompile Include="..\Classes\MainGameScene.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
@@ -188,7 +187,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\levelStates\DropSeedValid.h" />
     <ClInclude Include="..\Classes\levelStates\PlantSeed.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeed.h" />
-    <ClInclude Include="..\Classes\levelStates\RandomSeedAnimation.h" />
     <ClInclude Include="..\Classes\lib\TemplateMemoryManager.h" />
     <ClInclude Include="..\Classes\MainGameScene.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />

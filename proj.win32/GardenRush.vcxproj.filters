@@ -105,9 +105,6 @@
     <ClCompile Include="..\Classes\ui\SwitchButton.cpp">
       <Filter>src\ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\levelStates\RandomSeedAnimation.cpp">
-      <Filter>src\levelStates</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\model\SpriteAnimationState.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
@@ -199,9 +196,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\ui\SwitchButton.h">
       <Filter>src\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\levelStates\RandomSeedAnimation.h">
-      <Filter>src\levelStates</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\model\SpriteAnimationState.h">
       <Filter>src\model</Filter>
