@@ -24,6 +24,7 @@
 
 #include "AppDelegate.h"
 #include "MainGameScene.h"
+#include "controller/ConfigLoader.h"
 #include "nodes/Grid.h"
 //#include "HelloWorldScene.h"
 
@@ -131,11 +132,14 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // create a scene. it's an autorelease object
 	// load needed stuff
 	//mConfigLoader.loadMaterial("materials/highlightGridCell.material", "highlightGridCell");
-	mConfigLoader.loadShader("shaders/highlightGridCell.frag", "shaders/default_sprite.vert", "highlightGridCell");
-	mConfigLoader.loadShader("shaders/highlightGridCellIso.frag", "shaders/default_sprite.vert", "highlightGridCellIso");
-	Grid::setHighlightCellShader(mConfigLoader.getShader("highlightGridCell"));
-	Grid::setHighlightCellIsoShader(mConfigLoader.getShader("highlightGridCellIso"));
-    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager, &mConfigLoader));
+	//mConfigLoader.loadShader("shaders/highlightGridCell.frag", "shaders/default_sprite.vert", "highlightGridCell");
+	//mConfigLoader.loadShader("shaders/highlightGridCellIso.frag", "shaders/default_sprite.vert", "highlightGridCellIso");
+	//Grid::setHighlightCellShader(mConfigLoader.getShader("highlightGridCell"));
+	//Grid::setHighlightCellIsoShader(mConfigLoader.getShader("highlightGridCellIso"));
+	
+	ConfigLoader::loadFromJson("ressources.json", &mRessourcenManager);
+
+    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager, &mRessourcenManager));
 
     //auto scene = HelloWorld::createScene();
 

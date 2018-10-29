@@ -10,8 +10,6 @@ varying vec4 v_fragmentColor;
 varying vec2 v_texCoord;
 #endif
 
-uniform vec3 border_color;
-uniform vec3 highlight_color;
 
 void main()
 {

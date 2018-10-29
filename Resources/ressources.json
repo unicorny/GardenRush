@@ -1,0 +1,8 @@
+{
+	"materials": {
+		"highlightGridCell"   : "materials/highlightGridCell.material",
+		"highlightGridCellIso": "materials/highlightGridCellIso.material"
+	},
+	"plantTypes" : "graphics.json"
+	
+}

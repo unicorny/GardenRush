@@ -1,4 +1,4 @@
-material highlightGridCell
+material highlightGridCellIso
 {
 	technique emptyCell
 	{
@@ -7,10 +7,10 @@ material highlightGridCell
 			shader 
 			{
 				vertexShader = shaders/default_sprite.vert
-				fragmentShader = shaders/highlightGridCell.frag
+				fragmentShader = shaders/highlightGridCellIso.frag
 				
 				border_color    = 0.5,0.5,0.5,0.5
-				border_size 	= 32
+				border_size 	= 50
 				highlight_color = 1.0,1.0,0.0
 				
 			}
@@ -24,7 +24,7 @@ material highlightGridCell
 			shader 
 			{
 				vertexShader = shaders/default_sprite.vert
-				fragmentShader = shaders/highlightGridCell.frag
+				fragmentShader = shaders/highlightGridCellIso.frag
 				
 				border_color    = 0.0,1.0,0.0,1.0
 				border_size 	= 16
@@ -41,7 +41,7 @@ material highlightGridCell
 			shader 
 			{
 				vertexShader = shaders/default_sprite.vert
-				fragmentShader = shaders/highlightGridCell.frag
+				fragmentShader = shaders/highlightGridCellIso.frag
 				
 				border_color    = 1.0,0.0,0.0,1.0
 				border_size 	= 16
@@ -58,7 +58,7 @@ material highlightGridCell
 			shader 
 			{
 				vertexShader = shaders/default_sprite.vert
-				fragmentShader = shaders/highlightGridCell.frag
+				fragmentShader = shaders/highlightGridCellIso.frag
 				
 				border_color    = 0.4,1.0,0.4,1.0
 				border_size 	= 16
@@ -74,7 +74,7 @@ material highlightGridCell
 			shader 
 			{
 				vertexShader = shaders/default_sprite.vert
-				fragmentShader = shaders/highlightGridCell.frag
+				fragmentShader = shaders/highlightGridCellIso.frag
 				
 				border_color    = 1.0,1.0,1.0,1.0
 				border_size 	= 16
@@ -91,14 +91,13 @@ material highlightGridCell
 			shader 
 			{
 				vertexShader = shaders/default_sprite.vert
-				fragmentShader = shaders/highlightGridCell.frag
+				fragmentShader = shaders/highlightGridCellIso.frag
 				
 				border_color    = 1.0,1.0,1.0,1.0
 				border_size 	= 16
 				highlight_color = 1.0,1.0,0.0
 				
 			}
-
 		}
 	}
 	

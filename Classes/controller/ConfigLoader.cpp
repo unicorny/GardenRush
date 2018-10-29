@@ -1,6 +1,10 @@
 #include "controller/ConfigLoader.h"
+#include "controller/RessourcenManager.h"
 #include "ErrorLog.h"
 
+#include "json/document.h"
+//
+using namespace rapidjson;
 using namespace cocos2d;
 
 ConfigLoader::ConfigLoader()
@@ -10,38 +14,40 @@ ConfigLoader::ConfigLoader()
 
 ConfigLoader::~ConfigLoader()
 {
-	for (auto it = mMaterials.begin(); it != mMaterials.end(); it++) {
-		it->second->release();
-	}
-	mMaterials.clear();
 
-	for (u32 i = 0; i < mShaders.getNItems(); i++) {
-		GLProgram* shader = (GLProgram*)mShaders.findByIndex(i);
-		shader->release();
-	}
-	mShaders.clear(true);
 }
 
-void ConfigLoader::loadShader(const char* fragmentShaderFilename, const char* vertexShaderFilename, const char* name)
+
+bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenManager)
 {
-	GLProgram* shader = GLProgram::createWithFilenames(vertexShaderFilename, fragmentShaderFilename);
-	shader->link();
-	shader->updateUniforms();
-	shader->retain();
-	shader->addAttribute(GLProgram::ATTRIBUTE_NAME_POSITION, GLProgram::VERTEX_ATTRIB_POSITION);
-	shader->addAttribute(GLProgram::ATTRIBUTE_NAME_COLOR, GLProgram::VERTEX_ATTRIB_COLOR);
-	shader->addAttribute(GLProgram::ATTRIBUTE_NAME_TEX_COORD, GLProgram::VERTEX_ATTRIB_TEX_COORD);
+	// load json from file and parse
+	std::string content = cocos2d::FileUtils::getInstance()->getStringFromFile(path);
+	Document document;
+	document.Parse(content.data());
+
+	// interpret json
+	assert(document.IsObject());
 	
-	if (shader) {
-		mShaders.addByHash(DRMakeStringHash(name), shader);
-	}
-	else {
-		ErrorLog::printf("[ConfigLoader::loadShader] error loading shader: %s", name);
-	}
-}
+	for (auto itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr)
+	{
+		// for every type
+		if (!itr->name.IsString()) {
+			LOG_ERROR("error, invalid index type(not a string)", false);
+		}
+		if (!strcmp(itr->name.GetString(), "materials")) {
+			for (auto iMaterials = itr->value.MemberBegin(); iMaterials != itr->value.MemberEnd(); ++iMaterials) {
+				if (iMaterials->value.IsString() && iMaterials->name.IsString()) {
+					if (!ressourcenManager->loadMaterial(iMaterials->value.GetString(), iMaterials->name.GetString())) {
+						LOG_ERROR("error loading material", false);
+					}
+				}
+				else {
+					LOG_ERROR("[ConfigLoader::loadFromJson] error, material type or name invalid (expect both be string)", false);
+				}
+			}
 
-void ConfigLoader::loadMaterial(const char* path, const char* name)
-{
-	Material* material = Material::createWithFilename(path);
-	mMaterials.insert(std::pair<std::string, Material*>(name, material));
+		}
+	}
+	return true;
+
 }

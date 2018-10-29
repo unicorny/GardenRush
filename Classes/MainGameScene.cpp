@@ -42,7 +42,7 @@
 
 USING_NS_CC;
 
-Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, ConfigLoader* configLoader)
+Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, RessourcenManager* ressourcenManager)
 {
 	
 	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
@@ -54,7 +54,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 	ErrorLog::printf("init Scene duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
 	ProfilingBeginTimingBlock("init plant types");
 	result->mPlantTypesManager = plantTypesManager;
-	result->mConfigLoader = configLoader;
+	result->mRessourcenManager = ressourcenManager;
 	result->mPoints = points;
 	result->mAnimationStateMemoryManager = animationStateMemorymanager;
 	points->addPointChangeCallback(result, "main");

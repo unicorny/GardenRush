@@ -4,13 +4,9 @@
 #include "model/Points.h"
 #include "ErrorLog.h"
 #include "PlantTypesManager.h"
+#include "controller/RessourcenManager.h"
 
 using namespace cocos2d;
-
-cocos2d::GLProgram* Grid::mst_highlightCellShader = nullptr;
-cocos2d::GLProgram* Grid::mst_highlightCellIsoShader = nullptr;
-cocos2d::GLProgramState* Grid::mst_highlightCellEmptyShaderState = nullptr;
-cocos2d::GLProgramState* Grid::mst_highlightCellEmptyIsoShaderState = nullptr;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
 	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
@@ -149,16 +145,6 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 		return result;
 	}
 	return false;
-}
-
-void Grid::enableGlowCell(uint8_t x, uint8_t y, cocos2d::Color3B color)
-{
-
-}
-
-void Grid::disableGlowCell(uint8_t x, uint8_t y)
-{
-
 }
 
 
@@ -306,22 +292,8 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 	return true;
 }
 
-void Grid::glowEmpytCells(bool enable/* = true*/)
+void Grid::glowEmptyCells(const RessourcenManager* ressources, bool enable/* = true*/)
 {
-	if (isIsometric()) {
-		if (!mst_highlightCellEmptyIsoShaderState) {
-			mst_highlightCellEmptyIsoShaderState = GLProgramState::getOrCreateWithGLProgram(mst_highlightCellIsoShader);
-			mst_highlightCellEmptyIsoShaderState->setUniformVec3("border_color", Vec3(0.0f, 0.0f, 1.0f));
-			mst_highlightCellEmptyIsoShaderState->setUniformVec3("highlight_color", Vec3(0.0f, 1.0f, 1.0f));
-		}
-	}
-	else {
-		if (!mst_highlightCellEmptyShaderState) {
-			mst_highlightCellEmptyShaderState = GLProgramState::getOrCreateWithGLProgram(mst_highlightCellShader);
-			mst_highlightCellEmptyShaderState->setUniformVec3("border_color", Vec3(0.0f, 0.0f, 1.0f));
-			mst_highlightCellEmptyShaderState->setUniformVec3("highlight_color", Vec3(1.0f, 1.0f, 0.0f));
-		}
-	}
 	
 	//glprogramState->setUniformInt("")
 	for (int y = 0; y < mWidth; y++) {
@@ -331,8 +303,13 @@ void Grid::glowEmpytCells(bool enable/* = true*/)
 				if (enable && !mPlantMap[index]) {
 					//mBGCellsMap[index]->setGLProgram(mst_highlightCellShader);
 					//mBGCellsMap[index]->setGLProgramState(glprogramState);
-					if (isIsometric()) mBGCellsMap[index]->setGLProgramState(mst_highlightCellEmptyIsoShaderState);
-					else mBGCellsMap[index]->setGLProgramState(mst_highlightCellEmptyShaderState);
+					Material* mat = nullptr;
+					if (isIsometric()) { mat = ressources->getMaterial("highlightGridCellIso"); }
+					else { mat = ressources->getMaterial("highlightGridCell");  }
+
+					mBGCellsMap[index]->setGLProgramState(
+						mat->getTechniqueByName("emptyCell")->getPassByIndex(0)->getGLProgramState()
+					);
 				}
 				else {
 					mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
@@ -342,6 +319,59 @@ void Grid::glowEmpytCells(bool enable/* = true*/)
 			}
 		}
 	}
+}
+void Grid::disableAllGlowCells()
+{
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t index = x * mWidth + y;
+			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
+				mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+			}
+		}
+	}
+}
+
+void Grid::glowAutoCells(const PlantType* type, const RessourcenManager* ressources)
+{
+
+}
+
+
+void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, const RessourcenManager* ressources, bool enable/* = true*/)
+{
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t index = x * mWidth + y;
+			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index] && mPlantMap[index]) {
+				if (enable) {
+					Material* mat = nullptr;
+					if (isIsometric()) { mat = ressources->getMaterial("highlightGridCellIso"); }
+					else { mat = ressources->getMaterial("highlightGridCell"); }
+
+					Technique* technique = nullptr;
+					auto neighborType = plantTypesManager->getNeighborType(type->getIndex(), mPlantMap[index]->getPlantType()->getIndex());
+					switch (neighborType) {
+					case NEIGHBOR_GOOD: technique = mat->getTechniqueByName("positiveNeighbor"); break;
+					case NEIGHBOR_BAD: technique = mat->getTechniqueByName("negativeNeighbor"); break;
+					case NEIGHBOR_REALLY_GOOD: technique = mat->getTechniqueByName("reallyGoodNeighbor"); break;
+					case NEIGHBOR_NEUTRAL: technique = mat->getTechniqueByName("neutralNeighbor"); break;
+					}
+					if (technique) {
+						mBGCellsMap[index]->setGLProgramState(technique->getPassByIndex(0)->getGLProgramState());
+					}
+					else {
+						mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+					}
+
+				}
+				else {
+					mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+				}
+			}
+		}
+	}
+
 }
 
 bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)

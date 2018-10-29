@@ -150,6 +150,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\controller\ConfigLoader.cpp" />
+    <ClCompile Include="..\Classes\controller\RessourcenManager.cpp" />
     <ClCompile Include="..\Classes\ErrorLog.cpp" />
     <ClCompile Include="..\Classes\levelStates\DisplayInfo.cpp" />
     <ClCompile Include="..\Classes\levelStates\DragSeed.cpp" />
@@ -179,6 +180,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\controller\ConfigLoader.h" />
+    <ClInclude Include="..\Classes\controller\RessourcenManager.h" />
     <ClInclude Include="..\Classes\Enums.h" />
     <ClInclude Include="..\Classes\ErrorLog.h" />
     <ClInclude Include="..\Classes\levelStates\DisplayInfo.h" />

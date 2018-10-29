@@ -114,6 +114,9 @@
     <ClCompile Include="..\Classes\nodes\CustomAnimationSprite.cpp">
       <Filter>src\nodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\controller\RessourcenManager.cpp">
+      <Filter>src\controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\nodes\CustomAnimationSprite.h">
       <Filter>src\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\controller\RessourcenManager.h">
+      <Filter>src\controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

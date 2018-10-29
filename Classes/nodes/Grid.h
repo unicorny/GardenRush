@@ -12,8 +12,10 @@
 //#include "PlantNode.h"
 class IViewData;
 class PlantNode;
+class PlantType;
 class LevelData;
 class PlantTypesManager;
+class RessourcenManager;
 class Points;
 
 enum GridObstacleType
@@ -43,8 +45,6 @@ class Grid : public cocos2d::Node
 public:
 	// init
 	static Grid * create(uint8_t width, uint8_t height, GridType type);
-	inline static void setHighlightCellShader(cocos2d::GLProgram* shader) { mst_highlightCellShader = shader; }
-	inline static void setHighlightCellIsoShader(cocos2d::GLProgram* shader) { mst_highlightCellIsoShader = shader; }
 
 	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode);
 	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
@@ -58,9 +58,10 @@ public:
 	// actions
 	bool addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y);
 
-	void glowEmpytCells(bool enable = true);
-	void enableGlowCell(uint8_t x, uint8_t y, cocos2d::Color3B color);
-	void disableGlowCell(uint8_t x, uint8_t y);
+	void glowEmptyCells(const RessourcenManager* ressources, bool enable = true);
+	void disableAllGlowCells();
+	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, const RessourcenManager* ressources, bool enable = true);
+	void glowAutoCells(const PlantType* type, const RessourcenManager* ressources);
 
 	//! \return false if an obstacle is at this position
 	bool addGridCell(PlantNode* viewNode, uint8_t x, uint8_t y);
@@ -119,13 +120,6 @@ protected:
 	// geometrie
 
 	bool mIsIsometric;
-
-	// static materials
-	static cocos2d::GLProgram* mst_highlightCellShader;
-	static cocos2d::GLProgram* mst_highlightCellIsoShader;
-
-	static cocos2d::GLProgramState* mst_highlightCellEmptyShaderState;
-	static cocos2d::GLProgramState* mst_highlightCellEmptyIsoShaderState;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_GRID_H

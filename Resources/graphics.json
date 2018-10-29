@@ -1,0 +1,148 @@
+{
+	"carrot" : {
+		"neighbors": {
+			"good": [
+				"onion",
+				"pea",
+				"garlic",
+				"cabbage",
+				"leek",
+				"chard",
+				"radish",
+				"salad",
+				"tomato",
+				"spinach"
+			]
+		},
+		"graphics": {
+			"seed"   : "plants/Carrot_seed.png",
+			"seeded" : "plants/Carrot.png",
+			"growth" : [
+				"plants/Carrot_growth_1.png",
+				"plants/Carrot_growth_2.png",
+				"plants/Carrot_growth_3.png",
+				"plants/Carrot_growth_4.png",
+				"plants/Carrot_growth_5.png"
+			]
+		}
+	},
+	"garlic" : {
+		"neighbors": {
+			"good": [
+				"strawberry",
+				"carrot",
+				"cucumber",
+				"tomato",
+				"carrot",
+				"beetroot",
+				"raspberry",
+				"rose"
+			], "bad" : [
+				"bean",
+				"cabbage",
+				"pea"
+			]
+		},
+		"graphics" : {
+			"seed" :"plants/Garlic_seed.png",
+			"seeded": "plants/Garlic.png",
+			"growth": [
+				"plants/Garlic_growth_1.png",
+				"plants/Garlic_growth_2.png",
+				"plants/Garlic_growth_3.png",
+				"plants/Garlic_growth_4.png",
+				"plants/Garlic_growth_5.png"
+			],
+			"final": {
+				"neutral": "",
+				"good": "",
+				"very_good": "",
+				"bad": ""
+			}
+			
+		}
+	},
+	"leek" : {
+		"neighbors": {
+			"good": [
+				"cucumber",
+				"carrot",
+				"courgette",
+				"lettuce",
+				"strawberry",
+				"tomato"
+			], "bad" : [
+				"bean",
+				"pea",
+				"beetroot"
+			]
+		},
+		"graphics" : {
+			"seed"   : "plants/Leek_seed.png",
+			"seeded" : "plants/Leek.png",
+			"growth" : [
+				"plants/Leek_growth_1.png",
+				"plants/Leek_growth_2.png",
+				"plants/Leek_growth_3.png",
+				"plants/Leek_growth_4.png",
+				"plants/Leek_growth_5.png"
+			]
+		}
+	},
+	"pea" : {
+		"neighbors": {
+			"good" : [
+				"lettuce",
+				"fennel",
+				"cabbage",
+				"carrot",
+				"radish"
+			], "bad": [
+				"bean",
+				"turnip cabbage",
+				"onion",
+				"potato",
+				"garlic",
+				"leek"
+			]
+		},
+		"graphics" : {
+			"seed"   : "plants/Pea_seed.png",
+			"seeded" : "plants/Pea.png",
+			"growth" : [
+				"plants/Pea_growth_1.png",
+				"plants/Pea_growth_2.png",
+				"plants/Pea_growth_3.png",
+				"plants/Pea_growth_4.png",
+				"plants/Pea_growth_5.png"
+			]
+		}
+	},
+	"strawberry" : {
+		"neighbors": {
+			"good": [
+				"dill",
+				"carrot",
+				"leek",
+				"radish",
+				"lettuce",
+				"spinach",
+				"onion",
+				"garlic"
+			], "bad": [
+				"cabbage"
+			]
+		},
+		"graphics" : {
+			"seed"   : "plants/Strawberry_seed.png",
+			"seeded" : "plants/Strawberry.png",
+			"growth" : [
+				"plants/Strawberry_growth_1.png",
+				"plants/Strawberry_growth_2.png",
+				"plants/Strawberry_growth_3.png",
+				"plants/Strawberry_growth_4.png",
+				"plants/Strawberry_growth_5.png"
+			]
+		}
+	}
+}
