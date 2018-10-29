@@ -29,6 +29,7 @@
 #include "PlantTypesManager.h"
 #include "model/SpriteAnimationState.h"
 #include "lib/TemplateMemoryManager.h"
+#include "controller/ConfigLoader.h"
 #include "model/Points.h"
 
 /**
@@ -65,6 +66,7 @@ public:
 
 protected:
 	PlantTypesManager mPlantTypesManager;
+	ConfigLoader      mConfigLoader;
 	TemplateMemoryManager<SpriteAnimationState> mAnimationStateMemoryManager;
 	Points			  mPlayerPoints;
 };

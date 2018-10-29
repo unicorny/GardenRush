@@ -1,0 +1,24 @@
+material highlightGridCell
+{
+	technique emptyCell
+	{
+		pass 0
+		{
+			shader 
+			{
+				vertexShader = shaders/default_sprite.vert
+				fragmentShader = shaders/highlightGridCell.frag
+				
+				highlight_color = 0.0,0.0,0.8
+				
+			}
+			renderState 
+			{
+				blend = false
+				cullFace = true
+				depthTest = true
+				depthWrite = true
+			}
+		}
+	}
+}

@@ -24,6 +24,7 @@
 
 #include "AppDelegate.h"
 #include "MainGameScene.h"
+#include "nodes/Grid.h"
 //#include "HelloWorldScene.h"
 
 // #define USE_AUDIO_ENGINE 1
@@ -124,7 +125,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager));
+	// load needed stuff
+	//mConfigLoader.loadMaterial("materials/highlightGridCell.material", "highlightGridCell");
+	mConfigLoader.loadShader("shaders/highlightGridCell.frag", "shaders/default_sprite.vert", "highlightGridCell");
+	mConfigLoader.loadShader("shaders/highlightGridCellIso.frag", "shaders/default_sprite.vert", "highlightGridCellIso");
+	Grid::setHighlightCellShader(mConfigLoader.getShader("highlightGridCell"));
+	Grid::setHighlightCellIsoShader(mConfigLoader.getShader("highlightGridCellIso"));
+    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager, &mConfigLoader));
 
     //auto scene = HelloWorld::createScene();
 

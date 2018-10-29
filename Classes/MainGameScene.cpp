@@ -42,7 +42,7 @@
 
 USING_NS_CC;
 
-Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager)
+Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, ConfigLoader* configLoader)
 {
 	
 	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
@@ -54,6 +54,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 	ErrorLog::printf("init Scene duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
 	ProfilingBeginTimingBlock("init plant types");
 	result->mPlantTypesManager = plantTypesManager;
+	result->mConfigLoader = configLoader;
 	result->mPoints = points;
 	result->mAnimationStateMemoryManager = animationStateMemorymanager;
 	points->addPointChangeCallback(result, "main");
@@ -120,7 +121,7 @@ static void problemLoading(const char* filename)
     printf2("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-
+#define DISABLE_UI
 
 // on "init" you need to initialize your instance
 bool MainGameScene::init()
@@ -137,6 +138,8 @@ bool MainGameScene::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	mResolution = visibleSize;
+
+#ifndef DISABLE_UI
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
@@ -196,7 +199,7 @@ bool MainGameScene::init()
     auto menu = Menu::create(closeItem, toggleItem, resetItem, NULL);
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 3);
-
+#endif //DISABLE_UI
 
 	// //////////////////////////
 	// bg
@@ -217,7 +220,7 @@ bool MainGameScene::init()
 
     // add a label shows "Hello World"
     // create and initialize a label
-
+#ifndef DISABLE_UI
     auto label = Label::createWithTTF("Garden Rush Prototype", "fonts/Charmonman-Regular.ttf", 24);
 	
     if (label == nullptr)
@@ -256,7 +259,10 @@ bool MainGameScene::init()
 	if (mMovingPointsLabel) {
 		this->addChild(mMovingPointsLabel, 3);
 	}
-	
+#else 
+	Director::getInstance()->setDisplayStats(true);
+#endif //DISABLE_UI
+
 	std::vector<IViewData*> mGroundCells;
 	// add grid
 	///*
@@ -279,7 +285,7 @@ bool MainGameScene::init()
 
 	//float gridDimension = visibleSize.height * 0.9f;
 	//float cellSize = gridDimension / 8.0f;
-	uint8_t levelMainGridCellCount = 8;
+	uint8_t levelMainGridCellCount = 4;
 	Vec2 isoBoundingBoxSize = Vec2(
 		(isoEdgeWidth  / 8.0f) * static_cast<float>(levelMainGridCellCount),
 		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
@@ -289,6 +295,11 @@ bool MainGameScene::init()
 		origin.x + xBorder,
 		origin.y + yBorder
 	);
+	if (levelMainGridCellCount < 8) {
+		float cellCountDiffHalf = static_cast<float>(8 - levelMainGridCellCount) / 2.0f;
+		mainGridPosition.x += cellCountDiffHalf * (isoEdgeWidth / 8.0f);
+		mainGridPosition.y += cellCountDiffHalf * (isoEdgeHeight / 8.0f);
+	}
 	if (grid == nullptr) {
 		problemLoading("Grid");
 	} else {
@@ -385,6 +396,7 @@ bool MainGameScene::init()
  
 
 	// mouse for debugging
+#ifndef DISABLE_UI
 #ifdef _MSC_VER
 	mMousePosLabel = Label::createWithTTF(fontCfg, "Mouse:");
 	if (mMousePosLabel == nullptr)
@@ -403,7 +415,8 @@ bool MainGameScene::init()
 	auto _mouseListener = EventListenerMouse::create();
 	_mouseListener->onMouseMove = CC_CALLBACK_1(MainGameScene::onMouseMove, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_mouseListener, this);
-#endif
+#endif _MSC_VER
+
 
 	// label for debugging
 #ifdef _FAIRY_DEBUG_
@@ -424,7 +437,8 @@ bool MainGameScene::init()
 		this->addChild(mCurrentGameStateLabel, 2);
 	}
 #endif
-   
+#endif //DISABLE_UI
+
     return true;
 }
 
@@ -647,7 +661,9 @@ bool MainGameScene::transitTo(DHASH levelStateId)
 		LOG_ERROR("error enter state", false);
 	}
 #ifdef _FAIRY_DEBUG_
+#ifndef DISABLE_UI
 	mCurrentGameStateLabel->setString(mActiveLevelState->getName());
+#endif //DISABLE_UI
 #endif
 
 	return true;

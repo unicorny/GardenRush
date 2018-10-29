@@ -10,9 +10,9 @@
  *          a texture-atlas
 */
 #include "CustomAnimationSprite.h"
-#include "lib/DRHashlist.hpp"
+#include "lib/DRHashList.hpp"
 #include "nodes/Grid.h"
-#include "enums.h"
+#include "Enums.h"
 
 struct GridIndex;
 class PlantType;
@@ -34,7 +34,7 @@ public:
 	//inline DHASH getHash() const { return mPlantType->getNameHash(); }
 	inline const PlantType* getPlantType() const { return mPlantType; }
 
-	bool removeFromGrid();
+	bool removeFromGrid(bool removeFromGame = false);
 
 	inline float getPointsMultiplicator() const { return mPointsMultiplicator; }
 	inline float getDiversityBonus() const { return mDiversityBonus; }

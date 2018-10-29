@@ -29,6 +29,7 @@ LOCAL_MODULE_FILENAME := libMyGame
 LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/AppDelegate.cpp \
                    $(LOCAL_PATH)/../../../Classes/ErrorLog.cpp \
+                   $(LOCAL_PATH)/../../../Classes/controller/ConfigLoader.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/DRHashList.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/TemplateMemoryManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \

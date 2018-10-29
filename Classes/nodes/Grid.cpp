@@ -7,18 +7,26 @@
 
 using namespace cocos2d;
 
+cocos2d::GLProgram* Grid::mst_highlightCellShader = nullptr;
+cocos2d::GLProgram* Grid::mst_highlightCellIsoShader = nullptr;
+cocos2d::GLProgramState* Grid::mst_highlightCellEmptyShaderState = nullptr;
+cocos2d::GLProgramState* Grid::mst_highlightCellEmptyIsoShaderState = nullptr;
+
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
 	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
+	mBGCellsMap = (cocos2d::Sprite**)(malloc(width * height * sizeof(cocos2d::Sprite*)));
 	memset(mObstacleMap, 0, width*height * sizeof(uint8_t));
 	memset(mPlantMap, 0, width* height * sizeof(PlantNode*));
+	memset(mBGCellsMap, 0, width* height * sizeof(cocos2d::Sprite*));
 }
 
 Grid::~Grid()
 {
 	free(mObstacleMap);
+	free(mBGCellsMap);
 	free(mPlantMap);
 }
 
@@ -97,16 +105,20 @@ void Grid::reset()
 {
 	memset(mObstacleMap, 0, mWidth*mHeight * sizeof(uint8_t));
 	memset(mPlantMap, 0, mWidth* mHeight * sizeof(PlantNode*));
+	memset(mBGCellsMap, 0, mWidth* mHeight * sizeof(Sprite*));
 }
 
 bool Grid::addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y)
 {
 	assert(x < mWidth && y < mHeight);
 	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
+	auto index = x * mWidth + y;
 	if (obstacle) {
-		mObstacleMap[x * mWidth + y] = OBSTACLE_DEFAULT;
+		mObstacleMap[index] = OBSTACLE_DEFAULT;
 	}
-	return addCellSprite(viewData->createSprite(), x, y, 0);
+	auto cellSprite = viewData->createSprite();
+	mBGCellsMap[index] = cellSprite;
+	return addCellSprite(cellSprite, x, y, 0);
 }
 
 bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
@@ -134,6 +146,16 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 		return result;
 	}
 	return false;
+}
+
+void Grid::enableGlowCell(uint8_t x, uint8_t y, cocos2d::Color3B color)
+{
+
+}
+
+void Grid::disableGlowCell(uint8_t x, uint8_t y)
+{
+
 }
 
 
@@ -220,7 +242,7 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 			((static_cast<float>(x + y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
 		);
 		
-		ErrorLog::printf("flat pos: (%d)%f, (%d)%f\n", x, pos.x, y, pos.y);
+		//ErrorLog::printf("flat pos: (%d)%f, (%d)%f\n", x, pos.x, y, pos.y);
 		//sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
 		//sprite->setScale(0.25f);
 	} else {
@@ -274,6 +296,44 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 		}
 	}
 	return true;
+}
+
+void Grid::glowEmpytCells(bool enable/* = true*/)
+{
+	if (isIsometric()) {
+		if (!mst_highlightCellEmptyIsoShaderState) {
+			mst_highlightCellEmptyIsoShaderState = GLProgramState::getOrCreateWithGLProgram(mst_highlightCellIsoShader);
+			mst_highlightCellEmptyIsoShaderState->setUniformVec3("border_color", Vec3(0.0f, 0.0f, 1.0f));
+			mst_highlightCellEmptyIsoShaderState->setUniformVec3("highlight_color", Vec3(0.0f, 1.0f, 1.0f));
+		}
+	}
+	else {
+		if (!mst_highlightCellEmptyShaderState) {
+			mst_highlightCellEmptyShaderState = GLProgramState::getOrCreateWithGLProgram(mst_highlightCellShader);
+			mst_highlightCellEmptyShaderState->setUniformVec3("border_color", Vec3(0.0f, 0.0f, 1.0f));
+			mst_highlightCellEmptyShaderState->setUniformVec3("highlight_color", Vec3(1.0f, 1.0f, 0.0f));
+		}
+	}
+	
+	//glprogramState->setUniformInt("")
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t index = x * mWidth + y;
+			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
+				if (enable && !mPlantMap[index]) {
+					//mBGCellsMap[index]->setGLProgram(mst_highlightCellShader);
+					//mBGCellsMap[index]->setGLProgramState(glprogramState);
+					if (isIsometric()) mBGCellsMap[index]->setGLProgramState(mst_highlightCellEmptyIsoShaderState);
+					else mBGCellsMap[index]->setGLProgramState(mst_highlightCellEmptyShaderState);
+				}
+				else {
+					mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+					
+				}
+				//mBGCellsMap[index]->getGLProgram()->use();
+			}
+		}
+	}
 }
 
 bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)

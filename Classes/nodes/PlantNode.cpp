@@ -14,10 +14,10 @@ PlantNode::~PlantNode()
 
 }
 
-bool PlantNode::removeFromGrid()
+bool PlantNode::removeFromGrid(bool removeFromGame/* = false*/)
 {
 	if (mParentGrid) {
-		if (getReferenceCount() == 1) {
+		if (!removeFromGame && getReferenceCount() == 1) {
 			retain();
 		}
 		mParentGrid->removeGridCell(mGridIndex.x, mGridIndex.y);

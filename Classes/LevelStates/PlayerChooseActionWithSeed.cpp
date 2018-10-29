@@ -17,7 +17,6 @@ namespace level_state {
 
 	bool PlayerChooseActionWithSeed::initState()
 	{
-		//mMovedSum = cocos2d::Vec2::ZERO;
 		return true;
 	}
 	bool PlayerChooseActionWithSeed::onEnterState()
@@ -34,10 +33,8 @@ namespace level_state {
 	}
 
 	void PlayerChooseActionWithSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
-	{
-		//if (mMovedSum.x < 1.0f && mMovedSum.y < 1.0f) {
-			mMainGameScene->transitTo("DisplayInfo");
-		//}
+	{		
+		mMainGameScene->transitTo("DisplayInfo");
 	}
 	void PlayerChooseActionWithSeed::onTouchCancelled()
 	{
@@ -46,9 +43,7 @@ namespace level_state {
 
 	void PlayerChooseActionWithSeed::onTouchMoved(float deltaX, float deltaY)
 	{
-		//mMovedSum += Vec2(deltaX, deltaY);
-		auto plantNode = mMainGameScene->getTargetPlantNode();
-		
+		//auto plantNode = mMainGameScene->getTargetPlantNode();
 		mMainGameScene->transitTo("DragSeed");
 	}
 

@@ -40,6 +40,7 @@
 #include "model/SpriteAnimationState.h"
 
 class PlantTypesManager;
+class ConfigLoader;
 class LevelStateManager;
 class LevelData;
 class PlantNode;
@@ -69,7 +70,7 @@ inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)
 class MainGameScene : public cocos2d::Scene, public iPointsUpdate
 {
 public:
-	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager);
+	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, ConfigLoader* configLoader);
 	MainGameScene();
 	~MainGameScene();
 
@@ -102,6 +103,7 @@ public:
 	inline Grid* getGrid(const GridType type) const { assert(type < GRID_SIZE); return mGameGrids[type]; }
 	inline const LevelData* getLevelData() const { return mLevelData; }
 	inline const PlantTypesManager* getPlantTypesManager() const { return mPlantTypesManager; }
+	inline const ConfigLoader* getConfigLoader() const { return mConfigLoader; }
 	inline TemplateMemoryManager<SpriteAnimationState>* getAnimationStateMemoryManager() { return mAnimationStateMemoryManager; }
 	inline Points* getPoints() { return mPoints; }
 
@@ -124,6 +126,7 @@ protected:
 
 	bool mToogleStats;
 	PlantTypesManager* mPlantTypesManager;
+	ConfigLoader*	   mConfigLoader;
 	TemplateMemoryManager<SpriteAnimationState>* mAnimationStateMemoryManager;
 
 	Points*			   mPoints;

@@ -17,6 +17,8 @@ namespace level_state {
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED | ENABLED_TOUCH_MOVE);
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		auto grid = plantNode->getParentGrid();
+		mMainGameScene->getGrid(GRID_MAIN)->glowEmpytCells(true);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmpytCells(true);
 		auto pos = grid->fromLocalToWorld(plantNode->getPosition());
 		plantNode->removeFromGrid();
 		mMainGameScene->addChild(plantNode, 20);
@@ -25,6 +27,8 @@ namespace level_state {
 	}
 	bool DragSeed::onExitState()
 	{
+		mMainGameScene->getGrid(GRID_MAIN)->glowEmpytCells(false);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmpytCells(false);
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
 		return true;
 	}
@@ -38,13 +42,13 @@ namespace level_state {
 	void DragSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
 		auto plantNode = mMainGameScene->getTargetPlantNode();
-		if (plantNode->getReferenceCount() == 1) {
-			plantNode->retain();
-		}
-		
 		auto pos = plantNode->getPosition();
 
 		if (GRID_ERROR == type || GRID_BUCKET == type || !mMainGameScene->getGrid(type)->isCellEmptyAndFree(x, y)) {
+			if (plantNode->getReferenceCount() == 1) {
+				plantNode->retain();
+			}
+
 			mMainGameScene->removeChild(plantNode, false);
 			putBackPlantNode();
 			plantNode->setPosition(plantNode->getParentGrid()->fromWorldToLocal(pos));
@@ -80,6 +84,9 @@ namespace level_state {
 				plantNode->runAction(plantNodeSequence);
 			}
 			else if (GRID_INVENTORY == type) {
+				if (plantNode->getReferenceCount() == 1) {
+					plantNode->retain();
+				}
 				mMainGameScene->removeChild(plantNode, false);
 				grid->addGridCell(plantNode, x, y);
 				plantNode->setPosition(grid->fromWorldToLocal(pos));
@@ -104,13 +111,12 @@ namespace level_state {
 	void DragSeed::onCancelState()
 	{
 		putBackPlantNode();
-		auto plantNode = mMainGameScene->getTargetPlantNode();
+		//auto plantNode = mMainGameScene->getTargetPlantNode();
 	}
 	void DragSeed::onTouchMoved(float deltaX, float deltaY)
 	{
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		plantNode->setPosition(plantNode->getPosition() + cocos2d::Vec2(deltaX, -deltaY));
-
 	}
 
 	void DragSeed::animationEnd()
