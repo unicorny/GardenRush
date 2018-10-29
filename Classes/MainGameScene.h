@@ -55,10 +55,11 @@ namespace level_state {
 
 enum EnabledTouchType {
 	ENABLED_TOUCH_NONE = 0,
-	ENABLED_TOUCH_BEGIN = 1,
-	ENABLED_TOUCH_END = 2,
-	ENABLED_TOUCH_MOVE = 4,
-	ENABLED_TOUCH_CANCELLED = 8
+	ENABLED_TOUCH_BEGIN_PLANT = 1,
+	ENABLED_TOUCH_BEGIN_GRID = 2,
+	ENABLED_TOUCH_END = 4,
+	ENABLED_TOUCH_MOVE = 8,
+	ENABLED_TOUCH_CANCELLED = 16
 };
 
 inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)

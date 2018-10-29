@@ -17,13 +17,20 @@ namespace level_state {
 		virtual bool onExitState();
 		virtual void onCancelState();
 
+		virtual void onTouchBegan(GridType type, uint8_t x, uint8_t y);
 		virtual void onTouchEnded(GridType type, uint8_t x, uint8_t y);
 		virtual void onTouchCancelled();
 		virtual void onTouchMoved(float deltaX, float deltaY);
 
+		virtual void onUpdate(float delta);
+
+		virtual void dropAnimationEnd();
+		virtual void fadeAnimationEnd();
+
 	protected:
 		//cocos2d::Vec2 mMovedSum;
-
+		float mErrorTime;
+		GridIndex mTargetGridIndex;
 	};
 };
 

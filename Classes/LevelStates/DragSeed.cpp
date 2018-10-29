@@ -15,13 +15,12 @@ namespace level_state {
 	bool DragSeed::onEnterState()
 	{
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED | ENABLED_TOUCH_MOVE);
-		auto ressources = mMainGameScene->getRessourcenManager();
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		auto plantTypesManager = mMainGameScene->getPlantTypesManager();
 		auto grid = plantNode->getParentGrid();
-		mMainGameScene->getGrid(GRID_MAIN)->glowEmptyCells(ressources, true);
-		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(ressources, true);
-		mMainGameScene->getGrid(GRID_MAIN)->glowNeighborCells(plantNode->getPlantType(), plantTypesManager, ressources, true);
+		mMainGameScene->getGrid(GRID_MAIN)->glowEmptyCells(true);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(true);
+		mMainGameScene->getGrid(GRID_MAIN)->glowNeighborCells(plantNode->getPlantType(), plantTypesManager, true);
 		auto pos = grid->fromLocalToWorld(plantNode->getPosition());
 		plantNode->removeFromGrid();
 		mMainGameScene->addChild(plantNode, 20);
@@ -43,9 +42,8 @@ namespace level_state {
 
 	void DragSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
-		auto ressources = mMainGameScene->getRessourcenManager();
 		mMainGameScene->getGrid(GRID_MAIN)->disableAllGlowCells();
-		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(ressources, false);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(false);
 
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		auto pos = plantNode->getPosition();
@@ -96,7 +94,7 @@ namespace level_state {
 				mMainGameScene->removeChild(plantNode, false);
 				grid->addGridCell(plantNode, x, y);
 				plantNode->setPosition(grid->fromWorldToLocal(pos));
-				plantNode->setParentGrid(mMainGameScene->getGrid(type));
+				plantNode->setParentGrid(grid);
 				mMainGameScene->transitTo("DropSeedValid");
 			}
 			//mMainGameScene->transitTo("RandomSeed");
@@ -104,9 +102,8 @@ namespace level_state {
 	}
 	void DragSeed::onTouchCancelled()
 	{
-		auto ressources = mMainGameScene->getRessourcenManager();
 		mMainGameScene->getGrid(GRID_MAIN)->disableAllGlowCells();
-		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(ressources, false);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(false);
 
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		if (plantNode->getReferenceCount() == 1) {

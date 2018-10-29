@@ -18,8 +18,10 @@ namespace level_state {
 		auto targetPosition = grid->getOriginPosition(plantNode);
 		auto visibleSize = Director::getInstance()->getVisibleSize();
 		float distance = targetPosition.distanceSquared(plantNode->getPosition()) / Vec2(visibleSize).lengthSquared();
+		float animDuration = distance * 100.0f;
+		if (animDuration > 0.5f) animDuration = 0.5f;
 		auto plantNodeSequence = Sequence::create(
-			EaseIn::create(MoveTo::create(distance*100.0f, targetPosition), 1.2f),
+			EaseIn::create(MoveTo::create(animDuration, targetPosition), 1.2f),
 			CallFunc::create(CC_CALLBACK_0(DropSeedValid::animationEnd, this)),
 			nullptr);
 		plantNode->runAction(plantNodeSequence);

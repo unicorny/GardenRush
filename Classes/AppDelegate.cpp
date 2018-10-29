@@ -138,7 +138,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	//Grid::setHighlightCellIsoShader(mConfigLoader.getShader("highlightGridCellIso"));
 	
 	ConfigLoader::loadFromJson("ressources.json", &mRessourcenManager);
-
+	Grid::setRessourcenManager(&mRessourcenManager);
     MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager, &mRessourcenManager));
 
     //auto scene = HelloWorld::createScene();

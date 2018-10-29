@@ -101,4 +101,22 @@ material highlightGridCellIso
 		}
 	}
 	
+	technique errorCell
+	{
+		pass 0
+		{
+			shader 
+			{
+				vertexShader = shaders/default_sprite.vert
+				fragmentShader = shaders/highlightGridCellIso.frag
+				
+				border_color    = 1.0,0.0,0.0,1.0
+				border_size 	= 12
+				highlight_color = 1.0,1.0,0.0
+				
+			}
+
+		}
+	}
+	
 }

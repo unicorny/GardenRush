@@ -9,6 +9,7 @@
  * \brief: A class holding the plants inside the grid
 */
 #include "cocos2d.h"
+#include "Enums.h"
 //#include "PlantNode.h"
 class IViewData;
 class PlantNode;
@@ -45,6 +46,7 @@ class Grid : public cocos2d::Node
 public:
 	// init
 	static Grid * create(uint8_t width, uint8_t height, GridType type);
+	static void setRessourcenManager(RessourcenManager* ressources);
 
 	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode);
 	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
@@ -58,10 +60,19 @@ public:
 	// actions
 	bool addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y);
 
-	void glowEmptyCells(const RessourcenManager* ressources, bool enable = true);
+	void glowEmptyCells(bool enable = true);
+	inline void glowSelectedCell(GridIndex index, bool enable = true) {
+		if (enable) glowCell(index, "selectedCell");
+		else glowCell(index, "default");
+	}
+	inline void glowErrorCell(GridIndex index, bool enable = true) {
+		if (enable) glowCell(index, "errorCell");
+		else glowCell(index, "default");
+	}
+	void glowCell(GridIndex index, const char* technique);
 	void disableAllGlowCells();
-	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, const RessourcenManager* ressources, bool enable = true);
-	void glowAutoCells(const PlantType* type, const RessourcenManager* ressources);
+	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable = true);
+	void glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager);
 
 	//! \return false if an obstacle is at this position
 	bool addGridCell(PlantNode* viewNode, uint8_t x, uint8_t y);
@@ -78,8 +89,10 @@ public:
 	// infos
 	PlantNode* isPlantNodeAtPosition(cocos2d::Vec2 localPosition) const;
 	PlantNode* getPlantNodeAtWorldPosition(cocos2d::Vec2 worldPosition) const;
+	PlantNode* getPlantNodeFromIndex(GridIndex index) const;
 	bool isCellEmptyAndFree(uint8_t x, uint8_t y) const;
 	GridIndex getGridIndex(cocos2d::Vec2 localPosition) const;
+	cocos2d::Vec2 getWorldPositionForGridIndex(uint8_t x, uint8_t y);
 	inline cocos2d::Vec2 getCellSize() const { return cocos2d::Vec2(mBoundingBoxSize.x / static_cast<float>(mWidth), mBoundingBoxSize.y / static_cast<float>(mHeight)); }
 	cocos2d::Vec2 fromWorldToLocal(cocos2d::Vec2 worldCoords) const;
 	cocos2d::Vec2 fromLocalToWorld(cocos2d::Vec2 localCoords) const;
@@ -109,6 +122,9 @@ protected:
 	bool addCellSprite(cocos2d::Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex);
 	bool _setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
 
+	inline void setDefaultShader(cocos2d::Node* n) { n->setGLProgram(cocos2d::GLProgramCache::getInstance()->getGLProgram(cocos2d::GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP)); }
+	cocos2d::Technique* getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material);
+
 	uint8_t mWidth;
 	uint8_t mHeight;
 	GridType mType;
@@ -120,6 +136,8 @@ protected:
 	// geometrie
 
 	bool mIsIsometric;
+
+	static RessourcenManager* mRessourcenManager;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_GRID_H

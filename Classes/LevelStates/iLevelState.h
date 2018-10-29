@@ -33,9 +33,12 @@ namespace level_state
 		virtual void onCancelState() = 0;
 
 		virtual void onTouchBegan(PlantNode* plantNode) { };
+		virtual void onTouchBegan(GridType type, uint8_t x, uint8_t y) {};
 		virtual void onTouchMoved(float deltaX, float deltaY) {};
 		virtual void onTouchEnded(GridType type, uint8_t x, uint8_t y) { };
 		virtual void onTouchCancelled() { };
+
+		virtual void onUpdate(float delta) {};
 
 	protected:
 		MainGameScene* mMainGameScene;

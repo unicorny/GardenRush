@@ -15,13 +15,15 @@ void main()
 	vec4 texColor = v_fragmentColor * texture2D(CC_Texture0, v_texCoord);
 	
 	float cx1 = (v_texCoord.x - 0.5) / -0.5;
-	float cy1 = (v_texCoord.y - 0)   /  0.5;
+	float cy1 = (v_texCoord.y - 0.0) /  0.5;
 	float cx3 = (v_texCoord.x - 0.5) /  0.5;
 	float cy3 = (v_texCoord.y - 1.0) / -0.5;
-	float f1 = abs(cx1) - abs(cy1)+1;
-	float f2 = abs(cx3) - abs(cy3)+1;
-	f1 = max(0, pow(f1, border_size) / pow(1.0, border_size));
-	f2 = max(0, pow(f2, border_size) / pow(1.0, border_size));
+	float f1 = abs(cx1) - abs(cy1) + 1.0;
+	float f2 = abs(cx3) - abs(cy3) + 1.0;
+	//f1 = max(0, pow(f1, border_size) / pow(1.0, border_size));
+	//f2 = max(0, pow(f2, border_size) / pow(1.0, border_size));
+	f1 = max(0.0, pow(f1, border_size));
+	f2 = max(0.0, pow(f2, border_size));
 	float reversef1 = 1.0 - ceil(f1 - 1.1);
 	float reversef2 = 1.0 - ceil(f2 - 1.1);
 	//gl_FragColor = texColor * (1.0 - factor) + factor * vec4(border_color, 1.0);

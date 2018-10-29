@@ -20,8 +20,7 @@ namespace level_state {
 	}
 	bool PlayerChooseSeed::onEnterState()
 	{
-		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_BEGIN);
-		
+		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_BEGIN_PLANT);
 
 		return true;
 	}
@@ -37,6 +36,7 @@ namespace level_state {
 		//ErrorLog::printf("touchPlant");
 		if (plantNode) {
 			mMainGameScene->setTargetPlantNode(plantNode);
+
 			if (GRID_MAIN == plantNode->getParentGrid()->getType()) {
 				mMainGameScene->transitTo("DisplayInfo");
 			}
@@ -48,7 +48,7 @@ namespace level_state {
 
 	void PlayerChooseSeed::onCancelState()
 	{
-
+		
 	}
 
 };

@@ -31,6 +31,7 @@ public:
 	inline void setParentGrid(Grid* grid) { mParentGrid = grid; }
 	inline Grid* getParentGrid() const { return mParentGrid; }
 
+
 	//inline DHASH getHash() const { return mPlantType->getNameHash(); }
 	inline const PlantType* getPlantType() const { return mPlantType; }
 

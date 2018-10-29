@@ -6,7 +6,12 @@
 #include "PlantTypesManager.h"
 #include "controller/RessourcenManager.h"
 
+
+
+
 using namespace cocos2d;
+
+RessourcenManager* Grid::mRessourcenManager = nullptr;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
 	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
@@ -24,6 +29,11 @@ Grid::~Grid()
 	free(mObstacleMap);
 	free(mBGCellsMap);
 	free(mPlantMap);
+}
+
+void Grid::setRessourcenManager(RessourcenManager* ressources)
+{
+	mRessourcenManager = ressources;
 }
 
 Grid * Grid::create(uint8_t width, uint8_t height, GridType type)
@@ -211,6 +221,7 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 	
 	auto cellSize = getCellSize();
 	Size spriteSize = sprite->getContentSize();
+	Vec2 spriteScale = Vec2(sprite->getScaleX(), sprite->getScaleY());
 	auto pos = Vec2(
 		static_cast<float>(x) * cellSize.x,
 		static_cast<float>(y) * cellSize.y
@@ -256,6 +267,39 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 	return true;
 }
 
+cocos2d::Vec2 Grid::getWorldPositionForGridIndex(uint8_t x, uint8_t y)
+{
+	auto cellSize = getCellSize();
+	auto pos = Vec2(
+		static_cast<float>(x) * cellSize.x,
+		static_cast<float>(y) * cellSize.y
+	);
+	if (isIsometric()) {
+		//ErrorLog::printf("pos: %f, %f\n", pos.x, pos.y);
+		//pos.x += 0.5f * cellSize.x;
+		//pos.y += 0.5f * cellSize.y;
+		//pos = flatToIso(pos);
+		// origin : x = grid bounding box / 2
+		//          y = 0
+		// pos.x = origin.x + (x-y)/2 * cellWidth
+		// pos.y = (x+y)/2 * cellHeight
+		pos = Vec2(
+			((static_cast<float>(x - y) + static_cast<float>(mWidth)) / 2.0f - 0.5f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+			((static_cast<float>(x + y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
+		);
+
+		//ErrorLog::printf("flat pos: (%d)%f, (%d)%f\n", x, pos.x, y, pos.y);
+		//sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
+		//sprite->setScale(0.25f);
+	}
+	// move by anchor
+	auto anchor = getAnchorPoint();
+	pos -= Vec2(anchor.x * mBoundingBoxSize.x, anchor.y * mBoundingBoxSize.y);
+
+	return fromLocalToWorld(pos);
+
+}
+
 PlantNode* Grid::removeGridCell(uint8_t x, uint8_t y)
 {
 	assert(x < mWidth && y < mHeight);
@@ -292,7 +336,7 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 	return true;
 }
 
-void Grid::glowEmptyCells(const RessourcenManager* ressources, bool enable/* = true*/)
+void Grid::glowEmptyCells(bool enable/* = true*/)
 {
 	
 	//glprogramState->setUniformInt("")
@@ -304,15 +348,15 @@ void Grid::glowEmptyCells(const RessourcenManager* ressources, bool enable/* = t
 					//mBGCellsMap[index]->setGLProgram(mst_highlightCellShader);
 					//mBGCellsMap[index]->setGLProgramState(glprogramState);
 					Material* mat = nullptr;
-					if (isIsometric()) { mat = ressources->getMaterial("highlightGridCellIso"); }
-					else { mat = ressources->getMaterial("highlightGridCell");  }
+					if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
+					else { mat = mRessourcenManager->getMaterial("highlightGridCell");  }
 
 					mBGCellsMap[index]->setGLProgramState(
 						mat->getTechniqueByName("emptyCell")->getPassByIndex(0)->getGLProgramState()
 					);
 				}
 				else {
-					mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+					setDefaultShader(mBGCellsMap[index]);
 					
 				}
 				//mBGCellsMap[index]->getGLProgram()->use();
@@ -326,19 +370,47 @@ void Grid::disableAllGlowCells()
 		for (int x = 0; x < mHeight; x++) {
 			uint8_t index = x * mWidth + y;
 			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
-				mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+				setDefaultShader(mBGCellsMap[index]);
 			}
 		}
 	}
 }
 
-void Grid::glowAutoCells(const PlantType* type, const RessourcenManager* ressources)
+void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager)
 {
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t index = x * mWidth + y;
+			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
+				Material* mat = nullptr;
+				if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
+				else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
 
+				Technique* technique = nullptr;
+
+				if (mPlantMap[index]) {
+					auto neighborType = plantTypesManager->getNeighborType(type->getIndex(), mPlantMap[index]->getPlantType()->getIndex());
+					technique = getTechniqueForNeighborType(neighborType, mat);
+				}
+				else {
+					technique = mat->getTechniqueByName("emptyCell");
+				}
+
+				if (technique) {
+					mBGCellsMap[index]->setGLProgramState(technique->getPassByIndex(0)->getGLProgramState());
+				}
+				else {
+					setDefaultShader(mBGCellsMap[index]);
+				}
+
+				
+			}
+		}
+	}
 }
 
 
-void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, const RessourcenManager* ressources, bool enable/* = true*/)
+void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable/* = true*/)
 {
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
@@ -346,30 +418,58 @@ void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* pla
 			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index] && mPlantMap[index]) {
 				if (enable) {
 					Material* mat = nullptr;
-					if (isIsometric()) { mat = ressources->getMaterial("highlightGridCellIso"); }
-					else { mat = ressources->getMaterial("highlightGridCell"); }
-
-					Technique* technique = nullptr;
+					if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
+					else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
+					
 					auto neighborType = plantTypesManager->getNeighborType(type->getIndex(), mPlantMap[index]->getPlantType()->getIndex());
-					switch (neighborType) {
-					case NEIGHBOR_GOOD: technique = mat->getTechniqueByName("positiveNeighbor"); break;
-					case NEIGHBOR_BAD: technique = mat->getTechniqueByName("negativeNeighbor"); break;
-					case NEIGHBOR_REALLY_GOOD: technique = mat->getTechniqueByName("reallyGoodNeighbor"); break;
-					case NEIGHBOR_NEUTRAL: technique = mat->getTechniqueByName("neutralNeighbor"); break;
-					}
+					Technique* technique = getTechniqueForNeighborType(neighborType, mat);
+
 					if (technique) {
 						mBGCellsMap[index]->setGLProgramState(technique->getPassByIndex(0)->getGLProgramState());
 					}
 					else {
-						mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+						setDefaultShader(mBGCellsMap[index]);
 					}
 
 				}
 				else {
-					mBGCellsMap[index]->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+					setDefaultShader(mBGCellsMap[index]);
 				}
 			}
 		}
+	}
+
+}
+
+cocos2d::Technique* Grid::getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material)
+{
+	switch (type) {
+	case NEIGHBOR_GOOD: return material->getTechniqueByName("positiveNeighbor"); break;
+	case NEIGHBOR_BAD: return material->getTechniqueByName("negativeNeighbor"); break;
+	case NEIGHBOR_REALLY_GOOD: return material->getTechniqueByName("reallyGoodNeighbor"); break;
+	case NEIGHBOR_NEUTRAL: return material->getTechniqueByName("neutralNeighbor"); break;
+	default: break;
+	}
+	return nullptr;
+}
+
+
+void Grid::glowCell(GridIndex index, const char* technique)
+{
+	if (index.x < 0 || index.y < 0) return;
+	if (index.x > mWidth || index.y > mHeight) return;
+	int i = index.x * mWidth + index.y;
+	if (!mPlantMap[i]) return;
+
+
+	if (!strcmp(technique, "default")) {
+		setDefaultShader(mBGCellsMap[i]);
+	}
+	else {
+		Material* mat = nullptr;
+		if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
+		else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
+		mBGCellsMap[i]->setGLProgramState(mat->getTechniqueByName(technique)->getPassByIndex(0)->getGLProgramState());
 	}
 
 }
@@ -517,12 +617,25 @@ cocos2d::Vec2 Grid::getOriginPosition(PlantNode* viewNode)
 		static_cast<float>(gridIndex.x) * (mBoundingBoxSize.x / static_cast<float>(mWidth)),
 		static_cast<float>(gridIndex.y) * (mBoundingBoxSize.y / static_cast<float>(mHeight))
 	);
+	if (isIsometric()) {
+		//ErrorLog::printf("pos: %f, %f\n", pos.x, pos.y);
+		//pos.x += 0.5f * cellSize.x;
+		//pos.y += 0.5f * cellSize.y;
+		//pos = flatToIso(pos);
+		// origin : x = grid bounding box / 2
+		//          y = 0
+		// pos.x = origin.x + (x-y)/2 * cellWidth
+		// pos.y = (x+y)/2 * cellHeight
+		pos = Vec2(
+			((static_cast<float>(gridIndex.x - gridIndex.y) + static_cast<float>(mWidth)) / 2.0f - 0.5f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+			((static_cast<float>(gridIndex.x + gridIndex.y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
+		);
+
+	}
 	// move by anchor
 	auto anchor = getAnchorPoint();
 	pos -= Vec2(anchor.x * mBoundingBoxSize.x, anchor.y * mBoundingBoxSize.y);
 
-	// no iso 
-	assert(!isIsometric());
 
 	return pos;
 }
@@ -551,8 +664,23 @@ PlantNode* Grid::getPlantNodeAtWorldPosition(cocos2d::Vec2 worldPosition) const
 
 }
 
+PlantNode* Grid::getPlantNodeFromIndex(GridIndex index) const
+{
+	if (index.x < 0 || index.y < 0) return nullptr;
+	if (index.x >= mWidth || index.y >= mHeight) return nullptr;
+
+	size_t i = index.x * mWidth + index.y;
+	if (mPlantMap[i]) {
+		return mPlantMap[i];
+	}
+	return nullptr;
+}
+
 bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const
 {
+	if (x < 0 || y < 0) return false;
+	if (x >= mWidth || y >= mHeight) return false;
+
 	uint8_t index = x * mWidth + y;
 	if (mObstacleMap[index] == OBSTACLE_DEFAULT) {
 		return false;

@@ -429,7 +429,7 @@ bool MainGameScene::init()
 	_keyboardListener->onKeyReleased = CC_CALLBACK_2(MainGameScene::onKeyReleased, this);
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_keyboardListener, this);
-#endif _MSC_VER
+#endif //_MSC_VER
 
 
 	// label for debugging
@@ -467,12 +467,17 @@ void MainGameScene::update(float delta)
 		mResolution = visibleSize;
 		bg->setScale(size.width / mResolution.width, size.height / mResolution.height);
 	}
-
+#ifdef _MSC_VER
 	if (mArrowPressed[0]) {
 		mGameGrids[GRID_MAIN]->setRotationSkewX(mGameGrids[GRID_MAIN]->getRotationSkewX() + delta * 10.0f);
 	}
 	else if (mArrowPressed[1]) {
 		mGameGrids[GRID_MAIN]->setRotationSkewX(mGameGrids[GRID_MAIN]->getRotationSkewX() - delta * 10.0f);
+	}
+#endif //_MSC_VER
+
+	if (mActiveLevelState) {
+		mActiveLevelState->onUpdate(delta);
 	}
 }
 
@@ -530,7 +535,8 @@ bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
 
 bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 {
-	if (!(mEnabledTouchTypes & ENABLED_TOUCH_BEGIN)) return false;
+	if (!(mEnabledTouchTypes & ENABLED_TOUCH_BEGIN_PLANT) && !(mEnabledTouchTypes & ENABLED_TOUCH_BEGIN_GRID)) 
+		return false;
 	if (!mActiveLevelState) return false;
 	// manuel bsp, check collision with grids
 	// global pos
@@ -543,14 +549,18 @@ bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 
 	for (int i = 0; i < GRID_SIZE; i++) {
 		GridType type = static_cast<GridType>(i);
+		auto grid = mGameGrids[type];
 		if (isInsideGrid(pos, type)) {
 			ErrorLog::printf("[MainGameScene::onTouchBegan] inside grid\n");
-			PlantNode* plantNode = mGameGrids[type]->getPlantNodeAtWorldPosition(pos);
-			mActiveLevelState->onTouchBegan(plantNode);
+			if (mEnabledTouchTypes & ENABLED_TOUCH_BEGIN_PLANT) {
+				PlantNode* plantNode = grid->getPlantNodeAtWorldPosition(pos);
+				mActiveLevelState->onTouchBegan(plantNode);
+			}
+			else if (mEnabledTouchTypes & ENABLED_TOUCH_BEGIN_GRID) {
+				GridIndex i = grid->getGridIndex(grid->fromWorldToLocal(pos));
+				mActiveLevelState->onTouchBegan(type, i.x, i.y);
+			}
 			break;
-		}
-		else {
-			int zahl = 1;
 		}
 	}
 	return true;
