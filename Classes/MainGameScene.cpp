@@ -83,7 +83,12 @@ MainGameScene::MainGameScene()
 	mLevelData->addPlantType("strawberry");
 	mLevelData->enableAutoHarvesting();
 	mLevelData->setMaxGrowthPhasis(PLANT_PHASIS_GROWTH_3);
-	
+
+	scheduleUpdate();
+
+#ifdef _MSC_VER
+	memset(mArrowPressed, 0, sizeof(bool) * 4);
+#endif	
 }
 
 MainGameScene::~MainGameScene() 
@@ -121,7 +126,7 @@ static void problemLoading(const char* filename)
     printf2("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-#define DISABLE_UI
+//#define DISABLE_UI
 
 // on "init" you need to initialize your instance
 bool MainGameScene::init()
@@ -285,7 +290,7 @@ bool MainGameScene::init()
 
 	//float gridDimension = visibleSize.height * 0.9f;
 	//float cellSize = gridDimension / 8.0f;
-	uint8_t levelMainGridCellCount = 4;
+	uint8_t levelMainGridCellCount = 8;
 	Vec2 isoBoundingBoxSize = Vec2(
 		(isoEdgeWidth  / 8.0f) * static_cast<float>(levelMainGridCellCount),
 		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
@@ -392,7 +397,10 @@ bool MainGameScene::init()
 	
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-	
+	// accelerometer event
+	auto accelListener = EventListenerAcceleration::create(CC_CALLBACK_2(MainGameScene::onAcceleration, this));
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(accelListener, this);
  
 
 	// mouse for debugging
@@ -415,6 +423,12 @@ bool MainGameScene::init()
 	auto _mouseListener = EventListenerMouse::create();
 	_mouseListener->onMouseMove = CC_CALLBACK_1(MainGameScene::onMouseMove, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(_mouseListener, this);
+
+	auto _keyboardListener = EventListenerKeyboard::create();
+	_keyboardListener->onKeyPressed = CC_CALLBACK_2(MainGameScene::onKeyPressed, this);
+	_keyboardListener->onKeyReleased = CC_CALLBACK_2(MainGameScene::onKeyReleased, this);
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(_keyboardListener, this);
 #endif _MSC_VER
 
 
@@ -453,8 +467,19 @@ void MainGameScene::update(float delta)
 		mResolution = visibleSize;
 		bg->setScale(size.width / mResolution.width, size.height / mResolution.height);
 	}
+
+	if (mArrowPressed[0]) {
+		mGameGrids[GRID_MAIN]->setRotationSkewX(mGameGrids[GRID_MAIN]->getRotationSkewX() + delta * 10.0f);
+	}
+	else if (mArrowPressed[1]) {
+		mGameGrids[GRID_MAIN]->setRotationSkewX(mGameGrids[GRID_MAIN]->getRotationSkewX() - delta * 10.0f);
+	}
 }
 
+void MainGameScene::onAcceleration(Acceleration* acc, Event* event)
+{
+
+}
 
 bool MainGameScene::touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 {
@@ -519,10 +544,13 @@ bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 	for (int i = 0; i < GRID_SIZE; i++) {
 		GridType type = static_cast<GridType>(i);
 		if (isInsideGrid(pos, type)) {
-			ErrorLog::printf("inside grid\n");
+			ErrorLog::printf("[MainGameScene::onTouchBegan] inside grid\n");
 			PlantNode* plantNode = mGameGrids[type]->getPlantNodeAtWorldPosition(pos);
 			mActiveLevelState->onTouchBegan(plantNode);
 			break;
+		}
+		else {
+			int zahl = 1;
 		}
 	}
 	return true;
@@ -584,6 +612,21 @@ void MainGameScene::onMouseMove(Event *event)
 	std::ostringstream os;
 	os << "MousePosition X:" << e->getCursorX() << " Y:" << e->getCursorY();
 	mMousePosLabel->setString(os.str());
+}
+
+void MainGameScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	switch (keyCode) {
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW: mArrowPressed[0] = true; break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW: mArrowPressed[1] = true; break;
+	}
+}
+void MainGameScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event* event)
+{
+	switch (keyCode) {
+	case EventKeyboard::KeyCode::KEY_LEFT_ARROW: mArrowPressed[0] = false; break;
+	case EventKeyboard::KeyCode::KEY_RIGHT_ARROW: mArrowPressed[1] = false; break;
+	}
 }
 #endif
 

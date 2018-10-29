@@ -88,11 +88,15 @@ public:
 	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
 
+	virtual void onAcceleration(cocos2d::Acceleration* acc, cocos2d::Event* event);
+
 	// user defined events
 	void updatePoints(float pointDifference, float pointsSum, cocos2d::Vec2 worldPosition);
 
 #ifdef _MSC_VER
-	void onMouseMove(cocos2d::Event *event);
+	virtual void onMouseMove(cocos2d::Event *event);
+	virtual void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
+	virtual void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 #endif
 
 	virtual void update(float delta);
@@ -121,6 +125,7 @@ protected:
 
 	bool touchBeganIfInsideGrid(cocos2d::Vec2 pos, GridType type);
 	bool touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type);
+	
 	bool isInsideGrid(cocos2d::Vec2 pos, GridType type);
 	bool addLevelState(level_state::iLevelState* levelState);
 
@@ -135,6 +140,8 @@ protected:
 
 #ifdef _MSC_VER
 	cocos2d::Label* mMousePosLabel;
+	// left, right, up, down
+	bool			mArrowPressed[4];
 #endif
 #ifdef _FAIRY_DEBUG_
 	cocos2d::Label* mCurrentGameStateLabel;

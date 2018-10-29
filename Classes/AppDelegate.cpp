@@ -124,6 +124,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
+
+	// enable use of accelerometer
+	Device::setAccelerometerEnabled(true);
+
     // create a scene. it's an autorelease object
 	// load needed stuff
 	//mConfigLoader.loadMaterial("materials/highlightGridCell.material", "highlightGridCell");

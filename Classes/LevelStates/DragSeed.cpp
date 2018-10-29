@@ -27,8 +27,7 @@ namespace level_state {
 	}
 	bool DragSeed::onExitState()
 	{
-		mMainGameScene->getGrid(GRID_MAIN)->glowEmpytCells(false);
-		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmpytCells(false);
+		
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
 		return true;
 	}
@@ -41,6 +40,9 @@ namespace level_state {
 
 	void DragSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
+		mMainGameScene->getGrid(GRID_MAIN)->glowEmpytCells(false);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmpytCells(false);
+
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		auto pos = plantNode->getPosition();
 
@@ -98,6 +100,9 @@ namespace level_state {
 	}
 	void DragSeed::onTouchCancelled()
 	{
+		mMainGameScene->getGrid(GRID_MAIN)->glowEmpytCells(false);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmpytCells(false);
+
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		if (plantNode->getReferenceCount() == 1) {
 			plantNode->retain();
@@ -110,6 +115,9 @@ namespace level_state {
 	}
 	void DragSeed::onCancelState()
 	{
+		mMainGameScene->getGrid(GRID_MAIN)->glowEmpytCells(false);
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmpytCells(false);
+
 		putBackPlantNode();
 		//auto plantNode = mMainGameScene->getTargetPlantNode();
 	}
