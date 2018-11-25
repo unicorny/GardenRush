@@ -104,6 +104,11 @@ public:
 	inline bool isIsometric() const { return mIsIsometric; }
 
 
+	// rendering, called from cocos2d-x
+	virtual void draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags);
+
+	void renderCommand();
+
 	
 CC_CONSTRUCTOR_ACCESS:
 	// Nodes should be created using create();
@@ -122,6 +127,10 @@ protected:
 	bool addCellSprite(cocos2d::Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex);
 	bool _setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
 
+	bool _setupRendering();
+	bool _setupRenderingIso();
+	bool _setupRendering3D();
+
 	inline void setDefaultShader(cocos2d::Node* n) { n->setGLProgram(cocos2d::GLProgramCache::getInstance()->getGLProgram(cocos2d::GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP)); }
 	cocos2d::Technique* getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material);
 
@@ -138,6 +147,19 @@ protected:
 	bool mIsIsometric;
 
 	static RessourcenManager* mRessourcenManager;
+	// ----------------------------------------------------------
+	// render data
+	cocos2d::VertexBuffer* mVertexBuffer;
+	GLuint				   mIndexBuffer;
+	cocos2d::CustomCommand mRenderCommand;
+	
+
+	// shader
+	cocos2d::Material*     mMaterial;
+	GLint				   mUniformLocationGridCell;
+
+	// grid decoration details
+
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_GRID_H

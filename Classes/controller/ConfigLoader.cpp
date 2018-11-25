@@ -51,3 +51,27 @@ bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenM
 	return true;
 
 }
+
+bool ConfigLoader::loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects)
+{
+	// load json from file and parse
+	std::string content = cocos2d::FileUtils::getInstance()->getStringFromFile(path);
+	Document document;
+	document.Parse(content.data());
+
+	// interpret json
+	assert(document.IsArray());
+	auto rectCount = document.Capacity();
+	*mResultRects = new cocos2d::Rect[rectCount];
+	int cursor = 0;
+	for (auto itr = document.Begin(); itr != document.End(); ++itr)
+	{
+		(*mResultRects)[cursor] = Rect(
+			itr['x'].GetInt(),
+			itr['y'].GetInt(),
+			itr['w'].GetInt(),
+			itr['h'].GetInt()
+		);
+	}
+	return true;
+}

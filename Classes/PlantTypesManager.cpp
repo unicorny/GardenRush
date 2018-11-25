@@ -68,6 +68,7 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 
 	// interpret json
 	assert(document.IsObject());
+
 	allocateMemoryForNPlantTypes(document.MemberCount());
 	for (Value::ConstMemberIterator itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr)
 	{

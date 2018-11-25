@@ -36,6 +36,7 @@
 #include "cocos2d.h"
 #include "lib/DRHashList.hpp"
 #include "nodes/Grid.h"
+#include "nodes/GridNode.h"
 #include "model/Points.h"
 #include "model/SpriteAnimationState.h"
 

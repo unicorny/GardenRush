@@ -1,0 +1,57 @@
+material Mesh3DGrid
+{
+	technique grid_sides
+	{
+		pass 0 
+		{
+			shader 
+			{
+				vertexShader = shaders/grid_sides.vert
+				fragmentShader = shaders/grid_sides.frag
+			}
+		}
+	}
+	
+	technique grid_2D
+	{
+		pass 0
+		{
+			shader 
+			{
+				vertexShader = shaders/grid.vert
+				fragmentShader = shaders/grid_2d.frag
+				
+				grid_cell_count = 1.0
+			}
+		}
+	}
+	
+	technique grid_3D
+	{
+		pass 0 
+		{
+			shader 
+			{
+				vertexShader = shaders/grid.vert
+				fragmentShader = shaders/grid_3d.frag
+				
+				grid_cell_count = 1.0
+			}
+		}
+	}
+	
+	technique grid_iso
+	{
+		pass 0
+		{
+			shader 
+			{
+				vertexShader = shaders/grid.vert
+				fragmentShader = shaders/grid_iso.frag
+				
+				grid_cell_count = 1.0
+			}
+		}
+	}
+	
+}

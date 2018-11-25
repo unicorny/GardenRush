@@ -40,6 +40,8 @@
 #include "model/Points.h"
 #include "ErrorLog.h"
 
+
+
 USING_NS_CC;
 
 Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, RessourcenManager* ressourcenManager)
@@ -82,7 +84,7 @@ MainGameScene::MainGameScene()
 	mLevelData->addPlantType("pea");
 	mLevelData->addPlantType("strawberry");
 	mLevelData->enableAutoHarvesting();
-	mLevelData->setMaxGrowthPhasis(PLANT_PHASIS_GROWTH_3);
+	mLevelData->setMaxGrowthPhasis(PLANT_PHASIS_GROWTH_5);
 
 	scheduleUpdate();
 
@@ -209,7 +211,7 @@ bool MainGameScene::init()
 	// //////////////////////////
 	// bg
 	// 
-	auto bg = Sprite::create("bg1.png");
+	/*auto bg = Sprite::create("bg1.png");
 	
 	if (bg) {
 		bg->setAnchorPoint(Vec2(0.0f, 0.0f));
@@ -219,6 +221,8 @@ bool MainGameScene::init()
 		this->addChild(bg, 0, "bg");
 	}
 	//*/
+	LayerColor *_bgColor = LayerColor::create(Color4B(130, 156, 184, 255));
+	this->addChild(_bgColor, -10);
 	
     /////////////////////////////
     // 3. add your codes below...
@@ -273,7 +277,7 @@ bool MainGameScene::init()
 	///*
 	ViewDataSimpleTexture view("gridCell.png");
 	// multiple bgs 
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0.png"));
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0_tr.png"));
 	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden1.png"));
 	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden2.png"));
 
@@ -296,6 +300,19 @@ bool MainGameScene::init()
 		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
 	);
 	auto grid = Grid::create(levelMainGridCellCount, levelMainGridCellCount, GRID_MAIN);
+	auto gridNode = new GridNode();
+	gridNode->setup(8, isoBoundingBoxSize, GRID_NODE_ISO);
+	auto cam = getDefaultCamera();
+	auto camPos = cam->getPosition3D();
+	//cam->initPerspective(35.0f, visibleSize.width / visibleSize.height, 10.0f, 1500.0f);
+	//	cam->
+	//camPos.y = 450.0f;
+	//camPos.z = -205.0f;
+	camPos.z = 0.0f; // 35° fov
+	gridNode->setPosition3D(camPos);
+
+	addChild(gridNode);
+
 	auto mainGridPosition = Vec2(
 		origin.x + xBorder,
 		origin.y + yBorder

@@ -7,6 +7,7 @@
 class PlantTypesManager;
 class RessourcenManager;
 
+
 class ConfigLoader
 {
 public:
@@ -16,6 +17,9 @@ public:
 	//bool initPlantTypes(PlantTypesManager* manager, )
 
 	static bool loadFromJson(const char* path, RessourcenManager* ressourcenManager);
+
+	// mResultRects pointer at memory allocated, caller must free memory after use
+	static bool loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects);
 
 protected:
 };

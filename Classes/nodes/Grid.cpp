@@ -6,7 +6,7 @@
 #include "PlantTypesManager.h"
 #include "controller/RessourcenManager.h"
 
-
+#include "model/Player.h"
 
 
 using namespace cocos2d;
@@ -689,5 +689,119 @@ bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const
 		return false;
 	}
 	return true;
+
+}
+
+// -------------------------------------------------------------------
+// rendering
+// -------------------------------------------------------------------
+
+bool Grid::_setupRendering()
+{
+	glGenBuffers(1, &mIndexBuffer);
+	auto player = Player::getInstance();
+	if (player->isGrid3D()) {
+		_setupRendering3D();
+	}
+	else if(player->isGridIso()) {
+		_setupRenderingIso();
+	}
+	return true;
+}
+
+bool Grid::_setupRenderingIso()
+{
+	
+	mMaterial = Material::createWithFilename("materials/grid.material");
+	mMaterial->retain();
+	auto programState = mMaterial->getTechniqueByName("white_grid")->getPassByIndex(0)->getGLProgramState();
+	mUniformLocationGridCell = glGetUniformLocation(programState->getGLProgram()->getProgram(), "grid_cell_count");
+
+	if (mUniformLocationGridCell != -1)
+	{
+		glUniform1f(mUniformLocationGridCell, mWidth);
+		CHECK_GL_ERROR_DEBUG();
+	}
+
+	Vec3 vertices[] = {
+		{ -0.5f,  0.5f,  0.0f }, // 0
+		{ -0.5f, -0.5f,  0.0f }, // 1
+		{ 0.5f, -0.5f,  0.0f }, // 2
+		{ 0.5f,  0.5f,  0.0f }, // 3
+
+		{ -0.5f, -0.5f, -0.125f }, // 4
+		{ 0.5f, -0.5f, -0.125f }, // 5
+
+		{ 0.5f,  0.5f, -0.125f }  // 6
+	};
+
+	mVertexBuffer = VertexBuffer::create(sizeof(Vec3), 7);
+	mVertexBuffer->retain();
+	mVertexBuffer->updateVertices(vertices, 7, 0);
+
+	uint16_t indices[] = { 
+		0, 1, 3, 1, 2, 3,
+		4, 5, 2, 4, 2, 1,
+		6, 3, 2, 2, 5, 6 
+	};
+	// fill index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
+
+	mRenderCommand.func = std::bind(&Grid::renderCommand, this);
+
+	return true;
+}
+
+bool Grid::_setupRendering3D()
+{
+	
+
+	mMaterial = Material::createWithFilename("materials/grid.material");
+	mMaterial->retain();
+	auto programState = mMaterial->getTechniqueByName("white_grid")->getPassByIndex(0)->getGLProgramState();
+	mUniformLocationGridCell = glGetUniformLocation(programState->getGLProgram()->getProgram(), "grid_cell_count");
+
+	if (mUniformLocationGridCell != -1)
+	{
+		glUniform1f(mUniformLocationGridCell, mWidth);
+		CHECK_GL_ERROR_DEBUG();
+	}
+
+	Vec3 vertices[] = {
+		{ -0.5f,  0.5f,  0.0f }, // 0
+		{ -0.5f, -0.5f,  0.0f }, // 1
+		{ 0.5f, -0.5f,  0.0f }, // 2
+		{ 0.5f,  0.5f,  0.0f }, // 3
+
+		{ -0.5f, -0.5f, -0.125f }, // 4
+		{ 0.5f, -0.5f, -0.125f }, // 5
+
+		{ 0.5f,  0.5f, -0.125f }  // 6
+	};
+
+	mVertexBuffer = VertexBuffer::create(sizeof(Vec3), 7);
+	mVertexBuffer->retain();
+	mVertexBuffer->updateVertices(vertices, 7, 0);
+
+	uint16_t indices[] = { 0, 1, 3, 1, 2, 3,
+		4, 5, 2, 4, 2, 1,
+		6, 3, 2, 2, 5, 6 };
+	// fill index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
+
+	mRenderCommand.func = std::bind(&Grid::renderCommand, this);
+
+	return true;
+}
+
+void Grid::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags)
+{
+
+}
+
+void Grid::renderCommand()
+{
 
 }

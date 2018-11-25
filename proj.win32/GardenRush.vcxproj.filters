@@ -117,6 +117,18 @@
     <ClCompile Include="..\Classes\controller\RessourcenManager.cpp">
       <Filter>src\controller</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\nodes\GridNode.cpp">
+      <Filter>src\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\model\GridModel.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\model\Player.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\model\GridDecoration.cpp">
+      <Filter>src\model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -211,6 +223,18 @@
     </ClInclude>
     <ClInclude Include="..\Classes\controller\RessourcenManager.h">
       <Filter>src\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\nodes\GridNode.h">
+      <Filter>src\nodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\GridModel.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\Player.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\GridDecoration.h">
+      <Filter>src\model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
