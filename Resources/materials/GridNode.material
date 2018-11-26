@@ -1,13 +1,13 @@
 material Mesh3DGrid
 {
-	technique grid_sides
+	technique grid_sides_iso
 	{
 		pass 0 
 		{
 			shader 
 			{
-				vertexShader = shaders/grid_sides.vert
-				fragmentShader = shaders/grid_sides.frag
+				vertexShader = shaders/grid_sides_iso.vert
+				fragmentShader = shaders/grid_sides_iso.frag
 			}
 		}
 	}
@@ -46,7 +46,7 @@ material Mesh3DGrid
 		{
 			shader 
 			{
-				vertexShader = shaders/grid.vert
+				vertexShader = shaders/grid_iso.vert
 				fragmentShader = shaders/grid_iso.frag
 				
 				grid_cell_count = 1.0

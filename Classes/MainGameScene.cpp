@@ -308,7 +308,7 @@ bool MainGameScene::init()
 	//	cam->
 	//camPos.y = 450.0f;
 	//camPos.z = -205.0f;
-	camPos.z = 0.0f; // 35° fov
+	camPos.z = -150.0f; // 35° fov
 	gridNode->setPosition3D(camPos);
 
 	addChild(gridNode);

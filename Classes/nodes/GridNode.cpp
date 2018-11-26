@@ -30,23 +30,25 @@ bool GridNode::_setupVertices()
 	glGenBuffers(1, &mIndexBuffer);
 
 	Vec3 vertices[] = {
-		{0.0f, 1.0f, 0.0f}, // 0 left top
-		{0.0f, 0.0f, 0.0f}, // 1 left bottom
-		{1.0f, 0.0f, 0.0f}, // 2 right bottom
-		{1.0f, 1.0f, 0.0f}, // 3 right top
+		{ -0.5f,  0.5f,  0.0f }, // 0
+		{ -0.5f, -0.5f,  0.0f }, // 1
+		{  0.5f, -0.5f,  0.0f }, // 2
+		{  0.5f,  0.5f,  0.0f }, // 3
 
-		{0.0f, 0.0f, -0.125f}, // 4 edge 
-		{0.0f, 1.0f, -0.125f}, // 5 left edge
-		{1.0f, 0.0f, -0.125f}  // 6 right edge
+		{ -0.5f, -0.5f, 0.125f }, // 4
+		{  0.5f, -0.5f, 0.125f }, // 5
+
+		//{  0.5f,  0.5f, 0.125f }  // 6
+		{ -0.5f,  0.5f, 0.125f }  // 6
 	};
 
 	mVertexBuffer->updateVertices(vertices, 7, 0);
 
 	uint16_t indices[] = { 
-		0, 1, 2, 2, 3, 0, // main
-		1, 4, 5, 5, 1, 0, // left edge
-		6, 2, 1, 4, 6, 2  // right edge
-	}; 
+		0, 1, 3, 1, 2, 3,
+		4, 5, 2, 4, 2, 1,
+		6, 4, 1, 6, 1, 0
+	};
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
@@ -68,7 +70,7 @@ bool GridNode::setup(uint8_t cellCount, cocos2d::Vec2 gridSizePixels, GridNodeTy
 
 	setScaleX(gridSizePixels.x);
 	setScaleY(gridSizePixels.y);
-	setScaleZ(1.0f);
+	setScaleZ(gridSizePixels.y);
 
 
 	switch (type) {
@@ -106,20 +108,22 @@ void GridNode::renderCommand()
 	auto mat1 = getNodeToWorldTransform();
 	//Mat4 mat2 = mTranslationObject.getMatrix();
 	GLProgramState* programState = NULL;
+	GLProgramState* programState2 = NULL;
 	switch (mType) {
 	case GRID_NODE_ISO:
 		programState = mMaterial->getTechniqueByName("grid_iso")->getPassByIndex(0)->getGLProgramState();
+		programState2 = mMaterial->getTechniqueByName("grid_sides_iso")->getPassByIndex(0)->getGLProgramState();
 		break;
 	default: LOG_ERROR_VOID("no valid type for rendering");
 	}
 
 	//programState->setUniformFloat("grid_cell_count", 1.0f);
 	//programState->applyGLProgram(mTranslationObject.getMatrix());
-	programState->applyGLProgram(mat1);
+	
 
 
 	GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POSITION);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	//glCullFace(GL_FRONT_AND_BACK);
 	// Index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
@@ -127,14 +131,17 @@ void GridNode::renderCommand()
 	//glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, 0, vertices);
 	glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POSITION);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glPolygonMode(GL_FRONT, GL_FILL);
 	//glPolygonMode(GL_BACK, GL_LINE);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
+	programState->applyGLProgram(mat1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, 18);
-	glCullFace(GL_BACK);
-	glDisable(GL_CULL_FACE);
+	//programState2->applyGLProgram(mat1);
+	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_SHORT, (void*)(sizeof(uint16_t)*6));
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(2, 18);
+	//glCullFace(GL_BACK);
+	//glDisable(GL_CULL_FACE);
 	CHECK_GL_ERROR_DEBUG();
 }
