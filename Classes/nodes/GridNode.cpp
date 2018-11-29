@@ -35,11 +35,11 @@ bool GridNode::_setupVertices()
 		{  0.5f, -0.5f,  0.0f }, // 2
 		{  0.5f,  0.5f,  0.0f }, // 3
 
-		{ -0.5f, -0.5f, 0.125f }, // 4
-		{  0.5f, -0.5f, 0.125f }, // 5
+		{ -0.5f, -0.5f, -0.25f }, // 4
+		{  0.5f, -0.5f, -0.25f }, // 5
 
 		//{  0.5f,  0.5f, 0.125f }  // 6
-		{ -0.5f,  0.5f, 0.125f }  // 6
+		{ -0.5f,  0.5f, -0.25f }  // 6
 	};
 
 	mVertexBuffer->updateVertices(vertices, 7, 0);
@@ -72,12 +72,28 @@ bool GridNode::setup(uint8_t cellCount, cocos2d::Vec2 gridSizePixels, GridNodeTy
 	setScaleY(gridSizePixels.y);
 	setScaleZ(gridSizePixels.y);
 
+	bool verticesChanged = false;
+	Vec3 changingVertices[3];
 
 	switch (type) {
 	GRID_NODE_ISO:
+		changingVertices[0] = { -0.5f, -0.5f, 0.125f }; // 4
+		changingVertices[1] = {  0.5f, -0.5f, 0.125f }; // 5
+		changingVertices[2] = { -0.5f,  0.5f, 0.125f };  // 6
+		verticesChanged = true;
+		break;
 	GRID_NODE_3D:
+		changingVertices[0] = { -0.5f, -0.5f, 0.125f }; // 4
+		changingVertices[1] = {  0.5f, -0.5f, 0.125f }; // 5
+		changingVertices[2] = { -0.5f,  0.5f, 0.125f };  // 6
+		verticesChanged = true;
 		break;
 	}
+	verticesChanged = false;
+	if (verticesChanged) {
+		mVertexBuffer->updateVertices(changingVertices, 3, 4);
+	}
+
 
 	
 
@@ -123,8 +139,8 @@ void GridNode::renderCommand()
 
 
 	GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POSITION);
-	//glDisable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT_AND_BACK);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	// Index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer->getVBO());
@@ -137,11 +153,11 @@ void GridNode::renderCommand()
 	//glDisable(GL_CULL_FACE);
 	programState->applyGLProgram(mat1);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, (void*)0);
-	//programState2->applyGLProgram(mat1);
+	programState2->applyGLProgram(mat1);
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_SHORT, (void*)(sizeof(uint16_t)*6));
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(2, 18);
 	//glCullFace(GL_BACK);
-	//glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 	CHECK_GL_ERROR_DEBUG();
 }
