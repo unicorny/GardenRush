@@ -46,6 +46,8 @@ public:
 	// return growth phasis
 	int countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
 
+	inline void setOutGrown() { mOutGrown = true; }
+	inline bool isOutGrown() { return mOutGrown; }
 	
 
 protected:
@@ -56,6 +58,7 @@ protected:
 	float	  mDiversityBonus;
 	PlantTypePhasisView		  mGrowPhasis;
 	bool	  mHalfGrow;
+	bool	  mOutGrown;
 	DRHashList mCountedNeighborForDiversity;
 
 	

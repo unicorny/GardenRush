@@ -45,7 +45,7 @@ PlantTypePhasisView PlantType::getPhasisViewFromString(const char* name)
 	else if (strcmp(name, "final_neutral") == 0) return PLANT_PHASIS_FINAL_NEUTRAL;
 	else if (strcmp(name, "final_good") == 0) return PLANT_PHASIS_FINAL_GOOD;
 	else if (strcmp(name, "final_very_good") == 0) return PLANT_PHASIS_FINAL_VERY_GOOD;
-	else if (strcmp(name, "final_bad") == 0) return PLANT_PHASIS_FINAL_BAD;
+	else if (strcmp(name, "final_bad") == 0 || strcmp(name, "dead")== 0) return PLANT_PHASIS_FINAL_BAD;
 	
 	return PLANT_PHASIS_ERROR;
 }

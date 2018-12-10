@@ -129,6 +129,21 @@
     <ClCompile Include="..\Classes\model\GridDecoration.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseCell.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeeded.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\MoveSeed.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\HarvestPlant.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\levelStates\iLevelState.cpp">
+      <Filter>src\levelStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -235,6 +250,18 @@
     </ClInclude>
     <ClInclude Include="..\Classes\model\GridDecoration.h">
       <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseCell.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeeded.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\MoveSeed.h">
+      <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\levelStates\HarvestPlant.h">
+      <Filter>src\levelStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

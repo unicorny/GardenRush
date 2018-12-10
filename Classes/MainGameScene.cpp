@@ -31,14 +31,20 @@
 #include "levelStates/DragSeed.h"
 #include "levelStates/DropSeedInvalid.h"
 #include "levelStates/DropSeedValid.h"
+#include "levelStates/HarvestPlant.h"
 #include "levelStates/iLevelState.h"
+#include "levelStates/MoveSeed.h"
 #include "levelStates/RandomSeed.h"
 #include "levelStates/PlantSeed.h"
+#include "levelStates/PlayerChooseCell.h"
 #include "levelStates/PlayerChooseSeed.h"
 #include "levelStates/PlayerChooseActionWithSeed.h"
+#include "levelStates/PlayerChooseActionWithSeeded.h"
 #include "model/LevelData.h"
 #include "model/Points.h"
 #include "ErrorLog.h"
+
+#include "nodes/GridNode.h"
 
 
 
@@ -66,7 +72,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 	ProfilingEndTimingBlock("init plant types");
 	timer = profiler->_activeTimers.at("init plant types");
 	ErrorLog::printf("init plant types duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
-
+	result->initAfterCreate();
 	result->transitTo("RandomSeed");
 
 	return result;
@@ -140,7 +146,6 @@ bool MainGameScene::init()
         return false;
     }
 
-	
 
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -222,6 +227,7 @@ bool MainGameScene::init()
 	}
 	//*/
 	LayerColor *_bgColor = LayerColor::create(Color4B(130, 156, 184, 255));
+	_bgColor->setGlobalZOrder(-10.0f);
 	this->addChild(_bgColor, -10);
 	
     /////////////////////////////
@@ -266,144 +272,29 @@ bool MainGameScene::init()
 	}
 	mMovingPointsLabel = Label::createWithTTF(fontCfg, "");
 	if (mMovingPointsLabel) {
-		this->addChild(mMovingPointsLabel, 3);
+		this->addChild(mMovingPointsLabel, 10);
+		mMovingPointsLabel->setGlobalZOrder(10.0f);
 	}
 #else 
 	Director::getInstance()->setDisplayStats(true);
 #endif //DISABLE_UI
 
-	std::vector<IViewData*> mGroundCells;
-	// add grid
-	///*
-	ViewDataSimpleTexture view("gridCell.png");
-	// multiple bgs 
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0_tr.png"));
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden1.png"));
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden2.png"));
-
+	
 	//*/
-	//bg_cells[0] = new ViewDataSimpleTexture("gridCell.png");
-	// Layout
-	float flatCellSize = (visibleSize.height * 0.9f) / 8.0f;
-	float xBorder = visibleSize.width * 0.01f;
-	float isoEdgeWidth = visibleSize.width - 2.0f * xBorder;// -2.0f * flatCellSize;
-	float isoEdgeHeight = isoEdgeWidth / 2.0f;
-	
-	float yBorder = (visibleSize.height - isoEdgeHeight) / 2.0f;
-	assert(yBorder >= 0.0f);
-
-	//float gridDimension = visibleSize.height * 0.9f;
-	//float cellSize = gridDimension / 8.0f;
-	uint8_t levelMainGridCellCount = 8;
-	Vec2 isoBoundingBoxSize = Vec2(
-		(isoEdgeWidth  / 8.0f) * static_cast<float>(levelMainGridCellCount),
-		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
-	);
-	auto grid = Grid::create(levelMainGridCellCount, levelMainGridCellCount, GRID_MAIN);
-	auto gridNode = new GridNode();
-	gridNode->setup(8, isoBoundingBoxSize, GRID_NODE_ISO);
-	auto cam = getDefaultCamera();
-	auto camPos = cam->getPosition3D();
-	//cam->initPerspective(35.0f, visibleSize.width / visibleSize.height, 10.0f, 1500.0f);
-	//	cam->
-	//camPos.y = 450.0f;
-	//camPos.z = -205.0f;
-	camPos.z = -150.0f; // 35° fov
-	gridNode->setPosition3D(camPos);
-
-	addChild(gridNode);
-
-	auto mainGridPosition = Vec2(
-		origin.x + xBorder,
-		origin.y + yBorder
-	);
-	if (levelMainGridCellCount < 8) {
-		float cellCountDiffHalf = static_cast<float>(8 - levelMainGridCellCount) / 2.0f;
-		mainGridPosition.x += cellCountDiffHalf * (isoEdgeWidth / 8.0f);
-		mainGridPosition.y += cellCountDiffHalf * (isoEdgeHeight / 8.0f);
-	}
-	if (grid == nullptr) {
-		problemLoading("Grid");
-	} else {
-		ErrorLog::printf("position: %f/%f, boundingBoxSize: %f/%f\n", 
-			mainGridPosition.x, mainGridPosition.y, isoBoundingBoxSize.x, isoBoundingBoxSize.y);
-
-		grid->setup(isoBoundingBoxSize, mainGridPosition, mGroundCells, this);
-		//grid->setRotationSkewX(45);
-		//grid->setRotationSkewY(45);
-		//grid->setAnchorPoint(Vec2(0.5f, 0.5f));
-
-		// SSR 30 Grad 
-		// https://medium.com/gravitdesigner/designers-guide-to-isometric-projection-6bfd66934fc7
-		// 86,6 % = cos(30 grad)
-		//grid->setScaleY(0.866f * grid->getScaleY());
-		//grid->setSkewX(30.0f);
-		//grid->setRotation(30.0f);
-
-		//grid->setRotationY(45.0f);
-		//grid->setRotation3D(Vec3(45.0f, 45.0f, 0.0f));
-		//grid->setScale(sqrt(5.0f) / 2.0f, sqrt(5.0f) / 2.0f);
-		
-		//grid->setScaleY(grid->getScaleY()*0.5f);
-		mGameGrids[GRID_MAIN] = grid;
-	}
-	
-	// vector from 0/0 to center of left bottom border line of iso grid
-	auto v = Vec2(
-		mainGridPosition.x + isoEdgeWidth * 0.25f,
-		mainGridPosition.y + isoEdgeHeight * 0.25f
-	);
-	auto vLength = v.getLength();
-	auto cellDiagonal = Vec2(flatCellSize, flatCellSize).getLength();
-	// add second grid as inventory
-	auto inventory_grid = Grid::create(2, 2, GRID_INVENTORY);
-	if (inventory_grid == nullptr) {
-		problemLoading("inventory Grid");
-	}
-	else {
-		// vector from right edge to right bottom border line of iso grid
-		auto v2 = Vec2(
-			-v.x,
-			v.y
-		);
-		auto percent = cellDiagonal * 2 / vLength;
-		auto position = Vec2(
-			//origin.x + visibleSize.width - flatCellSize * 2.0f - xBorder,
-			//origin.y + visibleSize.height * 0.15f
-			visibleSize.width + v2.x * 0.8f,
-			v2.y * 0.8f - flatCellSize * 2.0f
-		);
-		inventory_grid->setup(flatCellSize * 2.0f, position, &view, this);
-		mGameGrids[GRID_INVENTORY] = inventory_grid;
-		
-	}
-
-	// add third grid as 
-	auto bucket_grid = Grid::create(1, 1, GRID_BUCKET);
-	if (bucket_grid == nullptr) {
-		problemLoading("bucket grid");
-	}
-	else {
-		
-		auto percent = cellDiagonal / vLength;
-		auto factor = (1.0f - percent) / 2.0f;// +percent;
-		auto position = Vec2(
-			origin.x + v.x * factor,
-			origin.y + v.y * factor
-		);
-		bucket_grid->setup(flatCellSize, position, &view, this);
-		mGameGrids[GRID_BUCKET] = bucket_grid;
-	}
-	//*/
-	
-	addLevelState(new level_state::RandomSeed);
-	addLevelState(new level_state::PlayerChooseSeed);
-	addLevelState(new level_state::PlayerChooseActionWithSeed);
 	addLevelState(new level_state::DisplayInfo);
 	addLevelState(new level_state::DragSeed);
 	addLevelState(new level_state::DropSeedInvalid);
 	addLevelState(new level_state::DropSeedValid);
+	addLevelState(new level_state::HarvestPlant);
+	addLevelState(new level_state::MoveSeed);
 	addLevelState(new level_state::PlantSeed);
+	addLevelState(new level_state::PlayerChooseCell);
+	addLevelState(new level_state::PlayerChooseSeed);
+	addLevelState(new level_state::PlayerChooseActionWithSeed);
+	addLevelState(new level_state::PlayerChooseActionWithSeeded);
+	addLevelState(new level_state::RandomSeed);
+	
+	
 	
 	// global touch listener
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -473,6 +364,141 @@ bool MainGameScene::init()
     return true;
 }
 
+bool MainGameScene::initAfterCreate()
+{
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	std::vector<IViewData*> mGroundCells;
+
+	// add grid
+	///*
+	ViewDataSimpleTexture view("gridCell.png");
+	// multiple bgs 
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0.png"));
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden1.png"));
+	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden2.png"));
+
+	//*/
+	//bg_cells[0] = new ViewDataSimpleTexture("gridCell.png");
+	// Layout
+	float flatCellSize = (visibleSize.height * 0.9f) / 8.0f;
+	float xBorder = visibleSize.width * 0.01f;
+	float isoEdgeWidth = visibleSize.width - 2.0f * xBorder;// -2.0f * flatCellSize;
+	float isoEdgeHeight = isoEdgeWidth / 2.0f;
+
+	float yBorder = (visibleSize.height - isoEdgeHeight) / 2.0f;
+	assert(yBorder >= 0.0f);
+
+	//float gridDimension = visibleSize.height * 0.9f;
+	//float cellSize = gridDimension / 8.0f;
+	uint8_t levelMainGridCellCount = 8;
+	Vec2 isoBoundingBoxSize = Vec2(
+		(isoEdgeWidth / 8.0f) * static_cast<float>(levelMainGridCellCount),
+		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
+	);
+	auto grid = Grid::create(levelMainGridCellCount, levelMainGridCellCount, GRID_MAIN);
+	auto gridNode = new GridNode(mRessourcenManager);
+	gridNode->setup(8, isoBoundingBoxSize, GRID_NODE_ISO, this);
+	auto cam = getDefaultCamera();
+	auto camPos = cam->getPosition3D();
+	//cam->initPerspective(35.0f, visibleSize.width / visibleSize.height, 10.0f, 1500.0f);
+	//	cam->
+	//camPos.y = 450.0f;
+	//camPos.z = -205.0f;
+	//camPos.z = -150.0f; // 35° fov
+	camPos.z = 0.0f;
+	gridNode->setPosition3D(camPos);
+
+	addChild(gridNode);
+
+	auto mainGridPosition = Vec2(
+		origin.x + xBorder,
+		origin.y + yBorder
+	);
+	if (levelMainGridCellCount < 8) {
+		float cellCountDiffHalf = static_cast<float>(8 - levelMainGridCellCount) / 2.0f;
+		mainGridPosition.x += cellCountDiffHalf * (isoEdgeWidth / 8.0f);
+		mainGridPosition.y += cellCountDiffHalf * (isoEdgeHeight / 8.0f);
+	}
+	if (grid == nullptr) {
+		problemLoading("Grid");
+	}
+	else {
+		ErrorLog::printf("position: %f/%f, boundingBoxSize: %f/%f\n",
+			mainGridPosition.x, mainGridPosition.y, isoBoundingBoxSize.x, isoBoundingBoxSize.y);
+
+		grid->setup(isoBoundingBoxSize, mainGridPosition, mGroundCells, this);
+		//grid->setRotationSkewX(45);
+		//grid->setRotationSkewY(45);
+		//grid->setAnchorPoint(Vec2(0.5f, 0.5f));
+
+		// SSR 30 Grad 
+		// https://medium.com/gravitdesigner/designers-guide-to-isometric-projection-6bfd66934fc7
+		// 86,6 % = cos(30 grad)
+		//grid->setScaleY(0.866f * grid->getScaleY());
+		//grid->setSkewX(30.0f);
+		//grid->setRotation(30.0f);
+
+		//grid->setRotationY(45.0f);
+		//grid->setRotation3D(Vec3(45.0f, 45.0f, 0.0f));
+		//grid->setScale(sqrt(5.0f) / 2.0f, sqrt(5.0f) / 2.0f);
+
+		//grid->setScaleY(grid->getScaleY()*0.5f);
+		mGameGrids[GRID_MAIN] = grid;
+	}
+
+	// vector from 0/0 to center of left bottom border line of iso grid
+	auto v = Vec2(
+		mainGridPosition.x + isoEdgeWidth * 0.25f,
+		mainGridPosition.y + isoEdgeHeight * 0.25f
+	);
+	auto vLength = v.getLength();
+	auto cellDiagonal = Vec2(flatCellSize, flatCellSize).getLength();
+	// add second grid as inventory
+	auto inventory_grid = Grid::create(2, 2, GRID_INVENTORY);
+	if (inventory_grid == nullptr) {
+		problemLoading("inventory Grid");
+	}
+	else {
+		// vector from right edge to right bottom border line of iso grid
+		auto v2 = Vec2(
+			-v.x,
+			v.y
+		);
+		auto percent = cellDiagonal * 2 / vLength;
+		auto position = Vec2(
+			//origin.x + visibleSize.width - flatCellSize * 2.0f - xBorder,
+			//origin.y + visibleSize.height * 0.15f
+			visibleSize.width + v2.x * 0.8f,
+			v2.y * 0.8f - flatCellSize * 2.0f
+		);
+		inventory_grid->setup(flatCellSize * 2.0f, position, &view, this);
+		mGameGrids[GRID_INVENTORY] = inventory_grid;
+
+	}
+
+	// add third grid as 
+	auto bucket_grid = Grid::create(1, 1, GRID_BUCKET);
+	if (bucket_grid == nullptr) {
+		problemLoading("bucket grid");
+	}
+	else {
+
+		auto percent = cellDiagonal / vLength;
+		auto factor = (1.0f - percent) / 2.0f;// +percent;
+		auto position = Vec2(
+			origin.x + v.x * factor,
+			origin.y + v.y * factor
+		);
+		ErrorLog::printf("[MainGameScene::initAfterCreate] inventorygrid position: %f/%f",
+			position.x, position.y);
+		bucket_grid->setup(flatCellSize, position, &view, this);
+		mGameGrids[GRID_BUCKET] = bucket_grid;
+	}
+
+	return true;
+}
+
 // every frame
 void MainGameScene::update(float delta)
 {
@@ -535,6 +561,9 @@ void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 wo
 	else if(pointDifference >= 100) {
 		color = Color3B(0, 255, 0);
 	}
+	else if (pointDifference < 0) {
+		color = Color3B(255, 0, 0);
+	}
 	mMovingPointsLabel->setColor(color);
 	mMovingPointsLabel->setScale(2.0f);
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -552,16 +581,21 @@ bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
 
 bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 {
+	Vec2 pos = touch->getLocationInView();
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	pos.y = visibleSize.height - pos.y;
+	mCurrentTouchPosition = pos;
+
 	if (!(mEnabledTouchTypes & ENABLED_TOUCH_BEGIN_PLANT) && !(mEnabledTouchTypes & ENABLED_TOUCH_BEGIN_GRID)) 
 		return false;
 	if (!mActiveLevelState) return false;
 	// manuel bsp, check collision with grids
 	// global pos
-	Vec2 pos = touch->getLocationInView();
-	auto visibleSize = Director::getInstance()->getVisibleSize();
+	
+	
 	// touch y seems reversed at windows and android, but also in iOs?
 //#ifdef _MSC_VER
-	pos.y = visibleSize.height - pos.y;
+	
 //#endif
 
 	for (int i = 0; i < GRID_SIZE; i++) {
@@ -586,23 +620,33 @@ bool MainGameScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 
 void MainGameScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 {
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 pos = touch->getLocationInView();
+	pos.y = visibleSize.height - pos.y;
+	mCurrentTouchPosition = pos;
+
 	if (!(mEnabledTouchTypes & ENABLED_TOUCH_MOVE)) return;
 	if (!mActiveLevelState) return;
+	pos = touch->getLocationInView();
 	Vec2 prevPos = touch->getPreviousLocationInView();
-	Vec2 pos = touch->getLocationInView();
 	Vec2 diff = pos - prevPos;
+	
 	mActiveLevelState->onTouchMoved(diff.x, diff.y);
 }
 void MainGameScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 {
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 pos = touch->getLocationInView();
+	pos.y = visibleSize.height - pos.y;
+	mCurrentTouchPosition = pos;
+
 	if (!(mEnabledTouchTypes & ENABLED_TOUCH_END)) return;
 	if (!mActiveLevelState) return;
-
-	Vec2 pos = touch->getLocationInView();
-	auto visibleSize = Director::getInstance()->getVisibleSize();
+	
+	
 	// touch y seems reversed at windows and android, but also in iOs?
 //#ifdef _MSC_VER
-	pos.y = visibleSize.height - pos.y;
+	
 //#endif
 
 	bool found = false;
@@ -714,6 +758,7 @@ bool MainGameScene::addLevelState(level_state::iLevelState* levelState)
 
 bool MainGameScene::transitTo(DHASH levelStateId)
 {
+	auto oldActiveLevelState = mActiveLevelState;
 	if (mActiveLevelState) {
 		if (!mActiveLevelState->onExitState()) {
 			ErrorLog::printf("error exit state: %s", mActiveLevelState->getName());
@@ -726,7 +771,7 @@ bool MainGameScene::transitTo(DHASH levelStateId)
 		LOG_ERROR("level state not found", false);
 	}
 	mActiveLevelState = newLevelState;
-	if (!mActiveLevelState->onEnterState()) {
+	if (!mActiveLevelState->onEnterState(oldActiveLevelState)) {
 		ErrorLog::printf("error enter state: %s", mActiveLevelState->getName());
 		LOG_ERROR("error enter state", false);
 	}
@@ -737,4 +782,16 @@ bool MainGameScene::transitTo(DHASH levelStateId)
 #endif
 
 	return true;
+}
+
+// for rendering
+bool MainGameScene::addSpriteBatchNode(const char* textureFileName, const char* name, ssize_t capacity)
+{
+	auto spriteBatchNode = SpriteBatchNode::create(textureFileName, capacity);
+	//addChild(spriteBatchNode);
+	bool ret = mSpriteBatchNodes.addByHash(DRMakeStringHash(name), spriteBatchNode);
+	if (ret) {
+		addChild(spriteBatchNode);
+	}
+	return ret;
 }

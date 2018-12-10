@@ -19,12 +19,27 @@ RessourcenManager::~RessourcenManager()
 
 bool RessourcenManager::loadMaterial(const char* path, const char* name)
 {
-	Material* material = Material::createWithFilename(path);
-	if (!material) {
-		LOG_ERROR("coco2d report error by parsing/loading material", false);
-	}
-	material->retain();
-	mMaterials.addByHash(DRMakeStringHash(name), material);
+	
+	Material* material = nullptr;
+	ErrorLog::printf("try loading material from: %s\n", path);
+	try {
+		material = Material::createWithFilename(path);
+		if (!material) {
+			LOG_ERROR("coco2d report error by parsing/loading material", false);
+		}
 
-	return true;
+		material->retain();
+		mMaterials.addByHash(DRMakeStringHash(name), material);
+
+		return true;
+	}
+	catch (const std::exception& e) {
+		ErrorLog::printf("exception thrown: %s\n", e.what());
+		return false;
+	}
+	catch (...) {
+		ErrorLog::printf("exception thrown while create material from file: %s\n", path);
+		return false;
+	}
+	
 }

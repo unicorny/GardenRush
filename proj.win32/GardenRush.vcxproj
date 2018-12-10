@@ -156,8 +156,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\levelStates\DragSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\DropSeedInvalid.cpp" />
     <ClCompile Include="..\Classes\levelStates\DropSeedValid.cpp" />
+    <ClCompile Include="..\Classes\levelStates\HarvestPlant.cpp" />
+    <ClCompile Include="..\Classes\levelStates\iLevelState.cpp" />
+    <ClCompile Include="..\Classes\levelStates\MoveSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlantSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp" />
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeeded.cpp" />
+    <ClCompile Include="..\Classes\levelStates\PlayerChooseCell.cpp" />
     <ClCompile Include="..\Classes\lib\TemplateMemoryManager.cpp" />
     <ClCompile Include="..\Classes\MainGameScene.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
@@ -191,8 +196,12 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\levelStates\DragSeed.h" />
     <ClInclude Include="..\Classes\levelStates\DropSeedInvalid.h" />
     <ClInclude Include="..\Classes\levelStates\DropSeedValid.h" />
+    <ClInclude Include="..\Classes\levelStates\HarvestPlant.h" />
+    <ClInclude Include="..\Classes\levelStates\MoveSeed.h" />
     <ClInclude Include="..\Classes\levelStates\PlantSeed.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeed.h" />
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeeded.h" />
+    <ClInclude Include="..\Classes\levelStates\PlayerChooseCell.h" />
     <ClInclude Include="..\Classes\lib\TemplateMemoryManager.h" />
     <ClInclude Include="..\Classes\MainGameScene.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />

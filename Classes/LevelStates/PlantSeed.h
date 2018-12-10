@@ -8,16 +8,18 @@ namespace level_state {
 	class PlantSeed : public iLevelState
 	{
 	public:
-		PlantSeed() {};
+		PlantSeed() :mFadeOutPlantSeed(nullptr){};
 		virtual ~PlantSeed() {};
 		virtual const char* getName() const { return "PlantSeed"; }
 		virtual bool initState();
-		virtual bool onEnterState();
+		virtual bool onEnterState() { return true; };
+		virtual bool onEnterState(iLevelState* lastState);
 		virtual bool onExitState();
 		virtual void onCancelState();
 
+		void fadeAnimationEnd();
 	protected:
-
+		PlantNode* mFadeOutPlantSeed;
 	};
 };
 

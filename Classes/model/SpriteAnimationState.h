@@ -48,12 +48,12 @@ public:
 	inline bool isAnimationRunning(SpriteAnimationTags type) const {return  (mRunningAnimationTypes & type) == type;}
 	inline void setTargetScale(cocos2d::Vec2 targetScale) { mTargetScale = targetScale; }
 	inline void setTargetPosition(cocos2d::Vec2 targetPosition) { mTargetPosition = targetPosition; }
-	inline void setTargetOpacity(float targetOpacity) { mTargetOpacity = targetOpacity; }
+	inline void setTargetOpacity(GLubyte targetOpacity) { mTargetOpacity = targetOpacity; }
 
 	// run action
 	void runScaleAction(cocos2d::FiniteTimeAction* action, cocos2d::Vec2 targetScale);
 	void runMoveAction(cocos2d::FiniteTimeAction* action, cocos2d::Vec2 targetPosition);
-	void runFadeAction(cocos2d::FiniteTimeAction* action, float targetOpacity);
+	void runFadeAction(cocos2d::FiniteTimeAction* action, GLubyte targetOpacity);
 
 protected:
 	// memory management
@@ -65,7 +65,7 @@ protected:
 	cocos2d::Vec2		mTargetScale;
 	cocos2d::Vec2		mTargetAnchorPoint;
 	cocos2d::Vec2		mTargetPosition;
-	float				mTargetOpacity;
+	GLubyte				mTargetOpacity;
 
 	//
 	CustomAnimationSprite*    mParentSprite;

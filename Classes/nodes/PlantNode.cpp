@@ -4,7 +4,7 @@
 
 PlantNode::PlantNode(const PlantType* plantType)
 	: mPlantType(plantType), mParentGrid(nullptr), mPointsMultiplicator(1.0f), mDiversityBonus(1.0f), 
-	mGrowPhasis(PLANT_PHASIS_SEED), mHalfGrow(false)
+	mGrowPhasis(PLANT_PHASIS_SEED), mHalfGrow(false), mOutGrown(false)
 {
 	mCountedNeighborForDiversity.addByHash(plantType->getNameHash(), NULL);
 }
@@ -36,17 +36,19 @@ int PlantNode::countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighbo
 		mDiversityBonus *= Points::diversityBonus(edge);
 	}
 	if (neighborType == NEIGHBOR_GOOD || neighborType == NEIGHBOR_REALLY_GOOD) {
-		if (mGrowPhasis < PLANT_PHASIS_GROWTH_5) {
+		if (mGrowPhasis < PLANT_PHASIS_GROWTH_5 && mGrowPhasis != PLANT_PHASIS_FINAL_BAD) {
 
 			if (edge || mHalfGrow) {
 				mGrowPhasis = static_cast<PlantTypePhasisView>(static_cast<int>(mGrowPhasis) + 1);
-				mPlantType->getViewData(mGrowPhasis)->changePlantNodeSprite(this);
+				auto view = mPlantType->getViewData(mGrowPhasis);
+				if(view) view->changePlantNodeSprite(this);
 				if (!edge) mHalfGrow = false;
 				return mGrowPhasis;
 			}
 			else {
 				mHalfGrow = true;
 			}
+
 		}
 		return mGrowPhasis;
 	}
@@ -66,6 +68,10 @@ int PlantNode::countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighbo
 			if (!edge && !mHalfGrow) {
 				mHalfGrow = true;
 			}
+		}
+		else if (mGrowPhasis == PLANT_PHASIS_GROWTH_1) {
+			mGrowPhasis = PLANT_PHASIS_FINAL_BAD;
+			mPlantType->getViewData(mGrowPhasis)->changePlantNodeSprite(this);	
 		}
 		
 	}

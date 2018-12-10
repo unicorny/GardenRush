@@ -4,7 +4,7 @@
 using namespace cocos2d;
 
 SpriteAnimationState::SpriteAnimationState()
-	: mManager(nullptr), mMemoryIndex(0), mRunningAnimationTypes(SPRITE_ANIMATION_NONE), mParentSprite(nullptr)
+	: mManager(nullptr), mMemoryIndex(0), mRunningAnimationTypes(SPRITE_ANIMATION_NONE), mTargetOpacity(255), mParentSprite(nullptr)
 {
 
 }
@@ -109,7 +109,7 @@ void SpriteAnimationState::runMoveAction(FiniteTimeAction* action, Vec2 targetPo
 	setTargetPosition(targetPosition);
 	mParentSprite->runAction(moveSequence);
 }
-void SpriteAnimationState::runFadeAction(FiniteTimeAction* action, float targetOpacity)
+void SpriteAnimationState::runFadeAction(FiniteTimeAction* action, GLubyte targetOpacity)
 {
 	assert(mParentSprite);
 	auto fadeSequence = Sequence::create(
@@ -117,7 +117,7 @@ void SpriteAnimationState::runFadeAction(FiniteTimeAction* action, float targetO
 		CallFunc::create(CC_CALLBACK_0(SpriteAnimationState::animationEndFade, this)),
 		nullptr);
 	fadeSequence->setTag(SPRITE_ANIMATION_FADE);
-	animationStop(SPRITE_ANIMATION_FADE);
+	animationStop(SPRITE_ANIMATION_FADE, true);
 	mRunningAnimationTypes = static_cast<SpriteAnimationTags>(mRunningAnimationTypes | SPRITE_ANIMATION_FADE);
 	setTargetOpacity(targetOpacity);
 	mParentSprite->runAction(fadeSequence);

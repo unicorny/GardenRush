@@ -30,6 +30,7 @@ namespace level_state {
 	protected:
 		//cocos2d::Vec2 mMovedSum;
 		float mErrorTime;
+		clock_t mTouchStartTime;
 		GridIndex mTargetGridIndex;
 		cocos2d::Vec2 mTouchMoveSum;
 	};

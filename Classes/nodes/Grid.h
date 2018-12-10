@@ -41,6 +41,15 @@ struct GridIndex {
 	uint8_t y;
 };
 
+struct GridCell {
+	GridCell(uint8_t _x, uint8_t _y, GridType _type) :
+		index(_x, _y), type(_type) {}
+	GridCell() : type(GRID_ERROR) {}
+
+	GridIndex index;
+	GridType type;
+};
+
 class Grid : public cocos2d::Node
 {
 public:
@@ -80,6 +89,7 @@ public:
 	bool updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager, const LevelData* levelData, Points* points);
 
 	PlantNode* removeGridCell(uint8_t x, uint8_t y);
+	bool removeGridCell(PlantNode* plantNode);
 	void removeAllGridCells();
 	cocos2d::Vec2 getOriginPosition(PlantNode* viewNode);
 

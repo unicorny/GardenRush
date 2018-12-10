@@ -47,6 +47,14 @@ bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenM
 			}
 
 		}
+		else if (!strcmp(itr->name.GetString(), "spriteAtlas")) {
+			if (itr->value.IsArray()) {
+				auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
+				for (auto itrArray = itr->value.Begin(); itrArray != itr->value.End(); ++itrArray) {
+					spriteFrameCache->addSpriteFramesWithFile(itrArray->GetString());
+				}	
+			}
+		}
 	}
 	return true;
 

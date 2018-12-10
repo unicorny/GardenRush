@@ -195,13 +195,18 @@ bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager*
 					edge
 				);
 				// plant has out grown
-				if (growPhasis >= levelData->getMaxGrowthPhasis()) {
+				if (growPhasis >= levelData->getMaxGrowthPhasis() || growPhasis == PLANT_PHASIS_FINAL_BAD) {
 					if (levelData->isAutoHarvesting()) {
 						auto cellSize = getCellSize();
 						auto pos = fromLocalToWorld(Vec2((static_cast<float>(x)+0.5f) * cellSize.x, y * cellSize.y));
-						points->addPoints(100 * neighborPlant->getPointsMultiplicator() * neighborPlant->getDiversityBonus(), pos);
+						float mult = 100.0f;
+						if (growPhasis == PLANT_PHASIS_FINAL_BAD) mult = -10.0f;
+						points->addPoints(mult * neighborPlant->getPointsMultiplicator() * neighborPlant->getDiversityBonus(), pos);
 						removeGridCell(x, y);
 						neighborPlant = NULL;
+					}
+					else {
+						neighborPlant->setOutGrown();
 					}
 				}
 				
@@ -307,6 +312,19 @@ PlantNode* Grid::removeGridCell(uint8_t x, uint8_t y)
 	this->removeChild(plantNode, false);
 	mPlantMap[x * mWidth + y] = NULL;
 	return plantNode;
+}
+
+bool Grid::removeGridCell(PlantNode* plantNode)
+{
+	auto gridIndex = plantNode->getGridIndex();
+	if (plantNode->getParentGrid() != this) {
+		LOG_ERROR("does not belong to this grid ", false);
+	}
+	auto plantNodeReturn = removeGridCell(gridIndex.x, gridIndex.y);
+	if (plantNode != plantNodeReturn) {
+		LOG_ERROR("wasn't the plant node on this position", false);
+	}
+	return true;
 }
 
 void Grid::removeAllGridCells()
@@ -456,7 +474,6 @@ cocos2d::Technique* Grid::getTechniqueForNeighborType(PlantTypeNeighborType type
 
 void Grid::glowCell(GridIndex index, const char* technique)
 {
-	if (index.x < 0 || index.y < 0) return;
 	if (index.x > mWidth || index.y > mHeight) return;
 	int i = index.x * mWidth + index.y;
 	if (!mPlantMap[i]) return;
@@ -666,7 +683,6 @@ PlantNode* Grid::getPlantNodeAtWorldPosition(cocos2d::Vec2 worldPosition) const
 
 PlantNode* Grid::getPlantNodeFromIndex(GridIndex index) const
 {
-	if (index.x < 0 || index.y < 0) return nullptr;
 	if (index.x >= mWidth || index.y >= mHeight) return nullptr;
 
 	size_t i = index.x * mWidth + index.y;
@@ -678,7 +694,6 @@ PlantNode* Grid::getPlantNodeFromIndex(GridIndex index) const
 
 bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const
 {
-	if (x < 0 || y < 0) return false;
 	if (x >= mWidth || y >= mHeight) return false;
 
 	uint8_t index = x * mWidth + y;

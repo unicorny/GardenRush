@@ -18,17 +18,43 @@ class PlantNode;
 
 namespace level_state
 {
+	enum LevelStateDataType {
+		LEVEL_STATE_DATA_NONE,
+		LEVEL_STATE_DATA_TARGET_GRID_CELL
+	};
+	class LevelStateData {
+	public:
+		LevelStateData(LevelStateDataType type)
+			: mType(type) {}
+		bool isType(LevelStateDataType type) { return mType == type; }
+	protected:
+		LevelStateDataType mType;
+	};
+
+	class LevelStateDataGridCell : public LevelStateData
+	{
+	public:
+		LevelStateDataGridCell(GridType type, uint8_t x, uint8_t y)
+			: LevelStateData(LEVEL_STATE_DATA_TARGET_GRID_CELL), mGridCell(x, y, type) {}
+		LevelStateDataGridCell(GridCell cell)
+			: LevelStateData(LEVEL_STATE_DATA_TARGET_GRID_CELL), mGridCell(cell) {}
+
+		GridCell mGridCell;
+	};
+
 	class iLevelState
 	{
 	public:
 		iLevelState(MainGameScene* manager) : mMainGameScene(manager) {}
-		iLevelState() : mMainGameScene(nullptr) {}
+		iLevelState() : mMainGameScene(nullptr), mData(nullptr) {}
+		~iLevelState() { DR_SAVE_DELETE(mData); }
 
 		inline void setMainGameScene(MainGameScene* manager) { mMainGameScene = manager; }
-		virtual ~iLevelState() {};
+
 		virtual const char* getName() const { return "iLevelState"; }
 		virtual bool initState() = 0;
 		virtual bool onEnterState() = 0;
+		virtual bool onEnterState(iLevelState* lastState) { return onEnterState(); };
 		virtual bool onExitState() = 0;
 		virtual void onCancelState() = 0;
 
@@ -40,8 +66,13 @@ namespace level_state
 
 		virtual void onUpdate(float delta) {};
 
+		inline LevelStateData* getData() { return mData; }
+		void setGridCell(GridCell gridCell);
+		GridCell* getGridCell();
+
 	protected:
-		MainGameScene* mMainGameScene;
+		MainGameScene*    mMainGameScene;
+		LevelStateData*   mData;
 	};
 };
 

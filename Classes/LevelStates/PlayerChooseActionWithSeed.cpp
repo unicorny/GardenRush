@@ -11,6 +11,8 @@ using namespace cocos2d;
 namespace level_state {
 
 	const float C_MOVE_THRESHOLD = 50.0f;
+	const float C_TIME_FAST_TOUCH = 0.10f;
+	const float C_TIME_SLOW_TOUCH = 0.25f;
 
 	PlayerChooseActionWithSeed::PlayerChooseActionWithSeed()
 		//: mMovedSum(Vec2::ZERO)
@@ -24,7 +26,9 @@ namespace level_state {
 	bool PlayerChooseActionWithSeed::onEnterState()
 	{
 		mErrorTime = 0.0f;
+		mTouchStartTime = 0.0f;
 		mTouchMoveSum = Vec2::ZERO;
+
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_BEGIN_GRID | ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED | ENABLED_TOUCH_MOVE);
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		plantNode->getParentGrid()->glowSelectedCell(plantNode->getGridIndex(), true);
@@ -35,30 +39,42 @@ namespace level_state {
 	bool PlayerChooseActionWithSeed::onExitState()
 	{
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
-		mMainGameScene->getGrid(GRID_MAIN)->disableAllGlowCells();
+		/*mMainGameScene->getGrid(GRID_MAIN)->disableAllGlowCells();
 		mMainGameScene->getGrid(GRID_INVENTORY)->disableAllGlowCells();
 		mMainGameScene->getGrid(GRID_BUCKET)->disableAllGlowCells();
+		*/
 		return true;
 	}
 
 	void PlayerChooseActionWithSeed::onTouchEnded(GridType type, uint8_t x, uint8_t y)
-	{		
-		mTouchMoveSum = Vec2::ZERO;
-		if (GRID_MAIN == type) {
-			mMainGameScene->transitTo("DisplayInfo");
-		} else {
-			auto plantNode = mMainGameScene->getTargetPlantNode();
-			auto plantTypes = mMainGameScene->getPlantTypesManager();
+	{	
+		// timing
+		clock_t diff = clock() - mTouchStartTime;
+		float diffSeconds = (float)diff / CLOCKS_PER_SEC;
+
+		auto plantNode = mMainGameScene->getTargetPlantNode();
+		auto plantTypes = mMainGameScene->getPlantTypesManager();
+
+		if (diffSeconds >= C_TIME_FAST_TOUCH) {
 			mMainGameScene->getGrid(GRID_MAIN)->glowAutoCells(plantNode->getPlantType(), plantTypes);
 			mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(true);
-			mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_BEGIN_GRID | ENABLED_TOUCH_MOVE | ENABLED_TOUCH_CANCELLED);
+			mMainGameScene->transitTo("PlayerChooseCell");
 		}
+		else if (diffSeconds >= C_TIME_SLOW_TOUCH) {
+			mMainGameScene->transitTo("DisplayInfo");
+		}
+
+		mTouchMoveSum = Vec2::ZERO;
+
 		
 	}
 
 	void PlayerChooseActionWithSeed::onTouchBegan(GridType type, uint8_t x, uint8_t y)
 	{
 		auto plantNode = mMainGameScene->getTargetPlantNode();
+		mTouchStartTime = clock();
+
+		return;
 
 		//if (mTouchMoveSum.x + mTouchMoveSum.y > C_MOVE_THRESHOLD)
 
@@ -167,17 +183,26 @@ namespace level_state {
 		auto plantNode = mMainGameScene->getTargetPlantNode();
 		plantNode->getParentGrid()->glowSelectedCell(plantNode->getGridIndex(), false);
 
-		mMainGameScene->transitTo("PlayerChooseSeed");
+		mMainGameScene->transitTo("PlayerChooseCell");
 	}
 
 	void PlayerChooseActionWithSeed::onTouchMoved(float deltaX, float deltaY)
 	{		
 		mTouchMoveSum += Vec2(deltaX, deltaY);
-		ErrorLog::printf("[PlayerChooseActionWithSeed::onTouchMoved] touchMove: %f/%f", mTouchMoveSum.x, mTouchMoveSum.y);
-		if (mTouchMoveSum.x + mTouchMoveSum.y > C_MOVE_THRESHOLD) {
+		//ErrorLog::printf("[PlayerChooseActionWithSeed::onTouchMoved] touchMove: %f/%f\n", mTouchMoveSum.x, mTouchMoveSum.y);
+		if (fabs(mTouchMoveSum.x) + fabs(mTouchMoveSum.y) > C_MOVE_THRESHOLD) {
+
 			auto plantNode = mMainGameScene->getTargetPlantNode();
-			auto pos = plantNode->getPosition();
-			plantNode->setPosition(pos + mTouchMoveSum);
+			//auto localPlantPos = plantNode->getPosition();
+			//auto globalPlantPos = plantNode->convertToWorldSpace(localPlantPos);
+			auto globalTouchPos = mMainGameScene->getCurrentTouchPosition();
+			auto localTouchPos = globalTouchPos - plantNode->getParent()->getPosition();
+			localTouchPos -= plantNode->getContentSize() * plantNode->getScale() * 0.5f;
+			//ErrorLog::printf("[PlayerChooseActionWithSeed::onTouchMoved] localPlantPos: %f/%f, globalPlantPos: %f/%f, globalTouchPos: %f/%f, localTouchPos: %f/%f\n",
+				//localPlantPos.x, localPlantPos.y, globalPlantPos.x, globalPlantPos.y, globalTouchPos.x, globalTouchPos.y, localTouchPos.x, localTouchPos.y);
+			//plantNode->setAnchorPoint(Vec2(0.5f, 0.5f));
+
+			plantNode->setPosition(localTouchPos);
 			plantNode->getParentGrid()->glowSelectedCell(plantNode->getGridIndex(), false);
 
 			mMainGameScene->transitTo("DragSeed");

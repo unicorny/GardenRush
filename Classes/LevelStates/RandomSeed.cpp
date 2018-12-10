@@ -31,6 +31,7 @@ namespace level_state {
 		auto plantView = plantType->getViewData(PLANT_PHASIS_SEED);
 		auto plantNode = plantView->createPlantNode(plantType);
 		mMainGameScene->getGrid(GRID_BUCKET)->addGridCell(plantNode, 0, 0);
+		
 
 		auto planetNodeAnimationState = plantNode->getAnimationState(animationStateMemoryManager);	
 		assert(planetNodeAnimationState);
@@ -43,7 +44,7 @@ namespace level_state {
 		planetNodeAnimationState->runScaleAction(scaleSequence, targetScale);
 
 		mMainGameScene->setTargetPlantNode(plantNode);
-		mMainGameScene->transitTo("PlayerChooseSeed");
+		mMainGameScene->transitTo("PlayerChooseCell");
 
 		return true;
 	}

@@ -36,7 +36,7 @@
 #include "cocos2d.h"
 #include "lib/DRHashList.hpp"
 #include "nodes/Grid.h"
-#include "nodes/GridNode.h"
+
 #include "model/Points.h"
 #include "model/SpriteAnimationState.h"
 
@@ -116,9 +116,15 @@ public:
 	inline void setEnabledTouchType(EnabledTouchType type) { mEnabledTouchTypes = type; }
 	inline void setTargetPlantNode(PlantNode* target) { mTargetPlantNode = target; }
 	inline PlantNode* getTargetPlantNode() { return mTargetPlantNode; }
+	inline cocos2d::Vec2 getCurrentTouchPosition() { return mCurrentTouchPosition; }
 	
 	bool transitTo(DHASH levelStateId);
 	inline bool transitTo(const char* levelStateName) { return transitTo(DRMakeStringHash(levelStateName)); }
+
+	// create sprite Batch Node
+	// \return true by success, false if spriteBatchNode with Hash already exist
+	bool addSpriteBatchNode(const char* textureFileName, const char* name, ssize_t capacity);
+	cocos2d::SpriteBatchNode* getSpriteBatchNode(const char* name) { return (cocos2d::SpriteBatchNode*)mSpriteBatchNodes.findByHash(DRMakeStringHash(name)); }
 
     // implement the "static create()" method manually
     CREATE_FUNC(MainGameScene);
@@ -139,6 +145,7 @@ protected:
 	Points*			   mPoints;
 	LevelData* mLevelData;
 	Grid* mGameGrids[GRID_SIZE];
+	cocos2d::Vec2 mCurrentTouchPosition;
 
 #ifdef _MSC_VER
 	cocos2d::Label* mMousePosLabel;
@@ -159,6 +166,9 @@ protected:
 
 	// window size state
 	cocos2d::Size mResolution;
+
+	// rendering
+	DRHashList		mSpriteBatchNodes;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_MAIN_GAME_SCENE_H

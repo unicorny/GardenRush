@@ -9,7 +9,7 @@ namespace level_state {
 	bool DisplayInfo::onEnterState()
 	{
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED);
-		mMainGameScene->transitTo("PlayerChooseSeed");
+		mMainGameScene->transitTo("PlayerChooseCell");
 		return true;
 	}
 	bool DisplayInfo::onExitState()
@@ -25,10 +25,10 @@ namespace level_state {
 
 	void DisplayInfo::onTouchEnded(GridType type, uint8_t x, uint8_t y)
 	{
-		mMainGameScene->transitTo("PlayerChooseSeed");
+		mMainGameScene->transitTo("PlayerChooseCell");
 	}
 	void DisplayInfo::onTouchCancelled()
 	{
-		mMainGameScene->transitTo("PlayerChooseSeed");
+		mMainGameScene->transitTo("PlayerChooseCell");
 	}
 }

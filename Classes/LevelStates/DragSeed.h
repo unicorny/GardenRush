@@ -24,7 +24,6 @@ namespace level_state {
 		void animationEnd();
 
 	protected:
-		void putBackPlantNode();
 
 	};
 };

@@ -13,14 +13,14 @@ namespace level_state {
 		virtual ~DropSeedValid() {};
 		virtual const char* getName() const { return "DropSeedValid"; }
 		virtual bool initState();
-		virtual bool onEnterState();
+		virtual bool onEnterState() { return true; };
+		virtual bool onEnterState(iLevelState* lastState);
 		virtual bool onExitState();
 		virtual void onCancelState();
 
 		void animationEnd();
 
 	protected:
-
 	};
 };
 

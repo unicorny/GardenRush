@@ -36,20 +36,27 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/GridNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
                    $(LOCAL_PATH)/../../../Classes/PlantTypesManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/MainGameScene.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DisplayInfo.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DragSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedValid.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/HarvestPlant.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/iLevelState.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/MoveSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/RandomSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlantSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseCell.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp \
+                   $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeeded.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/Points.cpp
 
 

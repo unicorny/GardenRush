@@ -1,8 +1,11 @@
 {
 	"materials": {
 		"highlightGridCell"   : "materials/highlightGridCell.material",
-		"highlightGridCellIso": "materials/highlightGridCellIso.material"
+		"highlightGridCellIso": "materials/highlightGridCellIso.material",
+		"GridNode" : "materials/GridNode.material"
 	},
-	"plantTypes" : "graphics.json"
-	
+	"plantTypes" : "graphics.json",
+	"spriteAtlas" : [
+		"spriteAtlas/bg_sides.plist"
+	]
 }
