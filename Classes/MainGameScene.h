@@ -33,8 +33,9 @@
 
 #define _FAIRY_DEBUG_
 
-#include "cocos2d.h"
-#include "lib/DRHashList.hpp"
+//#include "cocos2d.h"
+//#include "lib/DRHashList.hpp"
+#include "scenes/SpriteBatchNodesHolderScene.h"
 #include "nodes/Grid.h"
 
 #include "model/Points.h"
@@ -69,7 +70,7 @@ inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)
 }
 
 
-class MainGameScene : public cocos2d::Scene, public iPointsUpdate
+class MainGameScene : public SpriteBatchNodesHolderScene, public iPointsUpdate
 {
 public:
 	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, RessourcenManager* ressourcenManager);
@@ -121,10 +122,7 @@ public:
 	bool transitTo(DHASH levelStateId);
 	inline bool transitTo(const char* levelStateName) { return transitTo(DRMakeStringHash(levelStateName)); }
 
-	// create sprite Batch Node
-	// \return true by success, false if spriteBatchNode with Hash already exist
-	bool addSpriteBatchNode(const char* textureFileName, const char* name, ssize_t capacity);
-	cocos2d::SpriteBatchNode* getSpriteBatchNode(const char* name) { return (cocos2d::SpriteBatchNode*)mSpriteBatchNodes.findByHash(DRMakeStringHash(name)); }
+	
 
     // implement the "static create()" method manually
     CREATE_FUNC(MainGameScene);
@@ -167,8 +165,7 @@ protected:
 	// window size state
 	cocos2d::Size mResolution;
 
-	// rendering
-	DRHashList		mSpriteBatchNodes;
+	
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_MAIN_GAME_SCENE_H

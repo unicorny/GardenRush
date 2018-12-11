@@ -46,9 +46,6 @@ namespace level_state {
 		}
 		else
 		{
-			auto scaleX = plantNode->getScaleX();
-			auto scaleY = plantNode->getScaleY();
-
 			mMainGameScene->setTargetPlantNode(plantNode);
 
 			if (GRID_MAIN == type) mMainGameScene->transitTo("PlayerChooseActionWithSeeded"); 

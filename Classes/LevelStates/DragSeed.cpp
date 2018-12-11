@@ -48,41 +48,9 @@ namespace level_state {
 			mMainGameScene->transitTo("DropSeedInvalid");
 		}
 		else {
-			setGridCell(GridCell(x, y, type));
+			setGridCell(GridCell(gridIndex.x, gridIndex.y, type));
 			mMainGameScene->transitTo("DropSeedValid");
-			/*
-			//plantNode->removeFromGrid();
-			// instead of adding, we fade it out and fade in the new state
-			if (GRID_MAIN == type) {
-				auto plantType = plantNode->getPlantType();// ->getViewData(PLANT_PHASIS_SEEDED);
-				auto seededPlantNode = plantType->getViewData(PLANT_PHASIS_SEEDED)->createPlantNode(plantType);
-				mMainGameScene->getGrid(GRID_MAIN)->addGridCell(seededPlantNode, x, y);
-				seededPlantNode->setOpacity(0);		
-
-				const float fadeTime = 0.5f;
-
-				auto seededPlantNodeSequence = Sequence::create(
-					FadeIn::create(fadeTime),
-					CallFunc::create(CC_CALLBACK_0(DragSeed::animationEnd, this)),
-					nullptr);
-				seededPlantNode->runAction(seededPlantNodeSequence);
-				mMainGameScene->setTargetPlantNode(seededPlantNode);
-
-				auto plantNodeSequence = Sequence::create(
-					FadeOut::create(fadeTime),
-					RemoveSelf::create(true),
-					nullptr);
-				plantNode->runAction(plantNodeSequence);
-			}
-			else if (GRID_INVENTORY == type) {
-				plantNode->removeFromGrid();
-				currentGrid->addGridCell(plantNode, x, y);
-				plantNode->setPosition(currentGrid->fromWorldToLocal(globalPlantPos));
-				plantNode->setParentGrid(currentGrid);
-				mMainGameScene->transitTo("DropSeedValid");
-			}
-			//mMainGameScene->transitTo("RandomSeed");
-			*/
+			
 		}
 	}
 	void DragSeed::onTouchCancelled()

@@ -1,4 +1,6 @@
 #include "model/ViewData.h"
+#include "scenes/SpriteBatchNodesHolderScene.h"
+
 #include "cocos2d.h"
 #include "ErrorLog.h"
 
@@ -27,6 +29,7 @@ IViewData* IViewData::createFromJson(const rapidjson::Value::ConstMemberIterator
 		LOG_ERROR("not implemented yet", NULL);
 	}
 }
+
 IViewData* IViewData::createFromJson(const rapidjson::Value::ConstValueIterator* itr)
 {
 	if ((*itr)->IsString()) {
@@ -36,11 +39,23 @@ IViewData* IViewData::createFromJson(const rapidjson::Value::ConstValueIterator*
 		}
 		else {
 			ErrorLog::printf("file: %s doesn't exist", filename);
-			LOG_ERROR("file doesn't exist", NULL);
+			LOG_ERROR("file doesn't exist", nullptr);
+		}
+	}
+	else if ((*itr)->IsObject()) {
+		//(*(*itr))["atlas"];
+		if ((*itr)->HasMember("atlas") && (*itr)->HasMember("part")) {
+			const char* atlasName = (*(*itr))["atlas"].GetString(); // iGraphics->value["atlas"].GetString();
+			const char* partName  = (*(*itr))["part"].GetString();
+			//return new ViewDataSpriteAtlas(atlasName, partName);
+			return new ViewDataSpriteAtlas(atlasName, partName);
+		}
+		else {
+			LOG_ERROR("hasn't expected members", nullptr);
 		}
 	}
 	else {
-		LOG_ERROR("not implemented yet", NULL);
+		LOG_ERROR("not implemented yet", nullptr);
 	}
 }
 
@@ -89,3 +104,53 @@ DHASH ViewDataSimpleTexture::getHash() const
 	return DRMakeFilenameHash(mTextureName.data());
 }
 
+
+// **************************** Sprite Atlas ***********************************************
+
+ViewDataSpriteAtlas::ViewDataSpriteAtlas(const char* spriteAtlasName, const char* objectName)
+	: IViewData(VIEW_TYPE_SPRITE_ATLAS), mSpriteAtlasName(spriteAtlasName), mObjectName(objectName)
+{
+
+}
+
+ViewDataSpriteAtlas::~ViewDataSpriteAtlas()
+{
+
+}
+
+cocos2d::Sprite* ViewDataSpriteAtlas::createSprite() const
+{
+	//return cocos2d::Sprite::create(mTextureName);
+	return cocos2d::Sprite::createWithSpriteFrameName(mObjectName);
+	//LOG_ERROR("not implemented yet", nullptr);
+}
+
+PlantNode* ViewDataSpriteAtlas::createPlantNode(const PlantType* plantType) const
+{
+	PlantNode * ret = new (std::nothrow) PlantNode(plantType);
+	//auto spriteBatchNode = spriteBatchNodeHolder->getSpriteBatchNode(mSpriteAtlasName.data());
+	cocos2d::SpriteFrame *frame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(mObjectName);
+
+	if (ret && ret->initWithSpriteFrame(frame))
+	{
+		ret->autorelease();
+	}
+	else
+	{
+		CC_SAFE_DELETE(ret);
+	}
+	return ret;
+}
+
+bool ViewDataSpriteAtlas::changePlantNodeSprite(PlantNode* plantNode) const
+{
+	cocos2d::SpriteFrame *frame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(mObjectName);
+	plantNode->setSpriteFrame(frame);
+	//plantNode->setTexture(mTextureName);
+	return true;
+}
+
+DHASH ViewDataSpriteAtlas::getHash() const
+{
+	return DRMakeFilenameHash(mObjectName.data());
+}

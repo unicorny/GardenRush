@@ -1,7 +1,7 @@
 #include "controller/ConfigLoader.h"
 #include "controller/RessourcenManager.h"
 #include "ErrorLog.h"
-
+#include "scenes/SpriteBatchNodesHolderScene.h"
 #include "json/document.h"
 //
 using namespace rapidjson;
@@ -48,11 +48,17 @@ bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenM
 
 		}
 		else if (!strcmp(itr->name.GetString(), "spriteAtlas")) {
-			if (itr->value.IsArray()) {
-				auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
-				for (auto itrArray = itr->value.Begin(); itrArray != itr->value.End(); ++itrArray) {
-					spriteFrameCache->addSpriteFramesWithFile(itrArray->GetString());
-				}	
+			auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
+			for (auto iSpriteAtlas = itr->value.MemberBegin(); iSpriteAtlas != itr->value.MemberEnd(); ++iSpriteAtlas) {
+				if (iSpriteAtlas->value.IsString() && iSpriteAtlas->name.IsString()) {
+					auto spriteAtlasPath = iSpriteAtlas->value.GetString();
+					auto spriteAtlasName = iSpriteAtlas->name.GetString();
+					if (!ressourcenManager->addSpriteAtlas(spriteAtlasName, spriteAtlasPath)) {
+						LOG_ERROR("error adding spriteAtlas", false);
+					}
+					spriteFrameCache->addSpriteFramesWithFile(spriteAtlasPath);
+					//spriteBatchHolder->addSpriteBatchNode(spriteAtlasPath, spriteAtlasName, 16);
+				}
 			}
 		}
 	}

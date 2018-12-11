@@ -119,21 +119,26 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 						typeName += std::to_string(count);
 						type = PlantType::getPhasisViewFromString(typeName.data());
 						assert(type < PLANT_PHASIS_SIZE);
+
 						view = IViewData::createFromJson(&itrArray);
 						plant->setViewData(view, type);
 						count++;
 					}
 				}
-				else if (iGraphics->value.IsObject() && strcmp(iGraphics->name.GetString(), "final") == 0) {
-					for (Value::ConstMemberIterator itrObject = iGraphics->value.MemberBegin(); itrObject != iGraphics->value.MemberEnd(); ++itrObject) {
-						assert(itrObject->name.IsString());
-						std::string typeName = iGraphics->name.GetString();
-						typeName += "_";
-						typeName += itrObject->name.GetString();
-						type = PlantType::getPhasisViewFromString(typeName.data());
-						assert(type < PLANT_PHASIS_SIZE);
-						view = IViewData::createFromJson(&itrObject);
-						plant->setViewData(view, type);
+				else if (iGraphics->value.IsObject()) {
+					// Sprite Atlas
+					std::string typeName = iGraphics->name.GetString();
+					type = PlantType::getPhasisViewFromString(typeName.data());
+					assert(type < PLANT_PHASIS_SIZE);
+					
+					if (iGraphics->value.HasMember("atlas") && iGraphics->value.HasMember("part")) {
+						const char* atlasName = iGraphics->value["atlas"].GetString();
+						const char* partName = iGraphics->value["part"].GetString();
+						//return new ViewDataSpriteAtlas(atlasName, partName);
+						plant->setViewData(new ViewDataSpriteAtlas(atlasName, partName), type);
+					}
+					else {
+						LOG_ERROR("unknown graphics type", false);
 					}
 				}
 				

@@ -144,6 +144,9 @@
     <ClCompile Include="..\Classes\levelStates\iLevelState.cpp">
       <Filter>src\levelStates</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\scenes\SpriteBatchNodesHolderScene.cpp">
+      <Filter>src\scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\levelStates\HarvestPlant.h">
       <Filter>src\levelStates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\scenes\SpriteBatchNodesHolderScene.h">
+      <Filter>src\scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

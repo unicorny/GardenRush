@@ -5,7 +5,8 @@
 		"GridNode" : "materials/GridNode.material"
 	},
 	"plantTypes" : "graphics.json",
-	"spriteAtlas" : [
-		"spriteAtlas/bg_sides.plist"
-	]
+	"spriteAtlas" : {
+		"bg_sides": "spriteAtlas/bg_sides.plist",
+		"plants1" : "spriteAtlas/plants1.plist"
+	}
 }

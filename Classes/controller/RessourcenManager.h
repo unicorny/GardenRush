@@ -29,8 +29,17 @@ public:
 		return (cocos2d::Material*)mMaterials.findByHash(DRMakeStringHash(name));
 	}
 
+	bool addSpriteAtlas(const char* name, const char* filename);
+	const char* getSpriteAtlasPath(const char* name);
+
+
 protected:
 	DRHashList		mMaterials;
+	DRHashList		mSpriteBatchNodes;
+
+	std::map<DHASH, std::string> mSpriteAtlases;
+	
+
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_CONTROLLER_RESSOURCEN_MANAGER_H

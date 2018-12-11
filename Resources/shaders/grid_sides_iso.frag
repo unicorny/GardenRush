@@ -8,7 +8,8 @@ uniform vec2 tex_coord_rects[4];
 
 void main()
 {
-	int indexAdd = int(ceil(vertex_pos.y+0.4999));
+	//int indexAdd = int(ceil(vertex_pos.y+0.4999));
+	int indexAdd = int(ceil(vertex_pos.y + 0.499));
 	indexAdd = 1 - indexAdd;
 	vec2 origin = tex_coord_rects[indexAdd * 2];
 	vec2 size   = tex_coord_rects[indexAdd * 2 + 1];

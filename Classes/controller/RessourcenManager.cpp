@@ -43,3 +43,25 @@ bool RessourcenManager::loadMaterial(const char* path, const char* name)
 	}
 	
 }
+
+bool RessourcenManager::addSpriteAtlas(const char* name, const char* filename)
+{
+	DHASH id = DRMakeStringHash(name);
+	auto it = mSpriteAtlases.find(id);
+	if (it != mSpriteAtlases.end()) {
+		LOG_ERROR("spriteAtlas already exist", false);
+	}
+	mSpriteAtlases.insert(std::pair<DHASH, std::string>(id, filename));
+	return true;
+}
+
+const char* RessourcenManager::getSpriteAtlasPath(const char* name)
+{
+	DHASH id = DRMakeStringHash(name);
+	auto it = mSpriteAtlases.find(id);
+	if (it == mSpriteAtlases.end()) {
+		return nullptr;
+	}
+
+	return mSpriteAtlases[id].data();
+}

@@ -6,7 +6,7 @@
 
 class PlantTypesManager;
 class RessourcenManager;
-
+class SpriteBatchNodesHolderScene;
 
 class ConfigLoader
 {
@@ -22,6 +22,7 @@ public:
 	static bool loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects);
 
 protected:
+
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_CONTROLLER_CONFIG_LOADER_H

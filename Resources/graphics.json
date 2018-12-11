@@ -15,15 +15,15 @@
 			]
 		},
 		"graphics": {
-			"seed"   : "plants/carrot_seed.png",
-			"seeded" : "plants/carrot_growth_1.png",
+			"seed"   : {"part": "carrot_seed.png", "atlas":"plants1"},
+			"seeded" : {"part" : "carrot_growth_1.png", "atlas": "plants1"},
 			"growth" : [
-				"plants/carrot_growth_2.png",
-				"plants/carrot_growth_3.png",
-				"plants/carrot_growth_4.png",
-				"plants/carrot_growth_5.png"
+				{"part": "carrot_growth_2.png", "atlas":"plants1"},
+				{"part": "carrot_growth_3.png", "atlas":"plants1"},
+				{"part": "carrot_growth_4.png", "atlas":"plants1"},
+				{"part": "carrot_growth_5.png", "atlas":"plants1"}
 			],
-			"dead" : "plants/carrot_dead.png"
+			"dead" : {"part":"carrot_dead.png", "atlas":"plants1"}
 		}
 	},
 	"garlic" : {
@@ -44,15 +44,15 @@
 			]
 		},
 		"graphics" : {
-			"seed" :"plants/garlic_seed.png",
-			"seeded": "plants/garlic_growth_1.png",
+			"seed"  : {"part":"garlic_seed.png", "atlas":"plants1"},
+			"seeded": {"part":"garlic_growth_1.png", "atlas":"plants1"},
 			"growth": [
-				"plants/garlic_growth_2.png",
-				"plants/garlic_growth_3.png",
-				"plants/garlic_growth_4.png",
-				"plants/garlic_growth_5.png"
+				{"part": "garlic_growth_2.png", "atlas":"plants1"},
+				{"part": "garlic_growth_3.png", "atlas":"plants1"},
+				{"part": "garlic_growth_4.png", "atlas":"plants1"},
+				{"part": "garlic_growth_5.png", "atlas":"plants1"}
 			],
-			"dead": "plants/garlic_dead.png"
+			"dead": {"part" : "garlic_dead.png", "atlas":"plants1"}
 			
 		}
 	},
@@ -72,15 +72,15 @@
 			]
 		},
 		"graphics" : {
-			"seed"   : "plants/leek_seed.png",
-			"seeded" : "plants/leek_growth_1.png",
+			"seed"   : {"part":"leek_seed.png", "atlas":"plants1"},
+			"seeded" : {"part":"leek_growth_1.png", "atlas":"plants1"},
 			"growth" : [
-				"plants/leek_growth_2.png",
-				"plants/leek_growth_3.png",
-				"plants/leek_growth_4.png",
-				"plants/leek_growth_5.png"
+				{"part":"leek_growth_2.png", "atlas":"plants1"},
+				{"part":"leek_growth_3.png", "atlas":"plants1"},
+				{"part":"leek_growth_4.png", "atlas":"plants1"},
+				{"part": "leek_growth_5.png", "atlas":"plants1"}
 			],
-			"dead": "plants/leek_dead.png"
+			"dead": {"part":"leek_dead.png", "atlas":"plants1"}
 		}
 	},
 	"pea" : {
@@ -101,15 +101,15 @@
 			]
 		},
 		"graphics" : {
-			"seed"   : "plants/pea_seed.png",
-			"seeded" : "plants/pea_growth_1.png",
+			"seed"   : {"part":"pea_seed.png", "atlas": "plants"},
+			"seeded" : {"part":"pea_growth_1.png", "atlas":"plants1"},
 			"growth" : [
-				"plants/pea_growth_2.png",
-				"plants/pea_growth_3.png",
-				"plants/pea_growth_4.png",
-				"plants/pea_growth_5.png"
+				{"part":"pea_growth_2.png", "atlas":"plants1"},
+				{"part":"pea_growth_3.png", "atlas":"plants1"},
+				{"part":"pea_growth_4.png", "atlas":"plants1"},
+				{"part":"pea_growth_5.png", "atlas":"plants1"}
 			],
-			"dead": "plants/pea_dead.png"
+			"dead": {"part":"pea_dead.png", "atlas":"plants1"}
 		}
 	},
 	"strawberry" : {
@@ -128,15 +128,15 @@
 			]
 		},
 		"graphics" : {
-			"seed"   : "plants/strawberry_seed.png",
-			"seeded" : "plants/strawberry_growth_1.png",
+			"seed"   : {"part":"strawberry_seed.png", "atlas":"plants1"},
+			"seeded" : {"part":"strawberry_growth_1.png", "atlas":"plants1"},
 			"growth" : [
-				"plants/strawberry_growth_2.png",
-				"plants/strawberry_growth_3.png",
-				"plants/strawberry_growth_4.png",
-				"plants/strawberry_growth_5.png"
+				{"part":"strawberry_growth_2.png", "atlas":"plants1"},
+				{"part":"strawberry_growth_3.png", "atlas":"plants1"},
+				{"part":"strawberry_growth_4.png", "atlas":"plants1"},
+				{"part":"strawberry_growth_5.png", "atlas":"plants1"}
 			],
-			"dead": "plants/strawberry_dead.png"
+			"dead": {"part":"strawberry_dead.png", "atlas":"plants1"}
 		}
 	}
 }

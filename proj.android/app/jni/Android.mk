@@ -35,13 +35,15 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/TemplateMemoryManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/GridNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
+                   $(LOCAL_PATH)/../../../Classes/scenes/SpriteBatchNodesHolderScene.cpp \
                    $(LOCAL_PATH)/../../../Classes/PlantTypesManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/MainGameScene.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DisplayInfo.cpp \
@@ -57,7 +59,7 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeeded.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp
+                   
 
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes

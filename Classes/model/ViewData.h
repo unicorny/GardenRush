@@ -15,6 +15,9 @@
 #include "lib/DRHash.hpp"
 #include "json/document.h"
 
+class RessourcenManager;
+class SpriteBatchNodesHolderScene;
+
 enum ViewType
 {
 	VIEW_TYPE_SIMPLE_TEXTUE,
@@ -59,6 +62,22 @@ public:
 	virtual DHASH getHash() const;
 protected:
 	std::string mTextureName;
+};
+
+class ViewDataSpriteAtlas : public IViewData
+{
+public:
+	ViewDataSpriteAtlas(const char* spriteAtlasName, const char* objectName);
+	virtual ~ViewDataSpriteAtlas();
+	virtual cocos2d::Sprite* createSprite() const;
+	virtual cocos2d::Animation* createAnimation() { return NULL; }
+	virtual PlantNode* createPlantNode(const PlantType* plantType) const;
+	virtual bool changePlantNodeSprite(PlantNode* plantNode) const;
+	virtual DHASH getHash() const;
+
+protected:
+	std::string mSpriteAtlasName;
+	std::string mObjectName;
 };
 
 

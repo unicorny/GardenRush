@@ -134,7 +134,7 @@ static void problemLoading(const char* filename)
     printf2("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-//#define DISABLE_UI
+#define DISABLE_UI
 
 // on "init" you need to initialize your instance
 bool MainGameScene::init()
@@ -372,6 +372,12 @@ bool MainGameScene::initAfterCreate()
 
 	// add grid
 	///*
+/*	ViewDataSpriteAtlas view("plants1", "gridCell.png");
+	// multiple bgs 
+	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden0.png"));
+	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden1.png"));
+	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden2.png"));
+	*/
 	ViewDataSimpleTexture view("gridCell.png");
 	// multiple bgs 
 	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0.png"));
@@ -547,7 +553,9 @@ bool MainGameScene::touchEndIfInsideGrid(cocos2d::Vec2 pos, GridType type)
 void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 worldPosition)
 {
 	std::stringstream sstream,sstream2;
+
 	sstream << "Punkte: " << static_cast<int>(pointsSum);
+#ifndef DISABLE_UI
 	mPointsLabel->setString(sstream.str());
 	//sstream.
 	sstream2 << static_cast<int>(pointDifference);
@@ -572,6 +580,7 @@ void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 wo
 		cocos2d::EaseSineInOut::create(ScaleTo::create(1.2f, 1.0f)),
 		nullptr);
 	mMovingPointsLabel->runAction(sequence);
+#endif //DISABLE_UI
 }
 
 bool MainGameScene::isInsideGrid(cocos2d::Vec2 pos, GridType type)
@@ -784,14 +793,3 @@ bool MainGameScene::transitTo(DHASH levelStateId)
 	return true;
 }
 
-// for rendering
-bool MainGameScene::addSpriteBatchNode(const char* textureFileName, const char* name, ssize_t capacity)
-{
-	auto spriteBatchNode = SpriteBatchNode::create(textureFileName, capacity);
-	//addChild(spriteBatchNode);
-	bool ret = mSpriteBatchNodes.addByHash(DRMakeStringHash(name), spriteBatchNode);
-	if (ret) {
-		addChild(spriteBatchNode);
-	}
-	return ret;
-}

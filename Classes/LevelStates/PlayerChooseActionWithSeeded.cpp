@@ -46,7 +46,7 @@ namespace level_state {
 			mMainGameScene->transitTo("HarvestPlant");
 		}
 		else {
-			mMainGameScene->transitTo("ShowInfo");
+			mMainGameScene->transitTo("DisplayInfo");
 		}
 	}
 
