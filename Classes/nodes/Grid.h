@@ -57,8 +57,8 @@ public:
 	static Grid * create(uint8_t width, uint8_t height, GridType type);
 	static void setRessourcenManager(RessourcenManager* ressources);
 
-	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode);
-	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
+	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode, RessourcenManager* ressources);
+	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode, RessourcenManager* ressources);
 	bool setup(float edgeSizes, const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
 	void setIsometric() { mIsIsometric = true; }
 	void setPixelSize(cocos2d::Vec2 pixelSize);
@@ -117,8 +117,6 @@ public:
 	// rendering, called from cocos2d-x
 	virtual void draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags);
 
-	void renderCommand();
-
 	
 CC_CONSTRUCTOR_ACCESS:
 	// Nodes should be created using create();
@@ -137,12 +135,19 @@ protected:
 	bool addCellSprite(cocos2d::Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex);
 	bool _setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
 
+	cocos2d::Rect getAbsGridTile(GridIndex index);
+	bool fillGroundTilesIntoTextureAtlas(const std::vector<IViewData*>& tiles);
+
 	bool _setupRendering();
 	bool _setupRenderingIso();
 	bool _setupRendering3D();
 
+
+
 	inline void setDefaultShader(cocos2d::Node* n) { n->setGLProgram(cocos2d::GLProgramCache::getInstance()->getGLProgram(cocos2d::GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP)); }
 	cocos2d::Technique* getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material);
+
+
 
 	uint8_t mWidth;
 	uint8_t mHeight;
@@ -159,6 +164,13 @@ protected:
 	static RessourcenManager* mRessourcenManager;
 	// ----------------------------------------------------------
 	// render data
+	bool					       mGlowEnabled;
+	cocos2d::V3F_C4B_T2F_Quad*	   mBGCellQuads;
+	cocos2d::V3F_C4B_T2F_Quad*	   mBGGlowCellQuads;
+
+	cocos2d::QuadCommand*		   mBGCellQuadCommand;
+	cocos2d::QuadCommand*		   mBGGlowCellQuadCommand;
+
 	cocos2d::VertexBuffer* mVertexBuffer;
 	GLuint				   mIndexBuffer;
 	cocos2d::CustomCommand mRenderCommand;

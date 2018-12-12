@@ -3,6 +3,7 @@
 #include "ErrorLog.h"
 #include "scenes/SpriteBatchNodesHolderScene.h"
 #include "json/document.h"
+#include "model/ViewData.h"
 //
 using namespace rapidjson;
 using namespace cocos2d;
@@ -46,6 +47,54 @@ bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenM
 				}
 			}
 
+		}
+		else if (!strcmp(itr->name.GetString(), "grid")) {
+
+
+			for (rapidjson::Value::ConstMemberIterator iTypes = itr->value["types"].MemberBegin();
+				iTypes != itr->value["types"].MemberEnd(); ++iTypes) {
+
+				RessourcenManager::GridGraphicsConfig* config = new RessourcenManager::GridGraphicsConfig;
+				config->type = RessourcenManager::getGridNodeTypeFromString(iTypes->name.GetString());
+
+				// ground tile (array or single element)
+				if (!iTypes->value.HasMember("GroundTile")) {
+					DR_SAVE_DELETE(config);
+					LOG_ERROR("error, GroundTile not exist", false);
+				}
+				if (iTypes->value["GroundTile"].IsArray()) {
+					int count = 0;
+					for (rapidjson::Value::ConstValueIterator itrArray = iTypes->value["GroundTile"].Begin(); itrArray != iTypes->value["GroundTile"].End(); ++itrArray) {
+						count++;
+					}
+					config->groundTiles.reserve(count);
+					for (rapidjson::Value::ConstValueIterator itrArray = iTypes->value["GroundTile"].Begin(); itrArray != iTypes->value["GroundTile"].End(); ++itrArray) {
+						config->groundTiles.push_back(IViewData::createFromJson(&itrArray));
+					}
+				}
+				else {
+					config->groundTiles.push_back(IViewData::createFromJson(&iTypes->value.FindMember("GroundTile")));
+				}
+
+				// sides (only for iso and 3D)
+				if (iTypes->value.HasMember("sides")) {
+					auto sides = iTypes->value.FindMember("sides");
+					if (sides->value.HasMember("left") && sides->value.HasMember("right")) {
+						config->leftSide = IViewData::createFromJson(&sides->value.FindMember("left"));
+						config->rightSide = IViewData::createFromJson(&sides->value.FindMember("right"));
+					}
+				}
+
+				// overlay
+				if (iTypes->value.HasMember("overlay")) {
+					config->overlay = IViewData::createFromJson(&iTypes->value.FindMember("overlay"));
+				}
+				if (iTypes->value.HasMember("overlay_small")) {
+					config->overlay_small = IViewData::createFromJson(&iTypes->value.FindMember("overlay_small"));
+				}
+
+				ressourcenManager->addGridConfig(config);
+			}
 		}
 		else if (!strcmp(itr->name.GetString(), "spriteAtlas")) {
 			auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();

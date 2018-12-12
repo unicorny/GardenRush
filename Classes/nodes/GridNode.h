@@ -8,16 +8,12 @@
 */
 
 #include "cocos2d.h"
+#include "Enums.h"
 
 class RessourcenManager;
 class MainGameScene;
 
-enum GridNodeType {
-	GRID_NODE_NONE,
-	GRID_NODE_2D,
-	GRID_NODE_ISO,
-	GRID_NODE_3D
-};
+
 
 class GridNode : public cocos2d::Node
 {

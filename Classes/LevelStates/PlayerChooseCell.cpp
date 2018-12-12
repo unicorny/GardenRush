@@ -37,7 +37,7 @@ namespace level_state {
 		if (!plantNode) 
 		{
 			//mMainGameScene->setTargetPlantNode(nullptr);
-			if (targetPlantNode) {
+			if (targetPlantNode && targetPlantNode->getGrowPhasis() == PLANT_PHASIS_SEED) {
 				//auto targetGridCell = GridCell(x, y, type);
 
 				setGridCell(GridCell(x, y, type));

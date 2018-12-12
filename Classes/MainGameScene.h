@@ -49,6 +49,9 @@ class PlantNode;
 class Points;
 //class Grid;
 
+const int G_INVENTORY_SIZE = 4;
+const int G_BUCKET_SIZE = 1;
+const int G_MAIN_GRID_SIZE = 16;
 
 namespace level_state {
 	class iLevelState;
@@ -103,6 +106,9 @@ public:
 #endif
 
 	virtual void update(float delta);
+
+	// rendering, called from cocos2d-x
+	virtual void draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags);
 
 	// enable/disable touch
 

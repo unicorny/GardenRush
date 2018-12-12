@@ -1,0 +1,18 @@
+material gridOverlay
+{
+	technique 2d
+	{
+		pass 0
+		{
+			shader 
+			{
+				vertexShader = shaders/default_sprite.vert
+				fragmentShader = shaders/highlightGridCell.frag
+				
+				border_color    = 0.5,0.5,0.5,0.5
+				border_size 	= 32
+				highlight_color = 1.0,1.0,0.0
+			}
+		}
+	}
+}

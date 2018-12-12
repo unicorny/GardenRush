@@ -43,8 +43,9 @@
 #include "model/LevelData.h"
 #include "model/Points.h"
 #include "ErrorLog.h"
-
+#include "controller/RessourcenManager.h"
 #include "nodes/GridNode.h"
+
 
 
 
@@ -379,11 +380,14 @@ bool MainGameScene::initAfterCreate()
 	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden2.png"));
 	*/
 	ViewDataSimpleTexture view("gridCell.png");
+	//ViewDataSimpleTexture view("gridCell_bl.png");
+
 	// multiple bgs 
 	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0.png"));
 	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden1.png"));
 	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden2.png"));
-
+	//*/
+	//mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden_bl.png"));
 	//*/
 	//bg_cells[0] = new ViewDataSimpleTexture("gridCell.png");
 	// Layout
@@ -433,7 +437,8 @@ bool MainGameScene::initAfterCreate()
 		ErrorLog::printf("position: %f/%f, boundingBoxSize: %f/%f\n",
 			mainGridPosition.x, mainGridPosition.y, isoBoundingBoxSize.x, isoBoundingBoxSize.y);
 
-		grid->setup(isoBoundingBoxSize, mainGridPosition, mGroundCells, this);
+		//grid->setup(isoBoundingBoxSize, mainGridPosition, mGroundCells, this);
+		grid->setup(isoBoundingBoxSize, mainGridPosition, this, mRessourcenManager);
 		//grid->setRotationSkewX(45);
 		//grid->setRotationSkewY(45);
 		//grid->setAnchorPoint(Vec2(0.5f, 0.5f));
@@ -478,7 +483,7 @@ bool MainGameScene::initAfterCreate()
 			visibleSize.width + v2.x * 0.8f,
 			v2.y * 0.8f - flatCellSize * 2.0f
 		);
-		inventory_grid->setup(flatCellSize * 2.0f, position, &view, this);
+		inventory_grid->setup(flatCellSize * 2.0f, position, this, mRessourcenManager);
 		mGameGrids[GRID_INVENTORY] = inventory_grid;
 
 	}
@@ -498,7 +503,7 @@ bool MainGameScene::initAfterCreate()
 		);
 		ErrorLog::printf("[MainGameScene::initAfterCreate] inventorygrid position: %f/%f",
 			position.x, position.y);
-		bucket_grid->setup(flatCellSize, position, &view, this);
+		bucket_grid->setup(flatCellSize, position, this, mRessourcenManager);
 		mGameGrids[GRID_BUCKET] = bucket_grid;
 	}
 
@@ -528,6 +533,10 @@ void MainGameScene::update(float delta)
 	if (mActiveLevelState) {
 		mActiveLevelState->onUpdate(delta);
 	}
+}
+
+void MainGameScene::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags)
+{
 }
 
 void MainGameScene::onAcceleration(Acceleration* acc, Event* event)

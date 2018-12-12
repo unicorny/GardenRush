@@ -1,7 +1,23 @@
 #include "controller/RessourcenManager.h"
 #include "ErrorLog.h"
+#include "model/ViewData.h"
 
 using namespace cocos2d;
+
+// ------------------------------------- structs -----------------------------------------------
+
+RessourcenManager::GridGraphicsConfig::~GridGraphicsConfig()
+{
+	DR_SAVE_DELETE(leftSide);
+	DR_SAVE_DELETE(rightSide);
+	for (auto it = groundTiles.begin(); it != groundTiles.end(); it++) {
+		DR_SAVE_DELETE(*it);
+	}
+	groundTiles.clear();
+
+}
+
+// --------------------------------- Ressourcen Manager ----------------------------------------
 
 RessourcenManager::RessourcenManager()
 {
@@ -15,6 +31,11 @@ RessourcenManager::~RessourcenManager()
 		material->release();
 	}
 	mMaterials.clear(true);
+
+	for (auto it = mGridConfigs.begin(); it != mGridConfigs.end(); it++) {
+		DR_SAVE_DELETE(it->second);
+	}
+	mGridConfigs.clear();
 }
 
 bool RessourcenManager::loadMaterial(const char* path, const char* name)
@@ -64,4 +85,32 @@ const char* RessourcenManager::getSpriteAtlasPath(const char* name)
 	}
 
 	return mSpriteAtlases[id].data();
+}
+
+
+// grid
+GridNodeType RessourcenManager::getGridNodeTypeFromString(const char* gridNodeTypeName)
+{
+	if (strcmp(gridNodeTypeName, "2d") == 0) {
+		return GRID_NODE_2D;
+	}
+	else if (strcmp(gridNodeTypeName, "iso") == 0) {
+		return GRID_NODE_ISO;
+	}
+	else if (strcmp(gridNodeTypeName, "3d") == 0) {
+		return GRID_NODE_3D;
+	}
+	return GRID_NODE_NONE;
+}
+
+bool RessourcenManager::addGridConfig(GridGraphicsConfig* config)
+{
+	assert(config);
+	auto it = mGridConfigs.find(config->type);
+	if (it != mGridConfigs.end()) {
+		LOG_ERROR("error, grid type already exist", false);
+	}
+	mGridConfigs.insert(std::pair < GridNodeType, GridGraphicsConfig*>(config->type, config));
+
+	return true;
 }

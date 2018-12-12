@@ -14,6 +14,7 @@
 #include "nodes/PlantNode.h"
 #include "lib/DRHash.hpp"
 #include "json/document.h"
+//#include "json/rapidjson.h"
 
 class RessourcenManager;
 class SpriteBatchNodesHolderScene;
@@ -75,6 +76,7 @@ public:
 	virtual bool changePlantNodeSprite(PlantNode* plantNode) const;
 	virtual DHASH getHash() const;
 
+	inline cocos2d::SpriteFrame* getSpriteFrame() const {return cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(mObjectName);}
 protected:
 	std::string mSpriteAtlasName;
 	std::string mObjectName;

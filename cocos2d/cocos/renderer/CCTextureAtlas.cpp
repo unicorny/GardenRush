@@ -371,12 +371,15 @@ void TextureAtlas::insertQuads(V3F_C4B_T2F_Quad* quads, ssize_t index, ssize_t a
 
     auto max = index + amount;
     int j = 0;
+	// UNICORN CHANGE
+	memcpy(&_quads[index], quads, sizeof(V3F_C4B_T2F_Quad)*amount);
+	/*
     for (ssize_t i = index; i < max ; i++)
     {
         _quads[index] = quads[j];
         index++;
         j++;
-    }
+    }*/
 
     _dirty = true;
 }

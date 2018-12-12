@@ -24,8 +24,18 @@ IViewData* IViewData::createFromJson(const rapidjson::Value::ConstMemberIterator
 			ErrorLog::printf("file: %s doesn't exist", filename);
 			LOG_ERROR("file doesn't exist", NULL);
 		}
-	}
-	else {
+	} else if ((*itr)->value.IsObject()) {
+		//(*(*itr))["atlas"];
+		if ((*itr)->value.HasMember("atlas") && (*itr)->value.HasMember("part")) {
+			const char* atlasName = (*itr)->value["atlas"].GetString(); // iGraphics->value["atlas"].GetString();
+			const char* partName = (*itr)->value["part"].GetString();
+			//return new ViewDataSpriteAtlas(atlasName, partName);
+			return new ViewDataSpriteAtlas(atlasName, partName);
+		}
+		else {
+			LOG_ERROR("hasn't expected members", nullptr);
+		}
+	} else {
 		LOG_ERROR("not implemented yet", NULL);
 	}
 }
@@ -142,6 +152,8 @@ PlantNode* ViewDataSpriteAtlas::createPlantNode(const PlantType* plantType) cons
 	return ret;
 }
 
+
+
 bool ViewDataSpriteAtlas::changePlantNodeSprite(PlantNode* plantNode) const
 {
 	cocos2d::SpriteFrame *frame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(mObjectName);
@@ -149,6 +161,8 @@ bool ViewDataSpriteAtlas::changePlantNodeSprite(PlantNode* plantNode) const
 	//plantNode->setTexture(mTextureName);
 	return true;
 }
+
+
 
 DHASH ViewDataSpriteAtlas::getHash() const
 {

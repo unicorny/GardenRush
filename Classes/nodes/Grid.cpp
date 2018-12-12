@@ -5,6 +5,7 @@
 #include "ErrorLog.h"
 #include "PlantTypesManager.h"
 #include "controller/RessourcenManager.h"
+#include "MainGameScene.h"
 
 #include "model/Player.h"
 
@@ -14,11 +15,17 @@ using namespace cocos2d;
 RessourcenManager* Grid::mRessourcenManager = nullptr;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
-	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false)
+	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false),
+	mGlowEnabled(false), mBGCellQuads(nullptr), mBGGlowCellQuads(nullptr), mBGCellQuadCommand(nullptr), mBGGlowCellQuadCommand(nullptr)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
 	mBGCellsMap = (cocos2d::Sprite**)(malloc(width * height * sizeof(cocos2d::Sprite*)));
+	mBGCellQuads = new V3F_C4B_T2F_Quad[width * height];
+	mBGGlowCellQuads = new V3F_C4B_T2F_Quad[width * height];
+	mBGCellQuadCommand = new QuadCommand;
+	mBGGlowCellQuadCommand = new QuadCommand;
+
 	memset(mObstacleMap, 0, width*height * sizeof(uint8_t));
 	memset(mPlantMap, 0, width* height * sizeof(PlantNode*));
 	memset(mBGCellsMap, 0, width* height * sizeof(cocos2d::Sprite*));
@@ -29,6 +36,11 @@ Grid::~Grid()
 	free(mObstacleMap);
 	free(mBGCellsMap);
 	free(mPlantMap);
+
+	DR_SAVE_DELETE_ARRAY(mBGCellQuads);
+	DR_SAVE_DELETE_ARRAY(mBGGlowCellQuads);
+	DR_SAVE_DELETE(mBGCellQuadCommand);
+	DR_SAVE_DELETE(mBGGlowCellQuadCommand);
 }
 
 void Grid::setRessourcenManager(RessourcenManager* ressources)
@@ -61,21 +73,23 @@ bool Grid::init()
 	return ret;
 }
 
-bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, IViewData* bgTile, cocos2d::Node* parentNode)
+bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode, RessourcenManager* ressources)
 {
-	mBoundingBoxSize = Vec2(edge_size_pixels, edge_size_pixels);
-	std::vector<IViewData*> viewData;
-	viewData.push_back(bgTile);
 
-	return _setup(pos, viewData, parentNode);
+	mBoundingBoxSize = Vec2(edge_size_pixels, edge_size_pixels);
+	auto cfg = ressources->getGridConfig(GRID_NODE_2D);
+
+	return _setup(pos, cfg->groundTiles, parentNode);
 }
 
 
-bool Grid::setup(const Vec2& edgeSizes, const Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, Node* parentNode)
+bool Grid::setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode, RessourcenManager* ressources)
 {
 	setIsometric();
 	mBoundingBoxSize = edgeSizes;
-	return _setup(leftTopPosition, tiles, parentNode);
+	auto cfg = ressources->getGridConfig(GRID_NODE_ISO);
+
+	return _setup(leftTopPosition, cfg->groundTiles, parentNode);
 }
 bool Grid::setup(float edgeSizes, const Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, Node* parentNode)
 {
@@ -89,14 +103,19 @@ bool Grid::_setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewD
 	setAnchorPoint(Vec2(0.5f, 0.5f));
 	setPosition(leftTopPosition + mBoundingBoxSize * 0.5f);
 	bool ret = false;
-	if (tiles.size() > 1) {
-		ret = fillBgGridCellsRandom(tiles);
+	if (GRID_MAIN != mType) {
+		fillGroundTilesIntoTextureAtlas(tiles);
 	}
 	else {
-		ret = fillBgGridCells(tiles.front());
-	}
-	if (!ret) {
-		LOG_ERROR("fill bg grid", false);
+		if (tiles.size() > 1) {
+			ret = fillBgGridCellsRandom(tiles);
+		}
+		else {
+			ret = fillBgGridCells(tiles.front());
+		}
+		if (!ret) {
+			LOG_ERROR("fill bg grid", false);
+		}
 	}
 	parentNode->addChild(this, 1);
 	return true;
@@ -305,6 +324,15 @@ cocos2d::Vec2 Grid::getWorldPositionForGridIndex(uint8_t x, uint8_t y)
 
 }
 
+Rect Grid::getAbsGridTile(GridIndex index)
+{
+	Rect rect;
+	rect.origin = getWorldPositionForGridIndex(index.x, index.y);
+	rect.size = getCellSize();
+
+	return rect;
+}
+
 PlantNode* Grid::removeGridCell(uint8_t x, uint8_t y)
 {
 	assert(x < mWidth && y < mHeight);
@@ -351,6 +379,114 @@ bool Grid::fillBgGridCells(const IViewData* viewData)
 			}	
 		}
 	}
+	return true;
+}
+
+
+bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)
+{
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
+	assert(mWidth > 0 && mHeight > 0);
+	assert(viewData != NULL && countViewData > 0);
+
+	for (int i = 0; i < mWidth; i++) {
+		for (int j = 0; j < mHeight; j++) {
+			auto t = viewData[RandomHelper::random_int(0, countViewData - 1)];
+			bool ret = addBgGridCell(t, false, i, j);
+			if (!ret) {
+				LOG_ERROR("add bg grid cell", false);
+			}
+		}
+	}
+	return true;
+}
+
+bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
+{
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
+	assert(mWidth > 0 && mHeight > 0);
+	assert(tiles.size() > 0);
+
+	for (int i = 0; i < mWidth; i++) {
+		for (int j = 0; j < mHeight; j++) {
+			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
+			bool ret = addBgGridCell(t, false, i, j);
+			if (!ret) {
+				LOG_ERROR("add bg grid cell", false);
+			}
+			//if (j == 1) return true;
+			//return true;
+		}
+	}
+	return true;
+}
+
+bool Grid::fillGroundTilesIntoTextureAtlas(const std::vector<IViewData*>& tiles)
+{
+	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
+	assert(mWidth > 0 && mHeight > 0);
+	assert(tiles.size() > 0);
+	assert(mBGCellQuads);
+
+	SpriteFrame* firstSpriteFrame = nullptr;
+
+	//mGroundTextureAtlas->create()
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t index = x * mWidth + y;
+			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
+			if (VIEW_TYPE_SPRITE_ATLAS != t->getType()) {
+				ErrorLog::printf("[Grid::fillGroundTilesIntoTextureAtlas] Error, not a sprite atlas view! ");
+				continue;
+			}
+			auto* spriteAtlasView = static_cast<ViewDataSpriteAtlas*>(t);
+			auto spriteFrame = spriteAtlasView->getSpriteFrame();
+			if (!firstSpriteFrame) firstSpriteFrame = spriteFrame;
+			
+			auto textureRect = spriteFrame->getRectInPixels();
+			auto texture = spriteFrame->getTexture();
+			auto textureSize = Vec2(static_cast<float>(texture->getPixelsWide()), static_cast<float>(texture->getPixelsHigh()));
+
+			auto position = getAbsGridTile(GridIndex(x, y));
+			V3F_C4B_T2F_Quad* quad = &mBGCellQuads[index];
+			quad->tl.vertices = Vec3(position.getMinX(), position.getMaxY(), 0.0f);
+			quad->tl.colors = Color4B(255,255,255,255);
+			quad->tl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+
+			quad->bl.vertices = Vec3(position.getMinX(), position.getMinY(), 0.0f);
+			quad->bl.colors = Color4B(255, 255, 255, 255);
+			quad->bl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+			quad->tr.vertices = Vec3(position.getMaxX(), position.getMaxY(), 0.0f);
+			quad->tr.colors = Color4B(255, 255, 255, 255);
+			quad->tr.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+
+			quad->br.vertices = Vec3(position.getMaxX(), position.getMinY(), 0.0f);
+			quad->br.colors = Color4B(255, 255, 255, 255);
+			quad->br.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+		}
+	}
+	auto texture = firstSpriteFrame->getTexture();
+	auto glProgram = texture->getGLProgram();
+	auto programStateCache = GLProgramStateCache::getInstance();
+
+	BlendFunc blend;
+
+	// it is possible to have an untextured sprite
+	if (!texture || !texture->hasPremultipliedAlpha())
+	{
+		blend = BlendFunc::ALPHA_NON_PREMULTIPLIED;
+		//setOpacityModifyRGB(false);
+	}
+	else
+	{
+		blend = BlendFunc::ALPHA_PREMULTIPLIED;
+		//setOpacityModifyRGB(true);
+	}
+	Mat4 mat = Mat4::IDENTITY;
+	mBGCellQuadCommand->init(0.0, texture->getName(), programStateCache->getGLProgramState(glProgram), blend, mBGCellQuads, mWidth * mHeight, mat, 0);
+
 	return true;
 }
 
@@ -491,43 +627,6 @@ void Grid::glowCell(GridIndex index, const char* technique)
 
 }
 
-bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)
-{
-	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
-	assert(mWidth > 0 && mHeight > 0);
-	assert(viewData != NULL && countViewData > 0);
-
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mHeight; j++) {
-			auto t = viewData[RandomHelper::random_int(0, countViewData - 1)];
-			bool ret = addBgGridCell(t, false, i, j);
-			if (!ret) {
-				LOG_ERROR("add bg grid cell", false);
-			}
-		}
-	}
-	return true;
-}
-
-bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
-{
-	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
-	assert(mWidth > 0 && mHeight > 0);
-	assert(tiles.size() > 0);
-
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mHeight; j++) {
-			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
-			bool ret = addBgGridCell(t, false, i, j);
-			if (!ret) {
-				LOG_ERROR("add bg grid cell", false);
-			}
-			//if (j == 1) return true;
-			//return true;
-		}
-	}
-	return true;
-}
 
 GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
 {
@@ -763,7 +862,7 @@ bool Grid::_setupRenderingIso()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
 
-	mRenderCommand.func = std::bind(&Grid::renderCommand, this);
+//	mRenderCommand.func = std::bind(&Grid::renderCommand, this);
 
 	return true;
 }
@@ -806,17 +905,17 @@ bool Grid::_setupRendering3D()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
 
-	mRenderCommand.func = std::bind(&Grid::renderCommand, this);
+	//mRenderCommand.func = std::bind(&Grid::renderCommand, this);
 
 	return true;
 }
 
 void Grid::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags)
 {
-
+	if (GRID_MAIN == mType) return;
+	renderer->addCommand(mBGCellQuadCommand);
+	if (mGlowEnabled) {
+		renderer->addCommand(mBGGlowCellQuadCommand);
+	}
 }
 
-void Grid::renderCommand()
-{
-
-}

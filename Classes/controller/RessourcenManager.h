@@ -4,8 +4,10 @@
 #include "cocos2d.h"
 #include "lib/DRHashList.hpp"
 
-class PlantTypesManager;
+#include "Enums.h"
 
+class PlantTypesManager;
+class IViewData;
 /*
  * \author: einhornimmond
  *
@@ -32,13 +34,30 @@ public:
 	bool addSpriteAtlas(const char* name, const char* filename);
 	const char* getSpriteAtlasPath(const char* name);
 
+	
+	static GridNodeType getGridNodeTypeFromString(const char* gridNodeTypeName);
+
+	struct GridGraphicsConfig {
+		GridGraphicsConfig() : type(GRID_NODE_NONE), leftSide(nullptr), rightSide(nullptr), overlay(nullptr), overlay_small(nullptr) {}
+		~GridGraphicsConfig();
+
+		GridNodeType type;
+		std::vector<IViewData*> groundTiles;
+		IViewData* leftSide;
+		IViewData* rightSide;
+		IViewData* overlay;
+		IViewData* overlay_small;
+	};
+
+	bool addGridConfig(GridGraphicsConfig* config);
+
+	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
 
 protected:
 	DRHashList		mMaterials;
-	DRHashList		mSpriteBatchNodes;
-
 	std::map<DHASH, std::string> mSpriteAtlases;
-	
+	std::map<GridNodeType, GridGraphicsConfig*> mGridConfigs;
+
 
 };
 

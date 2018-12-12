@@ -30,4 +30,11 @@ enum PlantTypePhasisView
 	PLANT_PHASIS_ERROR
 };
 
+enum GridNodeType {
+	GRID_NODE_NONE,
+	GRID_NODE_2D,
+	GRID_NODE_ISO,
+	GRID_NODE_3D
+};
+
 #endif // __FAIRY_GAMES_GARDEN_RUSH_ENUMS_H

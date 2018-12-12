@@ -42,6 +42,7 @@ public:
 	inline void multPoints(float points) { mPointsMultiplicator *= points; }
 
 	inline void setGrowPhasis(PlantTypePhasisView growPhasis) { mGrowPhasis = growPhasis; }
+	inline PlantTypePhasisView getGrowPhasis() { return mGrowPhasis; }
 
 	// return growth phasis
 	int countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighborType, bool edge = true);
