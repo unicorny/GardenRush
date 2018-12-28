@@ -15,4 +15,17 @@ material gridOverlay
 			}
 		}
 	}
+	
+	technique default
+	{
+		pass 0 
+		{
+			shader 
+			{
+				vertexShader = shaders/default_sprite.vert
+				fragmentShader = shaders/highlightGridCell.frag
+				border_size 	= 32
+			}
+		}
+	}
 }

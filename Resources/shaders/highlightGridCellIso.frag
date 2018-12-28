@@ -5,14 +5,13 @@ precision lowp float;
 varying vec4 v_fragmentColor;
 varying vec2 v_texCoord;
 
-uniform vec4 border_color;
 uniform float border_size;
 //uniform vec3 highlight_color;
 
 void main()
 {
     //gl_FragColor = v_fragmentColor * texture2D(CC_Texture0, v_texCoord);
-	vec4 texColor = v_fragmentColor * texture2D(CC_Texture0, v_texCoord);
+	vec4 texColor = v_fragmentColor;// * texture2D(CC_Texture0, v_texCoord);
 	
 	float cx1 = (v_texCoord.x - 0.5) / -0.5;
 	float cy1 = (v_texCoord.y - 0.0) /  0.5;
@@ -30,5 +29,5 @@ void main()
 	//gl_FragColor = vec4(f1, f2, 0.0, 1.0);
 	//gl_FragColor = vec4(reversef1, reversef2, 0.0, 1.0);
 	//gl_FragColor = texColor * (1.0 - f1 - f2) + vec4(f1 * reversef1, f2 * reversef2, 0.0, texColor.a);
-	gl_FragColor = texColor * (1.0 - f1 - f2) + (f1 * reversef1 + f2 * reversef2) * vec4(border_color.xyz, texColor.a*border_color.a);
+	gl_FragColor = texColor * (1.0 - f1 - f2) + (f1 * reversef1 + f2 * reversef2) * vec4(v_fragmentColor.xyz, texColor.a*v_fragmentColor.a);
 }

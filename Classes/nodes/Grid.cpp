@@ -6,21 +6,23 @@
 #include "PlantTypesManager.h"
 #include "controller/RessourcenManager.h"
 #include "MainGameScene.h"
+#include "GridOverlay.h"
 
 #include "model/Player.h"
 
 
 using namespace cocos2d;
 
-RessourcenManager* Grid::mRessourcenManager = nullptr;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
-	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mPlantMap(nullptr), mIsIsometric(false),
-	mGlowEnabled(false), mBGCellQuads(nullptr), mBGGlowCellQuads(nullptr), mBGCellQuadCommand(nullptr), mBGGlowCellQuadCommand(nullptr)
+	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mObstaclesCount(0), mPlantMap(nullptr), mIsIsometric(false),
+	mGridGraphicsConfig(nullptr), 
+	mGlowEnabled(false), mBGCellQuads(nullptr), mBGGlowCellQuads(nullptr), mBGCellQuadCommand(nullptr), mBGGlowCellQuadCommand(nullptr),
+	mGridOverlay(nullptr)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
-	mBGCellsMap = (cocos2d::Sprite**)(malloc(width * height * sizeof(cocos2d::Sprite*)));
+	//mBGCellsMap = (cocos2d::Sprite**)(malloc(width * height * sizeof(cocos2d::Sprite*)));
 	mBGCellQuads = new V3F_C4B_T2F_Quad[width * height];
 	mBGGlowCellQuads = new V3F_C4B_T2F_Quad[width * height];
 	mBGCellQuadCommand = new QuadCommand;
@@ -28,13 +30,13 @@ Grid::Grid(uint8_t width, uint8_t height, GridType type)
 
 	memset(mObstacleMap, 0, width*height * sizeof(uint8_t));
 	memset(mPlantMap, 0, width* height * sizeof(PlantNode*));
-	memset(mBGCellsMap, 0, width* height * sizeof(cocos2d::Sprite*));
+	//memset(mBGCellsMap, 0, width* height * sizeof(cocos2d::Sprite*));
 }
 
 Grid::~Grid()
 {
 	free(mObstacleMap);
-	free(mBGCellsMap);
+	//free(mBGCellsMap);
 	free(mPlantMap);
 
 	DR_SAVE_DELETE_ARRAY(mBGCellQuads);
@@ -43,10 +45,6 @@ Grid::~Grid()
 	DR_SAVE_DELETE(mBGGlowCellQuadCommand);
 }
 
-void Grid::setRessourcenManager(RessourcenManager* ressources)
-{
-	mRessourcenManager = ressources;
-}
 
 Grid * Grid::create(uint8_t width, uint8_t height, GridType type)
 {
@@ -73,38 +71,41 @@ bool Grid::init()
 	return ret;
 }
 
-bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode, RessourcenManager* ressources)
+bool Grid::setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode)
 {
 
 	mBoundingBoxSize = Vec2(edge_size_pixels, edge_size_pixels);
-	auto cfg = ressources->getGridConfig(GRID_NODE_2D);
+	mGridGraphicsConfig = RessourcenManager::getInstance()->getGridConfig(GRID_NODE_2D);
 
-	return _setup(pos, cfg->groundTiles, parentNode);
+	return _setup(pos, parentNode);
 }
 
 
-bool Grid::setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode, RessourcenManager* ressources)
+bool Grid::setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode)
 {
 	setIsometric();
 	mBoundingBoxSize = edgeSizes;
-	auto cfg = ressources->getGridConfig(GRID_NODE_ISO);
+	mGridGraphicsConfig = RessourcenManager::getInstance()->getGridConfig(GRID_NODE_ISO);
 
-	return _setup(leftTopPosition, cfg->groundTiles, parentNode);
+	return _setup(leftTopPosition, parentNode);
 }
 bool Grid::setup(float edgeSizes, const Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, Node* parentNode)
 {
 	mBoundingBoxSize = Vec2(edgeSizes, edgeSizes);
-	return _setup(leftTopPosition, tiles, parentNode);
+	ErrorLog::printf("[Grid::setup] not used anymore");
+	return false;
+	//return _setup(leftTopPosition, tiles, parentNode);
 }
 
-bool Grid::_setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode)
+bool Grid::_setup(const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode)
 {
 	//setAnchorPoint(Vec2::ZERO);
 	setAnchorPoint(Vec2(0.5f, 0.5f));
 	setPosition(leftTopPosition + mBoundingBoxSize * 0.5f);
+	auto tiles = mGridGraphicsConfig->groundTiles;
 	bool ret = false;
-	if (GRID_MAIN != mType) {
-		fillGroundTilesIntoTextureAtlas(tiles);
+	if (true) {
+		fillGroundTilesIntoTextureAtlas();
 	}
 	else {
 		if (tiles.size() > 1) {
@@ -131,11 +132,12 @@ void Grid::reset()
 {
 	memset(mObstacleMap, 0, mWidth*mHeight * sizeof(uint8_t));
 	memset(mPlantMap, 0, mWidth* mHeight * sizeof(PlantNode*));
-	memset(mBGCellsMap, 0, mWidth* mHeight * sizeof(Sprite*));
+	//memset(mBGCellsMap, 0, mWidth* mHeight * sizeof(Sprite*));
 }
 
 bool Grid::addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y)
 {
+	LOG_ERROR("not used anymore", false);
 	assert(x < mWidth && y < mHeight);
 	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	auto index = x * mWidth + y;
@@ -143,7 +145,7 @@ bool Grid::addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, ui
 		mObstacleMap[index] = OBSTACLE_DEFAULT;
 	}
 	auto cellSprite = viewData->createSprite();
-	mBGCellsMap[index] = cellSprite;
+	//mBGCellsMap[index] = cellSprite;
 	return addCellSprite(cellSprite, x, y, 0);
 }
 
@@ -330,6 +332,7 @@ Rect Grid::getAbsGridTile(GridIndex index)
 	rect.origin = getWorldPositionForGridIndex(index.x, index.y);
 	rect.size = getCellSize();
 
+
 	return rect;
 }
 
@@ -421,105 +424,211 @@ bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
 	return true;
 }
 
-bool Grid::fillGroundTilesIntoTextureAtlas(const std::vector<IViewData*>& tiles)
+bool Grid::fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& vertices, const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize)
+{
+	quad->tl.vertices = Vec3(vertices.getMinX(), vertices.getMaxY(), 0.0f);
+	quad->tl.colors = Color4B(255, 255, 255, 255);
+	quad->tl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+
+	quad->bl.vertices = Vec3(vertices.getMinX(), vertices.getMinY(), 0.0f);
+	quad->bl.colors = Color4B(255, 255, 255, 255);
+	quad->bl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+	quad->tr.vertices = Vec3(vertices.getMaxX(), vertices.getMaxY(), 0.0f);
+	quad->tr.colors = Color4B(255, 255, 255, 255);
+	quad->tr.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+
+	quad->br.vertices = Vec3(vertices.getMaxX(), vertices.getMinY(), 0.0f);
+	quad->br.colors = Color4B(255, 255, 255, 255);
+	quad->br.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+	return true;
+}
+
+bool Grid::updateCellQuadTextureCoords(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize)
+{
+	quad->tl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+	quad->bl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+	quad->tr.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+	quad->br.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+	quad->tl.colors = Color4B::RED;
+	quad->bl.colors = Color4B::WHITE;
+	quad->tr.colors = Color4B::WHITE;
+	quad->br.colors = Color4B::WHITE;
+
+	return true;
+}
+
+bool Grid::updateCellQuadColor(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Color4B& color)
+{
+	quad->tl.colors = color;
+	quad->bl.colors = color;
+	quad->tr.colors = color;
+	quad->br.colors = color;
+
+	return true;
+}
+
+bool Grid::setGridOverlay(GridOverlay* gridOverlay)
+{
+	mGridOverlay = gridOverlay;
+	GridNodeType nodeType = GRID_NODE_2D;
+	if (isIsometric()) { nodeType = GRID_NODE_ISO; }
+	Vec2 positionOffset = getPosition();
+	auto texture = mGridGraphicsConfig->overlay->getTexture();
+	mGridOverlay->addSubgrid(mType, nodeType, GridIndex(mWidth, mHeight), positionOffset, texture);
+	
+	for (int y = 0; y < mHeight; y++) {
+		for (int x = 0; x < mWidth; x++) {
+			uint8_t index = x * mWidth + y;
+			Color4B color = Color4B::WHITE;
+			if (mObstacleMap[index] == OBSTACLE_DEFAULT) {
+				color.a = 0;
+			}
+			auto tile = getAbsGridTile(GridIndex(x, y));
+
+			// corners:  
+			//		0 = bl
+			//		1 = br
+			//		2 = tr
+			//		3 = tl
+			Vec2 corners[4];
+			
+			
+				
+			if(isIsometric()) {
+				corners[0] = Vec2(tile.getMidX(), tile.getMinY());
+				corners[1] = Vec2(tile.getMaxX(), tile.getMidY());
+				corners[2] = Vec2(tile.getMidX(), tile.getMaxY());
+				corners[3] = Vec2(tile.getMinX(), tile.getMidY());
+			
+			}
+			else {
+				corners[0] = Vec2(tile.getMinX(), tile.getMinY());
+				corners[1] = Vec2(tile.getMaxX(), tile.getMinY());
+				corners[2] = Vec2(tile.getMaxX(), tile.getMaxY());
+				corners[3] = Vec2(tile.getMinX(), tile.getMaxY());
+			}
+			mGridOverlay->fillCellQuad(mType, GridIndex(x, y), corners, color);
+		}
+	}
+	
+
+	return true;
+}
+
+
+bool Grid::fillGroundTilesIntoTextureAtlas()
 {
 	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	assert(mWidth > 0 && mHeight > 0);
-	assert(tiles.size() > 0);
+	//assert(tiles.size() > 0);
 	assert(mBGCellQuads);
+	assert(mBGGlowCellQuads);
+
+	auto tiles = mGridGraphicsConfig->groundTiles;
+	assert(tiles.size() > 0);
 
 	SpriteFrame* firstSpriteFrame = nullptr;
+	auto spriteFrameOverlaySmall = viewGetSpriteFrame(mGridGraphicsConfig->overlay_small);
+	auto overlayTexture = spriteFrameOverlaySmall->getTexture();
 
 	//mGroundTextureAtlas->create()
+	int bgCellIndex = 0;
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
 			uint8_t index = x * mWidth + y;
-			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
-			if (VIEW_TYPE_SPRITE_ATLAS != t->getType()) {
-				ErrorLog::printf("[Grid::fillGroundTilesIntoTextureAtlas] Error, not a sprite atlas view! ");
+			if (mObstacleMap[index] == OBSTACLE_DEFAULT)
 				continue;
+			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
+			auto spriteFrame = viewGetSpriteFrame(t);
+
+			if (!firstSpriteFrame) {
+				firstSpriteFrame = spriteFrame;
+			} else {
+				if (firstSpriteFrame->getTexture() != spriteFrame->getTexture()) {
+					ErrorLog::printf("[Grid::fillGroundTilesIntoTextureAtlas] Error, bg tiles have different textures");
+					continue;
+				}
 			}
-			auto* spriteAtlasView = static_cast<ViewDataSpriteAtlas*>(t);
-			auto spriteFrame = spriteAtlasView->getSpriteFrame();
-			if (!firstSpriteFrame) firstSpriteFrame = spriteFrame;
 			
 			auto textureRect = spriteFrame->getRectInPixels();
+			auto overlayTextureRect = spriteFrameOverlaySmall->getRectInPixels();
+
 			auto texture = spriteFrame->getTexture();
+			
+
 			auto textureSize = Vec2(static_cast<float>(texture->getPixelsWide()), static_cast<float>(texture->getPixelsHigh()));
+			auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
+
 
 			auto position = getAbsGridTile(GridIndex(x, y));
-			V3F_C4B_T2F_Quad* quad = &mBGCellQuads[index];
-			quad->tl.vertices = Vec3(position.getMinX(), position.getMaxY(), 0.0f);
-			quad->tl.colors = Color4B(255,255,255,255);
-			quad->tl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+			fillCellQuad(&mBGCellQuads[bgCellIndex], position, Color4B::WHITE, textureRect, textureSize);
+			fillCellQuad(&mBGGlowCellQuads[bgCellIndex], position, Color4B::WHITE, overlayTextureRect, overlayTextureSize);
 
-			quad->bl.vertices = Vec3(position.getMinX(), position.getMinY(), 0.0f);
-			quad->bl.colors = Color4B(255, 255, 255, 255);
-			quad->bl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMinY() / textureSize.y);
-
-			quad->tr.vertices = Vec3(position.getMaxX(), position.getMaxY(), 0.0f);
-			quad->tr.colors = Color4B(255, 255, 255, 255);
-			quad->tr.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
-
-			quad->br.vertices = Vec3(position.getMaxX(), position.getMinY(), 0.0f);
-			quad->br.colors = Color4B(255, 255, 255, 255);
-			quad->br.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMinY() / textureSize.y);
-
+			bgCellIndex++;
 		}
 	}
 	auto texture = firstSpriteFrame->getTexture();
 	auto glProgram = texture->getGLProgram();
+	auto glProgramOverlay = overlayTexture->getGLProgram();
 	auto programStateCache = GLProgramStateCache::getInstance();
 
 	BlendFunc blend;
 
 	// it is possible to have an untextured sprite
-	if (!texture || !texture->hasPremultipliedAlpha())
-	{
-		blend = BlendFunc::ALPHA_NON_PREMULTIPLIED;
-		//setOpacityModifyRGB(false);
-	}
-	else
-	{
-		blend = BlendFunc::ALPHA_PREMULTIPLIED;
-		//setOpacityModifyRGB(true);
-	}
+	if (!texture || !texture->hasPremultipliedAlpha()) { blend = BlendFunc::ALPHA_NON_PREMULTIPLIED; }
+	else { blend = BlendFunc::ALPHA_PREMULTIPLIED; }
+
 	Mat4 mat = Mat4::IDENTITY;
-	mBGCellQuadCommand->init(0.0, texture->getName(), programStateCache->getGLProgramState(glProgram), blend, mBGCellQuads, mWidth * mHeight, mat, 0);
+	mBGCellQuadCommand->init(0.0, texture->getName(), programStateCache->getGLProgramState(glProgram), blend, mBGCellQuads, bgCellIndex, mat, 0);
+
+	// it is possible to have an untextured sprite
+	if (!overlayTexture || !overlayTexture->hasPremultipliedAlpha()) { blend = BlendFunc::ALPHA_NON_PREMULTIPLIED; }
+	else { blend = BlendFunc::ALPHA_PREMULTIPLIED; }
+
+
+	mBGGlowCellQuadCommand->init(0.1f, overlayTexture->getName(), programStateCache->getGLProgramState(glProgramOverlay), blend, mBGGlowCellQuads, bgCellIndex, mat, 0);
 
 	return true;
 }
 
 void Grid::glowEmptyCells(bool enable/* = true*/)
 {
-	
-	//glprogramState->setUniformInt("")
-	for (int y = 0; y < mWidth; y++) {
-		for (int x = 0; x < mHeight; x++) {
-			uint8_t index = x * mWidth + y;
-			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
-				if (enable && !mPlantMap[index]) {
-					//mBGCellsMap[index]->setGLProgram(mst_highlightCellShader);
-					//mBGCellsMap[index]->setGLProgramState(glprogramState);
-					Material* mat = nullptr;
-					if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
-					else { mat = mRessourcenManager->getMaterial("highlightGridCell");  }
+	auto spriteFrameOverlaySmall = viewGetSpriteFrame(mGridGraphicsConfig->overlay_small);
+	auto overlayTexture = spriteFrameOverlaySmall->getTexture();
+	auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
 
-					mBGCellsMap[index]->setGLProgramState(
-						mat->getTechniqueByName("emptyCell")->getPassByIndex(0)->getGLProgramState()
-					);
+	if (!enable) {
+		mGlowEnabled = false;
+	}
+	else 
+	{
+		mGlowEnabled = true;
+
+		//glprogramState->setUniformInt("")
+		int cellQuadIndex = 0;
+		for (int y = 0; y < mWidth; y++) {
+			for (int x = 0; x < mHeight; x++) {
+				uint8_t index = x * mWidth + y;
+				if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
+					if (!mPlantMap[index]) {
+						updateCellQuadTextureCoords(&mBGGlowCellQuads[cellQuadIndex], spriteFrameOverlaySmall->getRectInPixels(), overlayTextureSize);
+					}
+					else {
+						updateCellQuadColor(&mBGGlowCellQuads[cellQuadIndex], Color4B(255, 255, 255, 0));
+					}
+					cellQuadIndex++;
 				}
-				else {
-					setDefaultShader(mBGCellsMap[index]);
-					
-				}
-				//mBGCellsMap[index]->getGLProgram()->use();
 			}
 		}
 	}
 }
 void Grid::disableAllGlowCells()
 {
+	mGlowEnabled = false;
+	/*
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
 			uint8_t index = x * mWidth + y;
@@ -528,10 +637,13 @@ void Grid::disableAllGlowCells()
 			}
 		}
 	}
+	*/
 }
 
 void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager)
 {
+	glowEmptyCells(true);
+	/*
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
 			uint8_t index = x * mWidth + y;
@@ -561,11 +673,13 @@ void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTy
 			}
 		}
 	}
+	*/
 }
 
 
 void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable/* = true*/)
 {
+	/*
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
 			uint8_t index = x * mWidth + y;
@@ -592,7 +706,7 @@ void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* pla
 			}
 		}
 	}
-
+	*/
 }
 
 cocos2d::Technique* Grid::getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material)
@@ -608,11 +722,35 @@ cocos2d::Technique* Grid::getTechniqueForNeighborType(PlantTypeNeighborType type
 }
 
 
-void Grid::glowCell(GridIndex index, const char* technique)
+void Grid::glowCell(const GridIndex& index, const char* technique)
 {
-	if (index.x > mWidth || index.y > mHeight) return;
-	int i = index.x * mWidth + index.y;
-	if (!mPlantMap[i]) return;
+	//LOG_ERROR_VOID("[Grid::glowCell] not updatet");
+
+	auto spriteFrameOverlay = viewGetSpriteFrame(mGridGraphicsConfig->overlay);
+	auto overlayTexture = spriteFrameOverlay->getTexture();
+	auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
+
+	int cellIndex = 0;
+
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t local_index = x * mWidth + y;
+			if (mObstacleMap[local_index] != OBSTACLE_DEFAULT) {
+				if (index.x == x && index.y == y) {
+					updateCellQuadTextureCoords(&mBGGlowCellQuads[cellIndex], spriteFrameOverlay->getRectInPixels(), overlayTextureSize);
+				}
+				else {
+					updateCellQuadColor(&mBGGlowCellQuads[cellIndex], Color4B(255, 0, 255, 0));
+				}
+				cellIndex++;
+			}
+		}
+	}
+
+	
+	mGlowEnabled = true;
+	
+	/*
 
 
 	if (!strcmp(technique, "default")) {
@@ -624,7 +762,7 @@ void Grid::glowCell(GridIndex index, const char* technique)
 		else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
 		mBGCellsMap[i]->setGLProgramState(mat->getTechniqueByName(technique)->getPassByIndex(0)->getGLProgramState());
 	}
-
+	*/
 }
 
 
@@ -912,7 +1050,7 @@ bool Grid::_setupRendering3D()
 
 void Grid::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags)
 {
-	if (GRID_MAIN == mType) return;
+//	if (GRID_MAIN == mType) return;
 	renderer->addCommand(mBGCellQuadCommand);
 	if (mGlowEnabled) {
 		renderer->addCommand(mBGGlowCellQuadCommand);

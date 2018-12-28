@@ -20,9 +20,9 @@ class IViewData;
 class RessourcenManager
 {
 public:
-	RessourcenManager();
+	
 	~RessourcenManager();
-
+	static RessourcenManager* getInstance();
 	//bool initPlantTypes(PlantTypesManager* manager, )
 
 	bool loadMaterial(const char* path, const char* name);
@@ -31,8 +31,9 @@ public:
 		return (cocos2d::Material*)mMaterials.findByHash(DRMakeStringHash(name));
 	}
 
-	bool addSpriteAtlas(const char* name, const char* filename);
+	bool addSpriteAtlas(const char* name, const char* plistFilename, const char* textureFilename);
 	const char* getSpriteAtlasPath(const char* name);
+	const char* getSpriteAtlasTexture(const char* name);
 
 	
 	static GridNodeType getGridNodeTypeFromString(const char* gridNodeTypeName);
@@ -49,13 +50,20 @@ public:
 		IViewData* overlay_small;
 	};
 
+	struct SpriteAtlasConfig {
+		std::string plistName;
+		std::string textureName;
+	};
+
 	bool addGridConfig(GridGraphicsConfig* config);
 
 	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
 
 protected:
+	RessourcenManager();
+
 	DRHashList		mMaterials;
-	std::map<DHASH, std::string> mSpriteAtlases;
+	std::map<DHASH, SpriteAtlasConfig*> mSpriteAtlases;
 	std::map<GridNodeType, GridGraphicsConfig*> mGridConfigs;
 
 

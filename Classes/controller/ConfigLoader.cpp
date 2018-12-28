@@ -19,16 +19,18 @@ ConfigLoader::~ConfigLoader()
 }
 
 
-bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenManager)
+bool ConfigLoader::loadFromJson(const char* path)
 {
 	// load json from file and parse
 	std::string content = cocos2d::FileUtils::getInstance()->getStringFromFile(path);
 	Document document;
 	document.Parse(content.data());
 
+	auto ressourcenManager = RessourcenManager::getInstance();
+
 	// interpret json
 	assert(document.IsObject());
-	
+
 	for (auto itr = document.MemberBegin(); itr != document.MemberEnd(); ++itr)
 	{
 		// for every type
@@ -99,15 +101,31 @@ bool ConfigLoader::loadFromJson(const char* path, RessourcenManager* ressourcenM
 		else if (!strcmp(itr->name.GetString(), "spriteAtlas")) {
 			auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
 			for (auto iSpriteAtlas = itr->value.MemberBegin(); iSpriteAtlas != itr->value.MemberEnd(); ++iSpriteAtlas) {
-				if (iSpriteAtlas->value.IsString() && iSpriteAtlas->name.IsString()) {
-					auto spriteAtlasPath = iSpriteAtlas->value.GetString();
+				if (iSpriteAtlas->name.IsString()) {
 					auto spriteAtlasName = iSpriteAtlas->name.GetString();
-					if (!ressourcenManager->addSpriteAtlas(spriteAtlasName, spriteAtlasPath)) {
-						LOG_ERROR("error adding spriteAtlas", false);
+
+					if (iSpriteAtlas->value.IsString()) {
+						auto spriteAtlasPList = iSpriteAtlas->value.GetString();
+
+						if (!ressourcenManager->addSpriteAtlas(spriteAtlasName, spriteAtlasPList, nullptr)) {
+							LOG_ERROR("error adding spriteAtlas", false);
+						}
+						spriteFrameCache->addSpriteFramesWithFile(spriteAtlasPList);
+						//spriteBatchHolder->addSpriteBatchNode(spriteAtlasPath, spriteAtlasName, 16);
 					}
-					spriteFrameCache->addSpriteFramesWithFile(spriteAtlasPath);
-					//spriteBatchHolder->addSpriteBatchNode(spriteAtlasPath, spriteAtlasName, 16);
+					else if (iSpriteAtlas->value.IsObject()) {
+						if (iSpriteAtlas->value.HasMember("plist") && iSpriteAtlas->value.HasMember("texture")) {
+							auto spriteAtlasPList = iSpriteAtlas->value["plist"].GetString();
+							auto spriteAtlasTexture = iSpriteAtlas->value["texture"].GetString();
+
+							if (!ressourcenManager->addSpriteAtlas(spriteAtlasName, spriteAtlasPList, spriteAtlasTexture)) {
+								LOG_ERROR("error adding spriteAtlas", false);
+							}
+							spriteFrameCache->addSpriteFramesWithFile(spriteAtlasPList);
+						}
+					}
 				}
+				
 			}
 		}
 	}

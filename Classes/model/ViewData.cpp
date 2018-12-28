@@ -69,6 +69,14 @@ IViewData* IViewData::createFromJson(const rapidjson::Value::ConstValueIterator*
 	}
 }
 
+cocos2d::SpriteFrame* viewGetSpriteFrame(IViewData* view)
+{
+	if (VIEW_TYPE_SPRITE_ATLAS == view->getType()) {
+		auto viewDataSpriteAtlas = static_cast<ViewDataSpriteAtlas*>(view);
+		return viewDataSpriteAtlas->getSpriteFrame();
+	}
+	LOG_ERROR("view isn't sprite Atlas", nullptr);
+}
 
 // **************************** Simple Texture ***********************************************
 
@@ -114,6 +122,11 @@ DHASH ViewDataSimpleTexture::getHash() const
 	return DRMakeFilenameHash(mTextureName.data());
 }
 
+cocos2d::Texture2D* ViewDataSimpleTexture::getTexture() const
+{
+	return cocos2d::Director::getInstance()->getTextureCache()->addImage(mTextureName);
+}
+
 
 // **************************** Sprite Atlas ***********************************************
 
@@ -150,6 +163,12 @@ PlantNode* ViewDataSpriteAtlas::createPlantNode(const PlantType* plantType) cons
 		CC_SAFE_DELETE(ret);
 	}
 	return ret;
+}
+
+cocos2d::Texture2D* ViewDataSpriteAtlas::getTexture() const
+{
+	auto textureName = RessourcenManager::getInstance()->getSpriteAtlasTexture(mSpriteAtlasName.data());
+	return cocos2d::Director::getInstance()->getTextureCache()->addImage(textureName);
 }
 
 

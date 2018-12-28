@@ -45,13 +45,14 @@
 #include "ErrorLog.h"
 #include "controller/RessourcenManager.h"
 #include "nodes/GridNode.h"
+#include "nodes/GridOverlay.h"
 
 
 
 
 USING_NS_CC;
 
-Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, RessourcenManager* ressourcenManager)
+Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager)
 {
 	
 	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
@@ -63,7 +64,6 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 	ErrorLog::printf("init Scene duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
 	ProfilingBeginTimingBlock("init plant types");
 	result->mPlantTypesManager = plantTypesManager;
-	result->mRessourcenManager = ressourcenManager;
 	result->mPoints = points;
 	result->mAnimationStateMemoryManager = animationStateMemorymanager;
 	points->addPointChangeCallback(result, "main");
@@ -369,27 +369,7 @@ bool MainGameScene::initAfterCreate()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	std::vector<IViewData*> mGroundCells;
-
-	// add grid
-	///*
-/*	ViewDataSpriteAtlas view("plants1", "gridCell.png");
-	// multiple bgs 
-	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden0.png"));
-	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden1.png"));
-	mGroundCells.push_back(new ViewDataSpriteAtlas("plants1", "boden2.png"));
-	*/
-	ViewDataSimpleTexture view("gridCell.png");
-	//ViewDataSimpleTexture view("gridCell_bl.png");
-
-	// multiple bgs 
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden0.png"));
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden1.png"));
-	mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden2.png"));
-	//*/
-	//mGroundCells.push_back(new ViewDataSimpleTexture("bg/boden_bl.png"));
-	//*/
-	//bg_cells[0] = new ViewDataSimpleTexture("gridCell.png");
+	
 	// Layout
 	float flatCellSize = (visibleSize.height * 0.9f) / 8.0f;
 	float xBorder = visibleSize.width * 0.01f;
@@ -406,8 +386,12 @@ bool MainGameScene::initAfterCreate()
 		(isoEdgeWidth / 8.0f) * static_cast<float>(levelMainGridCellCount),
 		(isoEdgeHeight / 8.0f) * static_cast<float>(levelMainGridCellCount)
 	);
+	auto gridOverlay = new GridOverlay();
+	gridOverlay->initRender();
+	addChild(gridOverlay);
+
 	auto grid = Grid::create(levelMainGridCellCount, levelMainGridCellCount, GRID_MAIN);
-	auto gridNode = new GridNode(mRessourcenManager);
+	/*auto gridNode = new GridNode(mRessourcenManager);
 	gridNode->setup(8, isoBoundingBoxSize, GRID_NODE_ISO, this);
 	auto cam = getDefaultCamera();
 	auto camPos = cam->getPosition3D();
@@ -420,7 +404,7 @@ bool MainGameScene::initAfterCreate()
 	gridNode->setPosition3D(camPos);
 
 	addChild(gridNode);
-
+	*/
 	auto mainGridPosition = Vec2(
 		origin.x + xBorder,
 		origin.y + yBorder
@@ -438,7 +422,8 @@ bool MainGameScene::initAfterCreate()
 			mainGridPosition.x, mainGridPosition.y, isoBoundingBoxSize.x, isoBoundingBoxSize.y);
 
 		//grid->setup(isoBoundingBoxSize, mainGridPosition, mGroundCells, this);
-		grid->setup(isoBoundingBoxSize, mainGridPosition, this, mRessourcenManager);
+		grid->setup(isoBoundingBoxSize, mainGridPosition, this);
+		grid->setGridOverlay(gridOverlay);
 		//grid->setRotationSkewX(45);
 		//grid->setRotationSkewY(45);
 		//grid->setAnchorPoint(Vec2(0.5f, 0.5f));
@@ -483,7 +468,7 @@ bool MainGameScene::initAfterCreate()
 			visibleSize.width + v2.x * 0.8f,
 			v2.y * 0.8f - flatCellSize * 2.0f
 		);
-		inventory_grid->setup(flatCellSize * 2.0f, position, this, mRessourcenManager);
+		inventory_grid->setup(flatCellSize * 2.0f, position, this);
 		mGameGrids[GRID_INVENTORY] = inventory_grid;
 
 	}
@@ -503,7 +488,7 @@ bool MainGameScene::initAfterCreate()
 		);
 		ErrorLog::printf("[MainGameScene::initAfterCreate] inventorygrid position: %f/%f",
 			position.x, position.y);
-		bucket_grid->setup(flatCellSize, position, this, mRessourcenManager);
+		bucket_grid->setup(flatCellSize, position, this);
 		mGameGrids[GRID_BUCKET] = bucket_grid;
 	}
 

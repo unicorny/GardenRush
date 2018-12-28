@@ -40,7 +40,8 @@ public:
 	virtual PlantNode* createPlantNode(const PlantType* plantType) const = 0;
 	virtual bool changePlantNodeSprite(PlantNode* plantNode) const = 0;
 	virtual DHASH getHash() const = 0;
-	
+	//cocos2d::SpriteFrame* getSpriteFrame() const;
+	virtual cocos2d::Texture2D* getTexture() const = 0;
 
 	static ViewType viewTypeFromString(const char* type);
 	static IViewData* createFromJson(const rapidjson::Value::ConstMemberIterator* itr);
@@ -49,6 +50,8 @@ public:
 protected:
 	ViewType mType;
 };
+
+cocos2d::SpriteFrame* viewGetSpriteFrame(IViewData* view);
 
 
 class ViewDataSimpleTexture : public IViewData
@@ -61,6 +64,8 @@ public:
 	virtual PlantNode* createPlantNode(const PlantType* plantType) const;
 	virtual bool changePlantNodeSprite(PlantNode* plantNode) const;
 	virtual DHASH getHash() const;
+
+	virtual cocos2d::Texture2D* getTexture() const;
 protected:
 	std::string mTextureName;
 };
@@ -75,6 +80,7 @@ public:
 	virtual PlantNode* createPlantNode(const PlantType* plantType) const;
 	virtual bool changePlantNodeSprite(PlantNode* plantNode) const;
 	virtual DHASH getHash() const;
+	virtual cocos2d::Texture2D* getTexture() const;
 
 	inline cocos2d::SpriteFrame* getSpriteFrame() const {return cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(mObjectName);}
 protected:

@@ -66,7 +66,6 @@ public:
 
 protected:
 	PlantTypesManager mPlantTypesManager;
-	RessourcenManager      mRessourcenManager;
 	TemplateMemoryManager<SpriteAnimationState> mAnimationStateMemoryManager;
 	Points			  mPlayerPoints;
 };

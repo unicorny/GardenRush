@@ -147,6 +147,9 @@
     <ClCompile Include="..\Classes\scenes\SpriteBatchNodesHolderScene.cpp">
       <Filter>src\scenes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\nodes\GridOverlay.cpp">
+      <Filter>src\nodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -268,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\scenes\SpriteBatchNodesHolderScene.h">
       <Filter>src\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\nodes\GridOverlay.h">
+      <Filter>src\nodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

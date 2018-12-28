@@ -10,6 +10,8 @@ varying vec4 v_fragmentColor;
 varying vec2 v_texCoord;
 #endif
 
+uniform float border_size;
+
 
 void main()
 {

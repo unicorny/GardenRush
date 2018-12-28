@@ -4,6 +4,12 @@
 
 using namespace cocos2d;
 
+RessourcenManager* RessourcenManager::getInstance()
+{
+	static RessourcenManager theOneAndOnly;
+	return &theOneAndOnly;
+}
+
 // ------------------------------------- structs -----------------------------------------------
 
 RessourcenManager::GridGraphicsConfig::~GridGraphicsConfig()
@@ -32,9 +38,15 @@ RessourcenManager::~RessourcenManager()
 	}
 	mMaterials.clear(true);
 
+	for (auto it = mSpriteAtlases.begin(); it != mSpriteAtlases.end(); it++) {
+		DR_SAVE_DELETE(it->second);
+	}
+	mSpriteAtlases.clear();
+
 	for (auto it = mGridConfigs.begin(); it != mGridConfigs.end(); it++) {
 		DR_SAVE_DELETE(it->second);
 	}
+
 	mGridConfigs.clear();
 }
 
@@ -65,14 +77,19 @@ bool RessourcenManager::loadMaterial(const char* path, const char* name)
 	
 }
 
-bool RessourcenManager::addSpriteAtlas(const char* name, const char* filename)
+bool RessourcenManager::addSpriteAtlas(const char* name, const char* plistFilename, const char* textureFilename)
 {
 	DHASH id = DRMakeStringHash(name);
 	auto it = mSpriteAtlases.find(id);
 	if (it != mSpriteAtlases.end()) {
 		LOG_ERROR("spriteAtlas already exist", false);
 	}
-	mSpriteAtlases.insert(std::pair<DHASH, std::string>(id, filename));
+	SpriteAtlasConfig* cfg = new SpriteAtlasConfig;
+	cfg->plistName = plistFilename;
+	if (textureFilename) {
+		cfg->textureName = textureFilename;
+	}
+	mSpriteAtlases.insert(std::pair<DHASH, SpriteAtlasConfig*>(id, cfg));
 	return true;
 }
 
@@ -84,9 +101,19 @@ const char* RessourcenManager::getSpriteAtlasPath(const char* name)
 		return nullptr;
 	}
 
-	return mSpriteAtlases[id].data();
+	return mSpriteAtlases[id]->plistName.data();
 }
 
+const char* RessourcenManager::getSpriteAtlasTexture(const char* name)
+{
+	DHASH id = DRMakeStringHash(name);
+	auto it = mSpriteAtlases.find(id);
+	if (it == mSpriteAtlases.end()) {
+		return nullptr;
+	}
+
+	return mSpriteAtlases[id]->textureName.data();
+}
 
 // grid
 GridNodeType RessourcenManager::getGridNodeTypeFromString(const char* gridNodeTypeName)

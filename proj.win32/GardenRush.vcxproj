@@ -180,6 +180,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\nodes\CustomAnimationSprite.cpp" />
     <ClCompile Include="..\Classes\nodes\Grid.cpp" />
     <ClCompile Include="..\Classes\nodes\GridNode.cpp" />
+    <ClCompile Include="..\Classes\nodes\GridOverlay.cpp" />
     <ClCompile Include="..\Classes\nodes\PlantNode.cpp" />
     <ClCompile Include="..\Classes\PlantTypesManager.cpp" />
     <ClCompile Include="..\Classes\scenes\SpriteBatchNodesHolderScene.cpp" />
@@ -222,6 +223,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\nodes\CustomAnimationSprite.h" />
     <ClInclude Include="..\Classes\nodes\Grid.h" />
     <ClInclude Include="..\Classes\nodes\GridNode.h" />
+    <ClInclude Include="..\Classes\nodes\GridOverlay.h" />
     <ClInclude Include="..\Classes\nodes\PlantNode.h" />
     <ClInclude Include="..\Classes\PlantTypesManager.h" />
     <ClInclude Include="..\Classes\scenes\SpriteBatchNodesHolderScene.h" />

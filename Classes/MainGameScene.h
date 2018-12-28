@@ -76,7 +76,7 @@ inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)
 class MainGameScene : public SpriteBatchNodesHolderScene, public iPointsUpdate
 {
 public:
-	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager, RessourcenManager* ressourcenManager);
+	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager);
 	MainGameScene();
 	~MainGameScene();
 
@@ -116,7 +116,6 @@ public:
 	inline Grid* getGrid(const GridType type) const { assert(type < GRID_SIZE); return mGameGrids[type]; }
 	inline const LevelData* getLevelData() const { return mLevelData; }
 	inline const PlantTypesManager* getPlantTypesManager() const { return mPlantTypesManager; }
-	inline const RessourcenManager* getRessourcenManager() const { return mRessourcenManager; }
 	inline TemplateMemoryManager<SpriteAnimationState>* getAnimationStateMemoryManager() { return mAnimationStateMemoryManager; }
 	inline Points* getPoints() { return mPoints; }
 
@@ -143,7 +142,6 @@ protected:
 
 	bool mToogleStats;
 	PlantTypesManager* mPlantTypesManager;
-	RessourcenManager*	   mRessourcenManager;
 	TemplateMemoryManager<SpriteAnimationState>* mAnimationStateMemoryManager;
 
 	Points*			   mPoints;

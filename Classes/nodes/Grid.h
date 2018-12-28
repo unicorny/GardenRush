@@ -11,12 +11,15 @@
 #include "cocos2d.h"
 #include "Enums.h"
 //#include "PlantNode.h"
+#include "controller/RessourcenManager.h"
+
 class IViewData;
 class PlantNode;
 class PlantType;
 class LevelData;
 class PlantTypesManager;
-class RessourcenManager;
+class GridOverlay;
+
 class Points;
 
 enum GridObstacleType
@@ -55,11 +58,11 @@ class Grid : public cocos2d::Node
 public:
 	// init
 	static Grid * create(uint8_t width, uint8_t height, GridType type);
-	static void setRessourcenManager(RessourcenManager* ressources);
 
-	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode, RessourcenManager* ressources);
-	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode, RessourcenManager* ressources);
+	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode);
+	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode);
 	bool setup(float edgeSizes, const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
+	bool setGridOverlay(GridOverlay* gridOverlay);
 	void setIsometric() { mIsIsometric = true; }
 	void setPixelSize(cocos2d::Vec2 pixelSize);
 	bool fillBgGridCells(const IViewData* viewData);
@@ -78,7 +81,7 @@ public:
 		if (enable) glowCell(index, "errorCell");
 		else glowCell(index, "default");
 	}
-	void glowCell(GridIndex index, const char* technique);
+	void glowCell(const GridIndex& index, const char* technique);
 	void disableAllGlowCells();
 	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable = true);
 	void glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager);
@@ -130,13 +133,16 @@ protected:
 	// coordinate transformation into and from isometric space
 	// Quelle: https://gamedevelopment.tutsplus.com/tutorials/creating-isometric-worlds-a-primer-for-game-developers--gamedev-6511
 	cocos2d::Vec2 isoLocalToFlatGrid(const cocos2d::Vec2& point) const;
-	cocos2d::Vec2 flatToIso(const cocos2d::Vec2& point) const;
+	cocos2d::Vec2 flatToIso(const cocos2d::Vec2& point) const;	
 
 	bool addCellSprite(cocos2d::Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex);
-	bool _setup(const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
+	bool _setup(const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode);
 
 	cocos2d::Rect getAbsGridTile(GridIndex index);
-	bool fillGroundTilesIntoTextureAtlas(const std::vector<IViewData*>& tiles);
+	bool fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& vertices, const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize);
+	bool updateCellQuadTextureCoords(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize); 
+	bool updateCellQuadColor(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Color4B& color);
+	bool fillGroundTilesIntoTextureAtlas();
 
 	bool _setupRendering();
 	bool _setupRenderingIso();
@@ -155,13 +161,13 @@ protected:
 	// whole grid size in Pixel
 	cocos2d::Vec2 mBoundingBoxSize;
 	uint8_t* mObstacleMap;
+	uint8_t mObstaclesCount;
 	PlantNode** mPlantMap;
-	cocos2d::Sprite** mBGCellsMap;
 	// geometrie
 
 	bool mIsIsometric;
 
-	static RessourcenManager* mRessourcenManager;
+	RessourcenManager::GridGraphicsConfig* mGridGraphicsConfig;
 	// ----------------------------------------------------------
 	// render data
 	bool					       mGlowEnabled;
@@ -181,7 +187,7 @@ protected:
 	GLint				   mUniformLocationGridCell;
 
 	// grid decoration details
-
+	GridOverlay*		   mGridOverlay;
 };
 
 #endif // __FAIRY_GAMES_GARDEN_RUSH_GRID_H
