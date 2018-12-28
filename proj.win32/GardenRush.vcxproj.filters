@@ -275,6 +275,9 @@
     <ClInclude Include="..\Classes\nodes\GridOverlay.h">
       <Filter>src\nodes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Config.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

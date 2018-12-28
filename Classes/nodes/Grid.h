@@ -74,14 +74,17 @@ public:
 
 	void glowEmptyCells(bool enable = true);
 	inline void glowSelectedCell(GridIndex index, bool enable = true) {
-		if (enable) glowCell(index, "selectedCell");
-		else glowCell(index, "default");
+		//if (enable) glowCell(index, "selectedCell");
+		//else glowCell(index, "default");
+		if (enable) glowCell(index, CELL_GLOW_SELECTED);
+		else disableAllGlowCells();
 	}
 	inline void glowErrorCell(GridIndex index, bool enable = true) {
-		if (enable) glowCell(index, "errorCell");
-		else glowCell(index, "default");
+		if (enable) glowCell(index, CELL_GLOW_ERROR);
+		else disableAllGlowCells();
 	}
 	void glowCell(const GridIndex& index, const char* technique);
+	void glowCell(const GridIndex& index, GridCellGlowType glowType);
 	void disableAllGlowCells();
 	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable = true);
 	void glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager);
@@ -96,7 +99,7 @@ public:
 	void removeAllGridCells();
 	cocos2d::Vec2 getOriginPosition(PlantNode* viewNode);
 
-	void rescale();
+	//void rescale();
 	void reset();
 
 	// infos
@@ -152,6 +155,7 @@ protected:
 
 	inline void setDefaultShader(cocos2d::Node* n) { n->setGLProgram(cocos2d::GLProgramCache::getInstance()->getGLProgram(cocos2d::GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP)); }
 	cocos2d::Technique* getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material);
+	GridCellGlowType getGlowTypeForNeighborType(PlantTypeNeighborType type);
 
 
 

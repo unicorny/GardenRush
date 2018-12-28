@@ -469,6 +469,7 @@ bool MainGameScene::initAfterCreate()
 			v2.y * 0.8f - flatCellSize * 2.0f
 		);
 		inventory_grid->setup(flatCellSize * 2.0f, position, this);
+		inventory_grid->setGridOverlay(gridOverlay);
 		mGameGrids[GRID_INVENTORY] = inventory_grid;
 
 	}
@@ -489,6 +490,7 @@ bool MainGameScene::initAfterCreate()
 		ErrorLog::printf("[MainGameScene::initAfterCreate] inventorygrid position: %f/%f",
 			position.x, position.y);
 		bucket_grid->setup(flatCellSize, position, this);
+		bucket_grid->setGridOverlay(gridOverlay);
 		mGameGrids[GRID_BUCKET] = bucket_grid;
 	}
 

@@ -7,6 +7,7 @@
 #include "controller/RessourcenManager.h"
 #include "MainGameScene.h"
 #include "GridOverlay.h"
+#include "Config.h"
 
 #include "model/Player.h"
 
@@ -606,7 +607,7 @@ void Grid::glowEmptyCells(bool enable/* = true*/)
 				for (int x = 0; x < mHeight; x++) {
 					uint8_t index = x * mWidth + y;
 					if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
-						Color4B color = Color4B(255, 255, 255, 192);
+						Color4B color = config_getColorForCellGlow(CELL_GLOW_EMPTY);
 						if (mPlantMap[index]) {
 							color.a = 0;
 						}
@@ -668,43 +669,49 @@ void Grid::disableAllGlowCells()
 
 void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager)
 {
-	glowEmptyCells(true);
-	/*
+	//glowEmptyCells(true);
+	assert(mGridOverlay);
+	
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
 			uint8_t index = x * mWidth + y;
-			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
-				Material* mat = nullptr;
-				if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
-				else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
-
-				Technique* technique = nullptr;
-
+			if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
+				
+				GridCellGlowType glowType = CELL_GLOW_EMPTY;
 				if (mPlantMap[index]) {
 					auto neighborType = plantTypesManager->getNeighborType(type->getIndex(), mPlantMap[index]->getPlantType()->getIndex());
-					technique = getTechniqueForNeighborType(neighborType, mat);
+					//technique = getTechniqueForNeighborType(neighborType, mat);
+					glowType = getGlowTypeForNeighborType(neighborType);
 				}
-				else {
-					technique = mat->getTechniqueByName("emptyCell");
-				}
-
-				if (technique) {
-					mBGCellsMap[index]->setGLProgramState(technique->getPassByIndex(0)->getGLProgramState());
-				}
-				else {
-					setDefaultShader(mBGCellsMap[index]);
-				}
-
-				
+				mGridOverlay->updateCellQuadColor(mType, GridIndex(x, y), config_getColorForCellGlow(glowType));
 			}
 		}
 	}
-	*/
+	mGridOverlay->setGlow(mType, true);
+	//*/
 }
 
 
 void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable/* = true*/)
 {
+	assert(mGridOverlay);
+
+	for (int y = 0; y < mWidth; y++) {
+		for (int x = 0; x < mHeight; x++) {
+			uint8_t index = x * mWidth + y;
+			if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
+
+				if (mPlantMap[index]) {
+					auto neighborType = plantTypesManager->getNeighborType(type->getIndex(), mPlantMap[index]->getPlantType()->getIndex());
+					//technique = getTechniqueForNeighborType(neighborType, mat);
+					auto glowType = getGlowTypeForNeighborType(neighborType);
+					mGridOverlay->updateCellQuadColor(mType, GridIndex(x, y), config_getColorForCellGlow(glowType));
+				}
+				
+			}
+		}
+	}
+	mGridOverlay->setGlow(mType, true);
 	/*
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {
@@ -747,48 +754,87 @@ cocos2d::Technique* Grid::getTechniqueForNeighborType(PlantTypeNeighborType type
 	return nullptr;
 }
 
+GridCellGlowType Grid::getGlowTypeForNeighborType(PlantTypeNeighborType type)
+{
+	switch (type) {
+	case NEIGHBOR_GOOD: return CELL_GLOW_GOOD_NEIGHBOR;
+	case NEIGHBOR_BAD: return CELL_GLOW_BAD_NEIGHBOR;
+	case NEIGHBOR_REALLY_GOOD: return CELL_GLOW_GOOD_NEIGHBOR;
+	case NEIGHBOR_NEUTRAL: return CELL_GLOW_NEUTRAL_NEIGHBOR;
+	default: return CELL_GLOW_ERROR;
+	}
+
+}
+
+void Grid::glowCell(const GridIndex& index, GridCellGlowType glowType)
+{
+	if (mGridOverlay) {
+		Color4B color = config_getColorForCellGlow(glowType);
+	
+		for (int y = 0; y < mWidth; y++) {
+			for (int x = 0; x < mHeight; x++) {
+				uint8_t local_index = x * mWidth + y;
+				if (mObstacleMap[local_index] != OBSTACLE_DEFAULT) {
+					if (index.x == x && index.y == y) {
+						mGridOverlay->updateCellQuadColor(mType, index, color);
+					}
+					else {
+						mGridOverlay->updateCellQuadColor(mType, index, Color4B(255,255,255,0));
+					}
+				}
+			}
+		}
+		mGridOverlay->setGlow(mType, true);
+	}
+}
 
 void Grid::glowCell(const GridIndex& index, const char* technique)
 {
 	//LOG_ERROR_VOID("[Grid::glowCell] not updatet");
 
-	auto spriteFrameOverlay = viewGetSpriteFrame(mGridGraphicsConfig->overlay);
-	auto overlayTexture = spriteFrameOverlay->getTexture();
-	auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
+	if (mGridOverlay) {
 
-	int cellIndex = 0;
-
-	for (int y = 0; y < mWidth; y++) {
-		for (int x = 0; x < mHeight; x++) {
-			uint8_t local_index = x * mWidth + y;
-			if (mObstacleMap[local_index] != OBSTACLE_DEFAULT) {
-				if (index.x == x && index.y == y) {
-					updateCellQuadTextureCoords(&mBGGlowCellQuads[cellIndex], spriteFrameOverlay->getRectInPixels(), overlayTextureSize);
-				}
-				else {
-					updateCellQuadColor(&mBGGlowCellQuads[cellIndex], Color4B(255, 0, 255, 0));
-				}
-				cellIndex++;
-			}
-		}
-	}
-
-	
-	mGlowEnabled = true;
-	
-	/*
-
-
-	if (!strcmp(technique, "default")) {
-		setDefaultShader(mBGCellsMap[i]);
 	}
 	else {
-		Material* mat = nullptr;
-		if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
-		else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
-		mBGCellsMap[i]->setGLProgramState(mat->getTechniqueByName(technique)->getPassByIndex(0)->getGLProgramState());
+
+		auto spriteFrameOverlay = viewGetSpriteFrame(mGridGraphicsConfig->overlay);
+		auto overlayTexture = spriteFrameOverlay->getTexture();
+		auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
+
+		int cellIndex = 0;
+
+		for (int y = 0; y < mWidth; y++) {
+			for (int x = 0; x < mHeight; x++) {
+				uint8_t local_index = x * mWidth + y;
+				if (mObstacleMap[local_index] != OBSTACLE_DEFAULT) {
+					if (index.x == x && index.y == y) {
+						updateCellQuadTextureCoords(&mBGGlowCellQuads[cellIndex], spriteFrameOverlay->getRectInPixels(), overlayTextureSize);
+					}
+					else {
+						updateCellQuadColor(&mBGGlowCellQuads[cellIndex], Color4B(255, 0, 255, 0));
+					}
+					cellIndex++;
+				}
+			}
+		}
+
+
+		mGlowEnabled = true;
+
+		/*
+
+
+		if (!strcmp(technique, "default")) {
+			setDefaultShader(mBGCellsMap[i]);
+		}
+		else {
+			Material* mat = nullptr;
+			if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
+			else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
+			mBGCellsMap[i]->setGLProgramState(mat->getTechniqueByName(technique)->getPassByIndex(0)->getGLProgramState());
+		}
+		*/
 	}
-	*/
 }
 
 

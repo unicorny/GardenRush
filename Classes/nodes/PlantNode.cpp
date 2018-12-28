@@ -41,7 +41,10 @@ int PlantNode::countNewNeighbor(DHASH neigborHash, PlantTypeNeighborType neighbo
 			if (edge || mHalfGrow) {
 				mGrowPhasis = static_cast<PlantTypePhasisView>(static_cast<int>(mGrowPhasis) + 1);
 				auto view = mPlantType->getViewData(mGrowPhasis);
+				auto anchorPoint = getAnchorPoint();
 				if(view) view->changePlantNodeSprite(this);
+				setAnchorPoint(anchorPoint);
+				
 				if (!edge) mHalfGrow = false;
 				return mGrowPhasis;
 			}
