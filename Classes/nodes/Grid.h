@@ -61,16 +61,13 @@ public:
 
 	bool setup(float edge_size_pixels, cocos2d::Vec2 pos, cocos2d::Node* parentNode);
 	bool setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode);
-	bool setup(float edgeSizes, const cocos2d::Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, cocos2d::Node* parentNode);
+
 	bool setGridOverlay(GridOverlay* gridOverlay);
 	void setIsometric() { mIsIsometric = true; }
 	void setPixelSize(cocos2d::Vec2 pixelSize);
-	bool fillBgGridCells(const IViewData* viewData);
-	bool fillBgGridCellsRandom(const IViewData** viewData, int countViewData);
-	bool fillBgGridCellsRandom(const std::vector<IViewData*>& tiles);
-
+	
 	// actions
-	bool addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y);
+	
 
 	void glowEmptyCells(bool enable = true);
 	inline void glowSelectedCell(GridIndex index, bool enable = true) {
@@ -83,7 +80,6 @@ public:
 		if (enable) glowCell(index, CELL_GLOW_ERROR);
 		else disableAllGlowCells();
 	}
-	void glowCell(const GridIndex& index, const char* technique);
 	void glowCell(const GridIndex& index, GridCellGlowType glowType);
 	void disableAllGlowCells();
 	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable = true);
@@ -144,17 +140,8 @@ protected:
 	cocos2d::Rect getAbsGridTile(GridIndex index);
 	bool fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& vertices, const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize);
 	bool updateCellQuadTextureCoords(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize); 
-	bool updateCellQuadColor(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Color4B& color);
 	bool fillGroundTilesIntoTextureAtlas();
 
-	bool _setupRendering();
-	bool _setupRenderingIso();
-	bool _setupRendering3D();
-
-
-
-	inline void setDefaultShader(cocos2d::Node* n) { n->setGLProgram(cocos2d::GLProgramCache::getInstance()->getGLProgram(cocos2d::GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP)); }
-	cocos2d::Technique* getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material);
 	GridCellGlowType getGlowTypeForNeighborType(PlantTypeNeighborType type);
 
 
@@ -174,21 +161,9 @@ protected:
 	RessourcenManager::GridGraphicsConfig* mGridGraphicsConfig;
 	// ----------------------------------------------------------
 	// render data
-	bool					       mGlowEnabled;
 	cocos2d::V3F_C4B_T2F_Quad*	   mBGCellQuads;
-	cocos2d::V3F_C4B_T2F_Quad*	   mBGGlowCellQuads;
-
 	cocos2d::QuadCommand*		   mBGCellQuadCommand;
-	cocos2d::QuadCommand*		   mBGGlowCellQuadCommand;
-
-	cocos2d::VertexBuffer* mVertexBuffer;
-	GLuint				   mIndexBuffer;
-	cocos2d::CustomCommand mRenderCommand;
 	
-
-	// shader
-	cocos2d::Material*     mMaterial;
-	GLint				   mUniformLocationGridCell;
 
 	// grid decoration details
 	GridOverlay*		   mGridOverlay;

@@ -36,7 +36,7 @@ bool GridOverlay::addSubgrid(GridType type, GridNodeType drawType, GridIndex cel
 
 
 	mSubGrids[type].mRenderCommand->init(
-		0.1f, texture, mMaterial->getTechniqueByName("default")->getPassByIndex(0)->getGLProgramState(),
+		0.0f, texture, mMaterial->getTechniqueByName("default")->getPassByIndex(0)->getGLProgramState(),
 		BlendFunc::ALPHA_NON_PREMULTIPLIED,
 		mSubGrids[type].mQuads, quadsCount, Mat4::IDENTITY, 0);
 

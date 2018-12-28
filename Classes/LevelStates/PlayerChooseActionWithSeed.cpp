@@ -75,62 +75,6 @@ namespace level_state {
 		mTouchStartTime = clock();
 
 		return;
-
-		//if (mTouchMoveSum.x + mTouchMoveSum.y > C_MOVE_THRESHOLD)
-
-/*		if (GRID_BUCKET == type) {
-			mMainGameScene->transitTo("DisplayInfo");
-			return;
-		}*/
-		//ErrorLog::printf("onTouchBegan");
-		auto grid = mMainGameScene->getGrid(type);
-		if ((GRID_MAIN == type || GRID_INVENTORY == type) && grid->isCellEmptyAndFree(x, y)) {
-			mMainGameScene->getGrid(GRID_MAIN)->disableAllGlowCells();
-			mMainGameScene->getGrid(GRID_INVENTORY)->disableAllGlowCells();
-			mMainGameScene->getGrid(GRID_BUCKET)->disableAllGlowCells();
-
-			auto pos = plantNode->getPosition();
-			pos = plantNode->getParentGrid()->fromLocalToWorld(pos);
-			plantNode->removeFromGrid(false);
-			if (GRID_INVENTORY == type) {
-				grid->addGridCell(plantNode, x, y);
-				plantNode->setGlobalZOrder(2.0f);
-				plantNode->setPosition(grid->fromWorldToLocal(pos));
-				mMainGameScene->transitTo("DropSeedValid");
-			} else if(GRID_MAIN == type) {
-				mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
-				mMainGameScene->addChild(plantNode);
-				plantNode->setPosition(pos);
-				mTargetGridIndex = GridIndex(x, y);
-				auto visibleSize = Director::getInstance()->getVisibleSize();
-				auto targetPosition = grid->getWorldPositionForGridIndex(x, y);
-				float distance = targetPosition.distanceSquared(plantNode->getPosition()) / Vec2(visibleSize).lengthSquared();
-				float animDuration = distance * 100.0f;
-				if (animDuration > 0.5f) animDuration = 0.5f;
-				auto plantNodeSequence = Sequence::create(
-					EaseIn::create(MoveTo::create(animDuration, targetPosition), 1.2f),
-					CallFunc::create(CC_CALLBACK_0(PlayerChooseActionWithSeed::dropAnimationEnd, this)),
-					nullptr);
-				plantNode->runAction(plantNodeSequence);
-			}
-		}
-		else 
-		{
-			if (!grid->isCellEmptyAndFree(x, y) && GRID_INVENTORY == type) {
-				plantNode->getParentGrid()->glowCell(plantNode->getGridIndex(), "default");
-				auto newTargetPlantNode = grid->getPlantNodeFromIndex(GridIndex(x, y));
-				mMainGameScene->setTargetPlantNode(newTargetPlantNode);
-				newTargetPlantNode->getParentGrid()->glowSelectedCell(newTargetPlantNode->getGridIndex());
-				auto plantTypes = mMainGameScene->getPlantTypesManager();
-				mMainGameScene->getGrid(GRID_MAIN)->glowAutoCells(newTargetPlantNode->getPlantType(), plantTypes);
-			}
-			else {
-				// error sound
-				//mErrorTime = 0.25f;
-				//plantNode->getParentGrid()->glowErrorCell(plantNode->getGridIndex(), true);
-				//mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_NONE);
-			}
-		}
 	}
 
 

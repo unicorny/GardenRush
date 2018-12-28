@@ -17,17 +17,14 @@ using namespace cocos2d;
 
 Grid::Grid(uint8_t width, uint8_t height, GridType type)
 	: mWidth(width), mHeight(height), mType(type), mBoundingBoxSize(Vec2::ZERO), mObstacleMap(nullptr), mObstaclesCount(0), mPlantMap(nullptr), mIsIsometric(false),
-	mGridGraphicsConfig(nullptr), 
-	mGlowEnabled(false), mBGCellQuads(nullptr), mBGGlowCellQuads(nullptr), mBGCellQuadCommand(nullptr), mBGGlowCellQuadCommand(nullptr),
+	mGridGraphicsConfig(nullptr), mBGCellQuads(nullptr), mBGCellQuadCommand(nullptr), 
 	mGridOverlay(nullptr)
 {
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
 	//mBGCellsMap = (cocos2d::Sprite**)(malloc(width * height * sizeof(cocos2d::Sprite*)));
 	mBGCellQuads = new V3F_C4B_T2F_Quad[width * height];
-	mBGGlowCellQuads = new V3F_C4B_T2F_Quad[width * height];
 	mBGCellQuadCommand = new QuadCommand;
-	mBGGlowCellQuadCommand = new QuadCommand;
 
 	memset(mObstacleMap, 0, width*height * sizeof(uint8_t));
 	memset(mPlantMap, 0, width* height * sizeof(PlantNode*));
@@ -41,9 +38,7 @@ Grid::~Grid()
 	free(mPlantMap);
 
 	DR_SAVE_DELETE_ARRAY(mBGCellQuads);
-	DR_SAVE_DELETE_ARRAY(mBGGlowCellQuads);
 	DR_SAVE_DELETE(mBGCellQuadCommand);
-	DR_SAVE_DELETE(mBGGlowCellQuadCommand);
 }
 
 
@@ -90,35 +85,15 @@ bool Grid::setup(const cocos2d::Vec2& edgeSizes, const cocos2d::Vec2& leftTopPos
 
 	return _setup(leftTopPosition, parentNode);
 }
-bool Grid::setup(float edgeSizes, const Vec2& leftTopPosition, const std::vector<IViewData*>& tiles, Node* parentNode)
-{
-	mBoundingBoxSize = Vec2(edgeSizes, edgeSizes);
-	ErrorLog::printf("[Grid::setup] not used anymore");
-	return false;
-	//return _setup(leftTopPosition, tiles, parentNode);
-}
+
 
 bool Grid::_setup(const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode)
 {
 	//setAnchorPoint(Vec2::ZERO);
 	setAnchorPoint(Vec2(0.5f, 0.5f));
 	setPosition(leftTopPosition + mBoundingBoxSize * 0.5f);
-	auto tiles = mGridGraphicsConfig->groundTiles;
-	bool ret = false;
-	if (true) {
-		fillGroundTilesIntoTextureAtlas();
-	}
-	else {
-		if (tiles.size() > 1) {
-			ret = fillBgGridCellsRandom(tiles);
-		}
-		else {
-			ret = fillBgGridCells(tiles.front());
-		}
-		if (!ret) {
-			LOG_ERROR("fill bg grid", false);
-		}
-	}
+	fillGroundTilesIntoTextureAtlas();
+	
 	parentNode->addChild(this, 1);
 	return true;
 }
@@ -136,19 +111,7 @@ void Grid::reset()
 	//memset(mBGCellsMap, 0, mWidth* mHeight * sizeof(Sprite*));
 }
 
-bool Grid::addBgGridCell(const IViewData* viewData, bool obstacle, uint8_t x, uint8_t y)
-{
-	LOG_ERROR("not used anymore", false);
-	assert(x < mWidth && y < mHeight);
-	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
-	auto index = x * mWidth + y;
-	if (obstacle) {
-		mObstacleMap[index] = OBSTACLE_DEFAULT;
-	}
-	auto cellSprite = viewData->createSprite();
-	//mBGCellsMap[index] = cellSprite;
-	return addCellSprite(cellSprite, x, y, 0);
-}
+
 
 bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 {
@@ -370,61 +333,6 @@ void Grid::removeAllGridCells()
 	}
 }
 
-bool Grid::fillBgGridCells(const IViewData* viewData)
-{
-	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
-	assert(mWidth > 0 && mHeight > 0);
-
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mHeight; j++) {
-			bool ret = addBgGridCell(viewData, false, i, j);
-			if (!ret) {
-				LOG_ERROR("add bg grid cell", false);
-			}	
-		}
-	}
-	return true;
-}
-
-
-bool Grid::fillBgGridCellsRandom(const IViewData** viewData, int countViewData)
-{
-	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
-	assert(mWidth > 0 && mHeight > 0);
-	assert(viewData != NULL && countViewData > 0);
-
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mHeight; j++) {
-			auto t = viewData[RandomHelper::random_int(0, countViewData - 1)];
-			bool ret = addBgGridCell(t, false, i, j);
-			if (!ret) {
-				LOG_ERROR("add bg grid cell", false);
-			}
-		}
-	}
-	return true;
-}
-
-bool Grid::fillBgGridCellsRandom(const std::vector<IViewData*>& tiles)
-{
-	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
-	assert(mWidth > 0 && mHeight > 0);
-	assert(tiles.size() > 0);
-
-	for (int i = 0; i < mWidth; i++) {
-		for (int j = 0; j < mHeight; j++) {
-			auto t = tiles[RandomHelper::random_int(0, static_cast<int>(tiles.size() - 1))];
-			bool ret = addBgGridCell(t, false, i, j);
-			if (!ret) {
-				LOG_ERROR("add bg grid cell", false);
-			}
-			//if (j == 1) return true;
-			//return true;
-		}
-	}
-	return true;
-}
-
 bool Grid::fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& vertices, const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize)
 {
 	quad->tl.vertices = Vec3(vertices.getMinX(), vertices.getMaxY(), 0.0f);
@@ -457,16 +365,6 @@ bool Grid::updateCellQuadTextureCoords(cocos2d::V3F_C4B_T2F_Quad* quad, const co
 	quad->bl.colors = Color4B::WHITE;
 	quad->tr.colors = Color4B::WHITE;
 	quad->br.colors = Color4B::WHITE;
-
-	return true;
-}
-
-bool Grid::updateCellQuadColor(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Color4B& color)
-{
-	quad->tl.colors = color;
-	quad->bl.colors = color;
-	quad->tr.colors = color;
-	quad->br.colors = color;
 
 	return true;
 }
@@ -529,7 +427,6 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 	assert(mWidth > 0 && mHeight > 0);
 	//assert(tiles.size() > 0);
 	assert(mBGCellQuads);
-	assert(mBGGlowCellQuads);
 
 	auto tiles = mGridGraphicsConfig->groundTiles;
 	assert(tiles.size() > 0);
@@ -569,7 +466,6 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 
 			auto position = getAbsGridTile(GridIndex(x, y));
 			fillCellQuad(&mBGCellQuads[bgCellIndex], position, Color4B::WHITE, textureRect, textureSize);
-			fillCellQuad(&mBGGlowCellQuads[bgCellIndex], position, Color4B::WHITE, overlayTextureRect, overlayTextureSize);
 
 			bgCellIndex++;
 		}
@@ -586,14 +482,7 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 	else { blend = BlendFunc::ALPHA_PREMULTIPLIED; }
 
 	Mat4 mat = Mat4::IDENTITY;
-	mBGCellQuadCommand->init(0.0, texture->getName(), programStateCache->getGLProgramState(glProgram), blend, mBGCellQuads, bgCellIndex, mat, 0);
-
-	// it is possible to have an untextured sprite
-	if (!overlayTexture || !overlayTexture->hasPremultipliedAlpha()) { blend = BlendFunc::ALPHA_NON_PREMULTIPLIED; }
-	else { blend = BlendFunc::ALPHA_PREMULTIPLIED; }
-
-
-	mBGGlowCellQuadCommand->init(0.1f, overlayTexture->getName(), programStateCache->getGLProgramState(glProgramOverlay), blend, mBGGlowCellQuads, bgCellIndex, mat, 0);
+	mBGCellQuadCommand->init(-0.1f, texture->getName(), programStateCache->getGLProgramState(glProgram), blend, mBGCellQuads, bgCellIndex, mat, 0);
 
 	return true;
 }
@@ -617,54 +506,13 @@ void Grid::glowEmptyCells(bool enable/* = true*/)
 			}
 		}
 	}
-	else {
-
-		auto spriteFrameOverlaySmall = viewGetSpriteFrame(mGridGraphicsConfig->overlay_small);
-		auto overlayTexture = spriteFrameOverlaySmall->getTexture();
-		auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
-
-		if (!enable) {
-			mGlowEnabled = false;
-		}
-		else
-		{
-			mGlowEnabled = true;
-
-			//glprogramState->setUniformInt("")
-			int cellQuadIndex = 0;
-			for (int y = 0; y < mWidth; y++) {
-				for (int x = 0; x < mHeight; x++) {
-					uint8_t index = x * mWidth + y;
-					if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
-						if (!mPlantMap[index]) {
-							updateCellQuadTextureCoords(&mBGGlowCellQuads[cellQuadIndex], spriteFrameOverlaySmall->getRectInPixels(), overlayTextureSize);
-						}
-						else {
-							updateCellQuadColor(&mBGGlowCellQuads[cellQuadIndex], Color4B(255, 255, 255, 0));
-						}
-						cellQuadIndex++;
-					}
-				}
-			}
-		}
-	}
+	
 }
 void Grid::disableAllGlowCells()
 {
-	mGlowEnabled = false;
 	if (mGridOverlay) {
 		mGridOverlay->setGlow(mType, false);
 	}
-	/*
-	for (int y = 0; y < mWidth; y++) {
-		for (int x = 0; x < mHeight; x++) {
-			uint8_t index = x * mWidth + y;
-			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index]) {
-				setDefaultShader(mBGCellsMap[index]);
-			}
-		}
-	}
-	*/
 }
 
 void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager)
@@ -712,46 +560,6 @@ void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* pla
 		}
 	}
 	mGridOverlay->setGlow(mType, true);
-	/*
-	for (int y = 0; y < mWidth; y++) {
-		for (int x = 0; x < mHeight; x++) {
-			uint8_t index = x * mWidth + y;
-			if (mObstacleMap[index] != OBSTACLE_DEFAULT && mBGCellsMap[index] && mPlantMap[index]) {
-				if (enable) {
-					Material* mat = nullptr;
-					if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
-					else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
-					
-					auto neighborType = plantTypesManager->getNeighborType(type->getIndex(), mPlantMap[index]->getPlantType()->getIndex());
-					Technique* technique = getTechniqueForNeighborType(neighborType, mat);
-
-					if (technique) {
-						mBGCellsMap[index]->setGLProgramState(technique->getPassByIndex(0)->getGLProgramState());
-					}
-					else {
-						setDefaultShader(mBGCellsMap[index]);
-					}
-
-				}
-				else {
-					setDefaultShader(mBGCellsMap[index]);
-				}
-			}
-		}
-	}
-	*/
-}
-
-cocos2d::Technique* Grid::getTechniqueForNeighborType(PlantTypeNeighborType type, cocos2d::Material* material)
-{
-	switch (type) {
-	case NEIGHBOR_GOOD: return material->getTechniqueByName("positiveNeighbor"); break;
-	case NEIGHBOR_BAD: return material->getTechniqueByName("negativeNeighbor"); break;
-	case NEIGHBOR_REALLY_GOOD: return material->getTechniqueByName("reallyGoodNeighbor"); break;
-	case NEIGHBOR_NEUTRAL: return material->getTechniqueByName("neutralNeighbor"); break;
-	default: break;
-	}
-	return nullptr;
 }
 
 GridCellGlowType Grid::getGlowTypeForNeighborType(PlantTypeNeighborType type)
@@ -788,54 +596,6 @@ void Grid::glowCell(const GridIndex& index, GridCellGlowType glowType)
 	}
 }
 
-void Grid::glowCell(const GridIndex& index, const char* technique)
-{
-	//LOG_ERROR_VOID("[Grid::glowCell] not updatet");
-
-	if (mGridOverlay) {
-
-	}
-	else {
-
-		auto spriteFrameOverlay = viewGetSpriteFrame(mGridGraphicsConfig->overlay);
-		auto overlayTexture = spriteFrameOverlay->getTexture();
-		auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
-
-		int cellIndex = 0;
-
-		for (int y = 0; y < mWidth; y++) {
-			for (int x = 0; x < mHeight; x++) {
-				uint8_t local_index = x * mWidth + y;
-				if (mObstacleMap[local_index] != OBSTACLE_DEFAULT) {
-					if (index.x == x && index.y == y) {
-						updateCellQuadTextureCoords(&mBGGlowCellQuads[cellIndex], spriteFrameOverlay->getRectInPixels(), overlayTextureSize);
-					}
-					else {
-						updateCellQuadColor(&mBGGlowCellQuads[cellIndex], Color4B(255, 0, 255, 0));
-					}
-					cellIndex++;
-				}
-			}
-		}
-
-
-		mGlowEnabled = true;
-
-		/*
-
-
-		if (!strcmp(technique, "default")) {
-			setDefaultShader(mBGCellsMap[i]);
-		}
-		else {
-			Material* mat = nullptr;
-			if (isIsometric()) { mat = mRessourcenManager->getMaterial("highlightGridCellIso"); }
-			else { mat = mRessourcenManager->getMaterial("highlightGridCell"); }
-			mBGCellsMap[i]->setGLProgramState(mat->getTechniqueByName(technique)->getPassByIndex(0)->getGLProgramState());
-		}
-		*/
-	}
-}
 
 
 GridIndex Grid::getGridIndex(cocos2d::Vec2 localPosition) const
@@ -1020,112 +780,10 @@ bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const
 // rendering
 // -------------------------------------------------------------------
 
-bool Grid::_setupRendering()
-{
-	glGenBuffers(1, &mIndexBuffer);
-	auto player = Player::getInstance();
-	if (player->isGrid3D()) {
-		_setupRendering3D();
-	}
-	else if(player->isGridIso()) {
-		_setupRenderingIso();
-	}
-	return true;
-}
-
-bool Grid::_setupRenderingIso()
-{
-	
-	mMaterial = Material::createWithFilename("materials/grid.material");
-	mMaterial->retain();
-	auto programState = mMaterial->getTechniqueByName("white_grid")->getPassByIndex(0)->getGLProgramState();
-	mUniformLocationGridCell = glGetUniformLocation(programState->getGLProgram()->getProgram(), "grid_cell_count");
-
-	if (mUniformLocationGridCell != -1)
-	{
-		glUniform1f(mUniformLocationGridCell, mWidth);
-		CHECK_GL_ERROR_DEBUG();
-	}
-
-	Vec3 vertices[] = {
-		{ -0.5f,  0.5f,  0.0f }, // 0
-		{ -0.5f, -0.5f,  0.0f }, // 1
-		{ 0.5f, -0.5f,  0.0f }, // 2
-		{ 0.5f,  0.5f,  0.0f }, // 3
-
-		{ -0.5f, -0.5f, -0.125f }, // 4
-		{ 0.5f, -0.5f, -0.125f }, // 5
-
-		{ 0.5f,  0.5f, -0.125f }  // 6
-	};
-
-	mVertexBuffer = VertexBuffer::create(sizeof(Vec3), 7);
-	mVertexBuffer->retain();
-	mVertexBuffer->updateVertices(vertices, 7, 0);
-
-	uint16_t indices[] = { 
-		0, 1, 3, 1, 2, 3,
-		4, 5, 2, 4, 2, 1,
-		6, 3, 2, 2, 5, 6 
-	};
-	// fill index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
-
-//	mRenderCommand.func = std::bind(&Grid::renderCommand, this);
-
-	return true;
-}
-
-bool Grid::_setupRendering3D()
-{
-	
-
-	mMaterial = Material::createWithFilename("materials/grid.material");
-	mMaterial->retain();
-	auto programState = mMaterial->getTechniqueByName("white_grid")->getPassByIndex(0)->getGLProgramState();
-	mUniformLocationGridCell = glGetUniformLocation(programState->getGLProgram()->getProgram(), "grid_cell_count");
-
-	if (mUniformLocationGridCell != -1)
-	{
-		glUniform1f(mUniformLocationGridCell, mWidth);
-		CHECK_GL_ERROR_DEBUG();
-	}
-
-	Vec3 vertices[] = {
-		{ -0.5f,  0.5f,  0.0f }, // 0
-		{ -0.5f, -0.5f,  0.0f }, // 1
-		{ 0.5f, -0.5f,  0.0f }, // 2
-		{ 0.5f,  0.5f,  0.0f }, // 3
-
-		{ -0.5f, -0.5f, -0.125f }, // 4
-		{ 0.5f, -0.5f, -0.125f }, // 5
-
-		{ 0.5f,  0.5f, -0.125f }  // 6
-	};
-
-	mVertexBuffer = VertexBuffer::create(sizeof(Vec3), 7);
-	mVertexBuffer->retain();
-	mVertexBuffer->updateVertices(vertices, 7, 0);
-
-	uint16_t indices[] = { 0, 1, 3, 1, 2, 3,
-		4, 5, 2, 4, 2, 1,
-		6, 3, 2, 2, 5, 6 };
-	// fill index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 18 * sizeof(uint16_t), &indices[0], GL_STATIC_DRAW);
-
-	//mRenderCommand.func = std::bind(&Grid::renderCommand, this);
-
-	return true;
-}
 
 void Grid::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags)
 {
 //	if (GRID_MAIN == mType) return;
 	renderer->addCommand(mBGCellQuadCommand);
-	if (mGlowEnabled) {
-		renderer->addCommand(mBGGlowCellQuadCommand);
-	}
 }
 
