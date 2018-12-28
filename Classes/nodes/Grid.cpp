@@ -486,6 +486,9 @@ bool Grid::setGridOverlay(GridOverlay* gridOverlay)
 			if (mObstacleMap[index] == OBSTACLE_DEFAULT) {
 				color.a = 0;
 			}
+			else {
+				color.a = 192;
+			}
 			auto tile = getAbsGridTile(GridIndex(x, y));
 
 			// corners:  
@@ -596,30 +599,50 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 
 void Grid::glowEmptyCells(bool enable/* = true*/)
 {
-	auto spriteFrameOverlaySmall = viewGetSpriteFrame(mGridGraphicsConfig->overlay_small);
-	auto overlayTexture = spriteFrameOverlaySmall->getTexture();
-	auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
-
-	if (!enable) {
-		mGlowEnabled = false;
+	if (mGridOverlay) {
+		mGridOverlay->setGlow(mType, enable);
+		if (enable) {
+			for (int y = 0; y < mWidth; y++) {
+				for (int x = 0; x < mHeight; x++) {
+					uint8_t index = x * mWidth + y;
+					if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
+						Color4B color = Color4B(255, 255, 255, 192);
+						if (mPlantMap[index]) {
+							color.a = 0;
+						}
+						mGridOverlay->updateCellQuadColor(mType, GridIndex(x, y), color);
+					}
+				}
+			}
+		}
 	}
-	else 
-	{
-		mGlowEnabled = true;
+	else {
 
-		//glprogramState->setUniformInt("")
-		int cellQuadIndex = 0;
-		for (int y = 0; y < mWidth; y++) {
-			for (int x = 0; x < mHeight; x++) {
-				uint8_t index = x * mWidth + y;
-				if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
-					if (!mPlantMap[index]) {
-						updateCellQuadTextureCoords(&mBGGlowCellQuads[cellQuadIndex], spriteFrameOverlaySmall->getRectInPixels(), overlayTextureSize);
+		auto spriteFrameOverlaySmall = viewGetSpriteFrame(mGridGraphicsConfig->overlay_small);
+		auto overlayTexture = spriteFrameOverlaySmall->getTexture();
+		auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
+
+		if (!enable) {
+			mGlowEnabled = false;
+		}
+		else
+		{
+			mGlowEnabled = true;
+
+			//glprogramState->setUniformInt("")
+			int cellQuadIndex = 0;
+			for (int y = 0; y < mWidth; y++) {
+				for (int x = 0; x < mHeight; x++) {
+					uint8_t index = x * mWidth + y;
+					if (mObstacleMap[index] != OBSTACLE_DEFAULT) {
+						if (!mPlantMap[index]) {
+							updateCellQuadTextureCoords(&mBGGlowCellQuads[cellQuadIndex], spriteFrameOverlaySmall->getRectInPixels(), overlayTextureSize);
+						}
+						else {
+							updateCellQuadColor(&mBGGlowCellQuads[cellQuadIndex], Color4B(255, 255, 255, 0));
+						}
+						cellQuadIndex++;
 					}
-					else {
-						updateCellQuadColor(&mBGGlowCellQuads[cellQuadIndex], Color4B(255, 255, 255, 0));
-					}
-					cellQuadIndex++;
 				}
 			}
 		}
@@ -628,6 +651,9 @@ void Grid::glowEmptyCells(bool enable/* = true*/)
 void Grid::disableAllGlowCells()
 {
 	mGlowEnabled = false;
+	if (mGridOverlay) {
+		mGridOverlay->setGlow(mType, false);
+	}
 	/*
 	for (int y = 0; y < mWidth; y++) {
 		for (int x = 0; x < mHeight; x++) {

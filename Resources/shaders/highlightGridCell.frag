@@ -23,6 +23,6 @@ void main()
 	//float glowFactor = ((v_texCoord.x + v_texCoord.y + 2.0*v_texCoord.x + (1.0-v_texCoord.y)*3.0)-1.0)*0.2*factor * (((CC_SinTime[3]+1.0)*0.5) / 3.0);
 	//float glowFactor = 0.0;
 	//gl_FragColor = texColor * (1.0 - factor) + (factor - glowFactor) * border_color + (glowFactor - factor) * vec4(highlight_color, 0.5);
-	gl_FragColor = texColor * (1.0 - factor) + factor * v_fragmentColor;
-	gl_FragColor = vec4(v_fragmentColor.xyz, 0.5);
+	gl_FragColor = vec4(v_fragmentColor.xyz, factor * v_fragmentColor.a);
+	//gl_FragColor = vec4(v_fragmentColor.xyz, 0.5);
 }

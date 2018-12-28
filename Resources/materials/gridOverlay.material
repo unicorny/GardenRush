@@ -24,7 +24,7 @@ material gridOverlay
 			{
 				vertexShader = shaders/default_sprite.vert
 				fragmentShader = shaders/highlightGridCell.frag
-				border_size 	= 32
+				border_size 	= 56
 			}
 		}
 	}

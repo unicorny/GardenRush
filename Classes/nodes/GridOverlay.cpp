@@ -154,7 +154,7 @@ void GridOverlay::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transfo
 	//mRenderCommand.init(10.0f, transform, flag);
 	//renderer->addCommand(mRenderCommand);
 	for (uint8_t i = 0; i < GRID_SIZE; i++) {
-		if (mSubGrids[i].mRenderCommand) {
+		if (mSubGrids[i].mRenderCommand && mSubGrids[i].mGlowEnabled) {
 			renderer->addCommand(mSubGrids[i].mRenderCommand);
 		}
 	}

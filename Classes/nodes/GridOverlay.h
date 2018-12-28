@@ -49,6 +49,8 @@ public:
 	bool fillCellQuad(GridType type, GridIndex cellIndex, const cocos2d::Vec2 corners[4], const cocos2d::Color4B& color);
 	bool updateCellQuadColor(GridType type, GridIndex cellIndex, const cocos2d::Color4B& color);
 
+	inline void setGlow(GridType type, bool enable) { mSubGrids[type].mGlowEnabled = enable; }
+
 	// init vertex and index buffer and draw command
 	bool initRender();
 
@@ -58,7 +60,7 @@ public:
 protected:
 	struct GridOverlaySubGrid
 	{
-		GridOverlaySubGrid() : mQuads(nullptr), mRenderCommand(nullptr) {}
+		GridOverlaySubGrid() : mQuads(nullptr), mRenderCommand(nullptr), mGlowEnabled(false) {}
 		~GridOverlaySubGrid() {
 			DR_SAVE_DELETE_ARRAY(mQuads);
 			DR_SAVE_DELETE(mRenderCommand);
@@ -69,6 +71,8 @@ protected:
 
 		cocos2d::V3F_C4B_T2F_Quad* mQuads;
 		cocos2d::QuadCommand*   mRenderCommand;
+
+		bool mGlowEnabled;
 
 		uint8_t getQuadIndex(GridIndex i) {
 			return i.x * mCellCount.x + i.y;
