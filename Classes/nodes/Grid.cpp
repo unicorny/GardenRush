@@ -23,7 +23,7 @@ Grid::Grid(uint8_t width, uint8_t height, GridType type)
 	mObstacleMap = (uint8_t*)(malloc(width * height * sizeof(uint8_t)));
 	mPlantMap = (PlantNode**)(malloc(width * height * sizeof(PlantNode*)));
 	//mBGCellsMap = (cocos2d::Sprite**)(malloc(width * height * sizeof(cocos2d::Sprite*)));
-	mBGCellQuads = new V3F_C4B_T2F_Quad[width * height];
+	//mBGCellQuads = new V3F_C4B_T2F_Quad[width * height];
 	mBGCellQuadCommand = new QuadCommand;
 
 	memset(mObstacleMap, 0, width*height * sizeof(uint8_t));
@@ -354,6 +354,27 @@ bool Grid::fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& ve
 	return true;
 }
 
+bool Grid::fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Vec2 corners[4], const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize)
+{
+	quad->tl.vertices = Vec3(corners[3].x, corners[3].y, 0.0f);
+	quad->tl.colors = Color4B(255, 255, 255, 255);
+	quad->tl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+
+	quad->bl.vertices = Vec3(corners[0].x, corners[0].y, 0.0f);
+	quad->bl.colors = Color4B(255, 255, 255, 255);
+	quad->bl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+	quad->tr.vertices = Vec3(corners[2].x, corners[2].y, 0.0f);
+	quad->tr.colors = Color4B(255, 255, 255, 255);
+	quad->tr.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
+
+	quad->br.vertices = Vec3(corners[1].x, corners[1].y, 0.0f);
+	quad->br.colors = Color4B(255, 255, 255, 255);
+	quad->br.texCoords = Tex2F(textureRect.getMaxX() / textureSize.x, textureRect.getMinY() / textureSize.y);
+
+	return true;
+}
+
 bool Grid::updateCellQuadTextureCoords(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize)
 {
 	quad->tl.texCoords = Tex2F(textureRect.getMinX() / textureSize.x, textureRect.getMaxY() / textureSize.y);
@@ -426,15 +447,22 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 	assert(mBoundingBoxSize.x > 0 && mBoundingBoxSize.y > 0);
 	assert(mWidth > 0 && mHeight > 0);
 	//assert(tiles.size() > 0);
-	assert(mBGCellQuads);
+	//assert(mBGCellQuads);
+
+	if (!mBGCellQuads) {
+		if (isIsometric()) {
+			mBGCellQuads = new V3F_C4B_T2F_Quad[mWidth * mHeight + 8];
+		}
+		else {
+			mBGCellQuads = new V3F_C4B_T2F_Quad[mWidth * mHeight];
+		}
+	}
 
 	auto tiles = mGridGraphicsConfig->groundTiles;
 	assert(tiles.size() > 0);
 
 	SpriteFrame* firstSpriteFrame = nullptr;
-	auto spriteFrameOverlaySmall = viewGetSpriteFrame(mGridGraphicsConfig->overlay_small);
-	auto overlayTexture = spriteFrameOverlaySmall->getTexture();
-
+	
 	//mGroundTextureAtlas->create()
 	int bgCellIndex = 0;
 	for (int y = 0; y < mWidth; y++) {
@@ -455,14 +483,8 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 			}
 			
 			auto textureRect = spriteFrame->getRectInPixels();
-			auto overlayTextureRect = spriteFrameOverlaySmall->getRectInPixels();
-
 			auto texture = spriteFrame->getTexture();
-			
-
-			auto textureSize = Vec2(static_cast<float>(texture->getPixelsWide()), static_cast<float>(texture->getPixelsHigh()));
-			auto overlayTextureSize = Vec2(static_cast<float>(overlayTexture->getPixelsWide()), static_cast<float>(overlayTexture->getPixelsHigh()));
-
+			auto textureSize = Vec2(static_cast<float>(texture->getPixelsWide()), static_cast<float>(texture->getPixelsHigh()));			
 
 			auto position = getAbsGridTile(GridIndex(x, y));
 			fillCellQuad(&mBGCellQuads[bgCellIndex], position, Color4B::WHITE, textureRect, textureSize);
@@ -470,9 +492,27 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 			bgCellIndex++;
 		}
 	}
+
+	// border
+	if (isIsometric()) {
+
+		auto leftTile = getAbsGridTile(GridIndex(0, mHeight - 1));
+		auto centerTile = getAbsGridTile(GridIndex(0, 0));
+		auto rightTile = getAbsGridTile(GridIndex(mWidth - 1, 0));
+		auto cellSize = getCellSize();
+
+		Vec2 leftPosIso = Vec2(leftTile.origin.x, leftTile.origin.y + cellSize.y * 0.5f);
+		Vec2 centerPosIso = Vec2(centerTile.origin.x + cellSize.x * 0.5f, centerTile.origin.y);
+		Vec2 rightPosIso = Vec2(rightTile.origin.x + cellSize.x, rightTile.origin.y + cellSize.y * 0.5f);
+
+		// left 
+		addQuadsForBorder(leftPosIso, centerPosIso, bgCellIndex, 4, viewGetSpriteFrame(mGridGraphicsConfig->leftSide));
+		// right 
+		addQuadsForBorder(centerPosIso, rightPosIso, bgCellIndex, 4, viewGetSpriteFrame(mGridGraphicsConfig->rightSide));
+		
+	}
 	auto texture = firstSpriteFrame->getTexture();
 	auto glProgram = texture->getGLProgram();
-	auto glProgramOverlay = overlayTexture->getGLProgram();
 	auto programStateCache = GLProgramStateCache::getInstance();
 
 	BlendFunc blend;
@@ -486,6 +526,57 @@ bool Grid::fillGroundTilesIntoTextureAtlas()
 
 	return true;
 }
+
+bool Grid::addQuadsForBorder(cocos2d::Vec2 leftStartPos, cocos2d::Vec2 rightStartPos, int& cellQuadIndex, uint8_t quadCount, cocos2d::SpriteFrame* spriteFrame)
+{
+	auto textureRect = spriteFrame->getRectInPixels();
+	auto texture = spriteFrame->getTexture();
+	auto textureSize = Vec2(static_cast<float>(texture->getPixelsWide()), static_cast<float>(texture->getPixelsHigh()));
+
+	// corners:  
+	//		0 = bl
+	//		1 = br
+	//		2 = tr
+	//		3 = tl
+	Vec2 corners[4];
+
+	auto cellSize = getCellSize();
+
+	// side height percent cellSize
+	const float sideHeight = 0.8f;
+
+	corners[3] = Vec2(leftStartPos.x, leftStartPos.y - cellSize.y * sideHeight); // bottom origin A
+	corners[2] = Vec2(rightStartPos.x, rightStartPos.y - cellSize.y * sideHeight); // bottom origin B
+
+	corners[1] = rightStartPos;
+	corners[0] = leftStartPos;
+
+	Vec2 bottomVector = corners[2] - corners[3];
+	Vec2 localCorners[4];
+
+	for (int i = 0; i < 4; i++) {
+		if (i == 0) {
+			localCorners[3] = corners[3] + (i * (bottomVector / 4.0f));
+			localCorners[0] = Vec2(localCorners[3].x, localCorners[3].y + cellSize.y * sideHeight);
+		}
+		else {
+			localCorners[3] = Vec2(localCorners[2].x - 1.0f, localCorners[2].y);
+			localCorners[0] = Vec2(localCorners[1].x - 1.0f, localCorners[1].y);
+		}
+
+		localCorners[2] = corners[3] + ((i + 1.0f) * (bottomVector / 4.0f));
+		localCorners[1] = Vec2(localCorners[2].x, localCorners[2].y + cellSize.y * sideHeight);
+
+		//roundCorners(localCorners);
+
+		fillCellQuad(&mBGCellQuads[cellQuadIndex], localCorners, Color4B::WHITE, textureRect, textureSize);
+		cellQuadIndex++;
+		//break;
+	}
+	return true;
+}
+
+
 
 void Grid::glowEmptyCells(bool enable/* = true*/)
 {

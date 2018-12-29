@@ -138,7 +138,9 @@ protected:
 	bool _setup(const cocos2d::Vec2& leftTopPosition, cocos2d::Node* parentNode);
 
 	cocos2d::Rect getAbsGridTile(GridIndex index);
+	bool addQuadsForBorder(cocos2d::Vec2 leftStartPos, cocos2d::Vec2 rightStartPos, int& cellQuadIndex, uint8_t quadCount, cocos2d::SpriteFrame* spriteFrame);
 	bool fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& vertices, const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize);
+	bool fillCellQuad(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Vec2 corners[4], const cocos2d::Color4B& color, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize);
 	bool updateCellQuadTextureCoords(cocos2d::V3F_C4B_T2F_Quad* quad, const cocos2d::Rect& textureRect, const cocos2d::Vec2& textureSize); 
 	bool fillGroundTilesIntoTextureAtlas();
 

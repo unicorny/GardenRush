@@ -176,8 +176,12 @@ cocos2d::Texture2D* ViewDataSpriteAtlas::getTexture() const
 bool ViewDataSpriteAtlas::changePlantNodeSprite(PlantNode* plantNode) const
 {
 	cocos2d::SpriteFrame *frame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName(mObjectName);
+
+	// seems updating sprite frame move also anchor back to default
+	auto anchorPoint = plantNode->getAnchorPoint();
 	plantNode->setSpriteFrame(frame);
-	//plantNode->setTexture(mTextureName);
+	plantNode->setAnchorPoint(anchorPoint);
+	
 	return true;
 }
 

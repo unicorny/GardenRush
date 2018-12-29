@@ -227,10 +227,11 @@ bool MainGameScene::init()
 		this->addChild(bg, 0, "bg");
 	}
 	//*/
+	
 	LayerColor *_bgColor = LayerColor::create(Color4B(130, 156, 184, 255));
 	_bgColor->setGlobalZOrder(-10.0f);
 	this->addChild(_bgColor, -10);
-	
+	//*/
     /////////////////////////////
     // 3. add your codes below...
 
