@@ -135,7 +135,7 @@ static void problemLoading(const char* filename)
     printf2("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-#define DISABLE_UI
+//#define DISABLE_UI
 
 // on "init" you need to initialize your instance
 bool MainGameScene::init()
@@ -741,6 +741,7 @@ void MainGameScene::menuResetCallback(cocos2d::Ref* pSender)
 	// reset grids
 	for (int i = 0; i < GRID_SIZE; i++) {
 		mGameGrids[i]->removeAllGridCells();
+		mGameGrids[i]->disableAllGlowCells();
 	}
 
 	// reset points

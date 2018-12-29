@@ -44,6 +44,7 @@ namespace level_state {
 		mMainGameScene->setTargetPlantNode(seededPlantNode);
 
 		mFadeOutPlantSeed = plantNode;
+		//plantNode->setPosition(plantNode->getParentGrid()->getLocalPositionForGridIndex(plantNode->getGridIndex()));
 		auto plantNodeSequence = Sequence::create(
 			FadeOut::create(fadeTime),
 			nullptr);

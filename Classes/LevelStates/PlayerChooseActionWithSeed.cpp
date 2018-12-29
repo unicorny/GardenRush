@@ -31,6 +31,7 @@ namespace level_state {
 
 		mMainGameScene->setEnabledTouchType(ENABLED_TOUCH_BEGIN_GRID | ENABLED_TOUCH_END | ENABLED_TOUCH_CANCELLED | ENABLED_TOUCH_MOVE);
 		auto plantNode = mMainGameScene->getTargetPlantNode();
+		mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(true);
 		plantNode->getParentGrid()->glowSelectedCell(plantNode->getGridIndex(), true);
 
 		return true;
@@ -53,11 +54,15 @@ namespace level_state {
 		float diffSeconds = (float)diff / CLOCKS_PER_SEC;
 
 		auto plantNode = mMainGameScene->getTargetPlantNode();
+		auto plantNodeGrid = plantNode->getParentGrid();
 		auto plantTypes = mMainGameScene->getPlantTypesManager();
 
 		if (diffSeconds >= C_TIME_FAST_TOUCH) {
 			mMainGameScene->getGrid(GRID_MAIN)->glowAutoCells(plantNode->getPlantType(), plantTypes);
 			mMainGameScene->getGrid(GRID_INVENTORY)->glowEmptyCells(true);
+			if (GRID_INVENTORY == plantNodeGrid->getType()) {
+				plantNodeGrid->glowSelectedCell(plantNode->getGridIndex());
+			}
 			mMainGameScene->transitTo("PlayerChooseCell");
 		}
 		else if (diffSeconds >= C_TIME_SLOW_TOUCH) {

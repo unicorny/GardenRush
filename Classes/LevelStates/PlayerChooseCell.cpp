@@ -33,6 +33,12 @@ namespace level_state {
 		auto plantNode = grid->getPlantNodeFromIndex(GridIndex(x, y));
 		auto targetPlantNode = mMainGameScene->getTargetPlantNode();
 
+		if (targetPlantNode) {
+			auto targetPlantNodeGrid = targetPlantNode->getParentGrid();
+			targetPlantNodeGrid->glowCell(targetPlantNode->getGridIndex(), CELL_GLOW_EMPTY);
+			targetPlantNodeGrid->disableAllGlowCells();
+		}
+
 		// if empty cell
 		if (!plantNode) 
 		{
@@ -46,10 +52,17 @@ namespace level_state {
 		}
 		else
 		{
+			
+			
 			mMainGameScene->setTargetPlantNode(plantNode);
 
-			if (GRID_MAIN == type) mMainGameScene->transitTo("PlayerChooseActionWithSeeded"); 
-			else				   mMainGameScene->transitTo("PlayerChooseActionWithSeed");
+			if (GRID_MAIN == type) {
+				mMainGameScene->transitTo("PlayerChooseActionWithSeeded");
+			}
+			else {
+				grid->glowSelectedCell(plantNode->getGridIndex());
+				mMainGameScene->transitTo("PlayerChooseActionWithSeed");
+			}
 		}
 
 	}

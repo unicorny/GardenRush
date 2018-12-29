@@ -17,6 +17,13 @@ SpriteAnimationState::~SpriteAnimationState()
 bool SpriteAnimationState::reinit(u8 index)
 {
 	mMemoryIndex = index;
+	mRunningAnimationTypes = SPRITE_ANIMATION_NONE;
+	mTargetOpacity = 255;
+	mTargetPosition = Vec2(0.0f, 0.0f);
+	mTargetScale = Vec2(1.0f, 1.0f);
+	mTargetAnchorPoint = Vec2(0.0f, 0.0f);
+	
+	//animationStop(SPRITE_ANIMATION_ALL);
 	return true;
 }
 // called from extern to stop animations
@@ -42,24 +49,31 @@ void SpriteAnimationState::animationEnd(SpriteAnimationTags animationTag, bool n
 {
 	assert(mParentSprite);
 	if (SPRITE_ANIMATION_SCALE == (animationTag & SPRITE_ANIMATION_SCALE)) {
+		if (SPRITE_ANIMATION_SCALE == (mRunningAnimationTypes & SPRITE_ANIMATION_SCALE)) {
+			mParentSprite->setAnchorPoint(cocos2d::Vec2::ZERO);
+			auto pos = mParentSprite->getPosition();
+			auto contentSize = mParentSprite->getContentSize();
+			auto translationVector = Vec2(mTargetAnchorPoint.x - 0.5f, mTargetAnchorPoint.y - 0.5f);
+			mParentSprite->setPosition(pos + Vec2(
+				translationVector.x * mTargetScale.x * contentSize.width,
+				translationVector.y * mTargetScale.y * contentSize.height
+			));
+			mParentSprite->setScale(mTargetScale.x, mTargetScale.y);
+		}
 		mRunningAnimationTypes = static_cast<SpriteAnimationTags>(mRunningAnimationTypes ^ SPRITE_ANIMATION_SCALE);
-		mParentSprite->setAnchorPoint(cocos2d::Vec2::ZERO);
-		auto pos = mParentSprite->getPosition();
-		auto contentSize = mParentSprite->getContentSize();
-		auto translationVector = Vec2(mTargetAnchorPoint.x - 0.5f, mTargetAnchorPoint.y - 0.5f);
-		mParentSprite->setPosition(pos + Vec2(
-			translationVector.x * mTargetScale.x * contentSize.width,
-			translationVector.y * mTargetScale.y * contentSize.height
-		));
-		mParentSprite->setScale(mTargetScale.x, mTargetScale.y);
 	}
 	if (SPRITE_ANIMATION_MOVE == (animationTag & SPRITE_ANIMATION_MOVE)) {
+		if (SPRITE_ANIMATION_MOVE == (mRunningAnimationTypes & SPRITE_ANIMATION_MOVE)) {
+			mParentSprite->setPosition(mTargetPosition);
+		}
 		mRunningAnimationTypes = static_cast<SpriteAnimationTags>(mRunningAnimationTypes ^ SPRITE_ANIMATION_MOVE);
-		mParentSprite->setPosition(mTargetPosition);
+		
 	}
 	if (SPRITE_ANIMATION_FADE == (animationTag & SPRITE_ANIMATION_FADE)) {
+		if (SPRITE_ANIMATION_FADE == (mRunningAnimationTypes & SPRITE_ANIMATION_FADE)) {
+			mParentSprite->setOpacity(mTargetOpacity);
+		}
 		mRunningAnimationTypes = static_cast<SpriteAnimationTags>(mRunningAnimationTypes ^ SPRITE_ANIMATION_FADE);
-		mParentSprite->setOpacity(mTargetOpacity);
 	}
 
 	if (false == newAnimationFollowd && mRunningAnimationTypes == SPRITE_ANIMATION_NONE) {

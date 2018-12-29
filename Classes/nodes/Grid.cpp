@@ -257,6 +257,38 @@ bool Grid::addCellSprite(Sprite* sprite, uint8_t x, uint8_t y, uint32_t zIndex)
 	return true;
 }
 
+cocos2d::Vec2 Grid::getLocalPositionForGridIndex(GridIndex index)
+{
+	auto cellSize = getCellSize();
+	auto pos = Vec2(
+		static_cast<float>(index.x) * cellSize.x,
+		static_cast<float>(index.y) * cellSize.y
+	);
+	if (isIsometric()) {
+		//ErrorLog::printf("pos: %f, %f\n", pos.x, pos.y);
+		//pos.x += 0.5f * cellSize.x;
+		//pos.y += 0.5f * cellSize.y;
+		//pos = flatToIso(pos);
+		// origin : x = grid bounding box / 2
+		//          y = 0
+		// pos.x = origin.x + (x-y)/2 * cellWidth
+		// pos.y = (x+y)/2 * cellHeight
+		pos = Vec2(
+			((static_cast<float>(index.x - index.y) + static_cast<float>(mWidth)) / 2.0f - 0.5f) * mBoundingBoxSize.x / static_cast<float>(mWidth),
+			((static_cast<float>(index.x + index.y)) / 2.0f) * mBoundingBoxSize.y / static_cast<float>(mHeight)
+		);
+
+		//ErrorLog::printf("flat pos: (%d)%f, (%d)%f\n", x, pos.x, y, pos.y);
+		//sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
+		//sprite->setScale(0.25f);
+	}
+	// move by anchor
+	auto anchor = getAnchorPoint();
+	pos -= Vec2(anchor.x * mBoundingBoxSize.x, anchor.y * mBoundingBoxSize.y);
+
+	return pos;
+}
+
 cocos2d::Vec2 Grid::getWorldPositionForGridIndex(uint8_t x, uint8_t y)
 {
 	auto cellSize = getCellSize();
@@ -603,7 +635,16 @@ void Grid::disableAllGlowCells()
 {
 	if (mGridOverlay) {
 		mGridOverlay->setGlow(mType, false);
+		Color4B color = config_getColorForCellGlow(CELL_GLOW_NONE);
+
+		for (int y = 0; y < mWidth; y++) {
+			for (int x = 0; x < mHeight; x++) {
+				uint8_t index = x * mWidth + y;
+				mGridOverlay->updateCellQuadColor(mType, GridIndex(x, y), color);
+			}
+		}
 	}
+
 }
 
 void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager)
@@ -670,15 +711,15 @@ void Grid::glowCell(const GridIndex& index, GridCellGlowType glowType)
 	if (mGridOverlay) {
 		Color4B color = config_getColorForCellGlow(glowType);
 	
-		for (int y = 0; y < mWidth; y++) {
-			for (int x = 0; x < mHeight; x++) {
+		for (uint8_t y = 0; y < mHeight; y++) {
+			for (uint8_t x = 0; x < mWidth; x++) {
 				uint8_t local_index = x * mWidth + y;
 				if (mObstacleMap[local_index] != OBSTACLE_DEFAULT) {
 					if (index.x == x && index.y == y) {
 						mGridOverlay->updateCellQuadColor(mType, index, color);
 					}
 					else {
-						mGridOverlay->updateCellQuadColor(mType, index, Color4B(255,255,255,0));
+						//mGridOverlay->updateCellQuadColor(mType, index, Color4B(255,255,255,0));
 					}
 				}
 			}

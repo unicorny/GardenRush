@@ -105,6 +105,7 @@ public:
 	bool isCellEmptyAndFree(uint8_t x, uint8_t y) const;
 	GridIndex getGridIndex(cocos2d::Vec2 localPosition) const;
 	cocos2d::Vec2 getWorldPositionForGridIndex(uint8_t x, uint8_t y);
+	cocos2d::Vec2 getLocalPositionForGridIndex(GridIndex index);
 	inline cocos2d::Vec2 getCellSize() const { return cocos2d::Vec2(mBoundingBoxSize.x / static_cast<float>(mWidth), mBoundingBoxSize.y / static_cast<float>(mHeight)); }
 	cocos2d::Vec2 fromWorldToLocal(cocos2d::Vec2 worldCoords) const;
 	cocos2d::Vec2 fromLocalToWorld(cocos2d::Vec2 localCoords) const;

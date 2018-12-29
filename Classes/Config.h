@@ -12,6 +12,7 @@ cocos2d::Color4B config_getColorForCellGlow(GridCellGlowType cellGlowType) {
 	case CELL_GLOW_GOOD_NEIGHBOR: return cocos2d::Color4B(0, 255, 0, 255);
 	case CELL_GLOW_BAD_NEIGHBOR: return cocos2d::Color4B(255, 0, 0, 255);
 	case CELL_GLOW_ERROR: return cocos2d::Color4B(255, 0, 0, 192);
+	case CELL_GLOW_NONE: return cocos2d::Color4B(255, 255, 255, 0);
 	default: return cocos2d::Color4B(255, 255, 255, 0);
 		
 	}

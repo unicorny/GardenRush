@@ -17,7 +17,7 @@ namespace level_state {
 
 		auto plantNodeParentGrid = plantNode->getParentGrid();
 		assert(plantNodeParentGrid != nullptr);
-
+		plantNodeParentGrid->disableAllGlowCells();
 		plantNodeParentGrid->glowSelectedCell(plantNode->getGridIndex(), true);
 		mGlowCellGrid = plantNodeParentGrid->getType();
 

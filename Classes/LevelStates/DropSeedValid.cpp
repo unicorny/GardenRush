@@ -27,16 +27,21 @@ namespace level_state {
 			auto targetGrid = mMainGameScene->getGrid(gridCell->type);
 			auto targetWorldPos = targetGrid->getWorldPositionForGridIndex(gridCell->index.x, gridCell->index.y);
 			auto targetLocalPos = targetWorldPos - plantNode->getParent()->getPosition();
+			targetLocalPos.x += targetGrid->getCellSize().x * 0.25f;
 
 			auto visibleSize = Director::getInstance()->getVisibleSize();
 			float distance = targetLocalPos.distanceSquared(plantNode->getPosition()) / Vec2(visibleSize).lengthSquared();
 			float animDuration = distance * 100.0f;
 			if (animDuration > 0.5f) animDuration = 0.5f;
+			animDuration += 0.1f;
+			//auto animationState = plantNode->getAnimationState(mMainGameScene->getAnimationStateMemoryManager());
+			
 			auto plantNodeSequence = Sequence::create(
 				EaseIn::create(MoveTo::create(animDuration, targetLocalPos), 1.2f),
 				CallFunc::create(CC_CALLBACK_0(DropSeedValid::animationEnd, this)),
 				nullptr);
 			plantNode->runAction(plantNodeSequence);
+			//animationState->runMoveAction(plantNodeSequence, targetLocalPos);
 		}
 
 		return true;
