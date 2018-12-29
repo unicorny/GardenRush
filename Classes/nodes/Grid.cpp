@@ -396,7 +396,7 @@ bool Grid::setGridOverlay(GridOverlay* gridOverlay)
 	GridNodeType nodeType = GRID_NODE_2D;
 	if (isIsometric()) { nodeType = GRID_NODE_ISO; }
 	Vec2 positionOffset = getPosition();
-	auto texture = mGridGraphicsConfig->overlay->getTexture();
+	auto texture = mGridGraphicsConfig->groundTiles[0]->getTexture();
 	mGridOverlay->addSubgrid(mType, nodeType, GridIndex(mWidth, mHeight), positionOffset, texture);
 	
 	for (int y = 0; y < mHeight; y++) {

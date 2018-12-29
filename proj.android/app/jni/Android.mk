@@ -38,9 +38,10 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp
+                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/GridNode.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/GridOverlay.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/scenes/SpriteBatchNodesHolderScene.cpp \

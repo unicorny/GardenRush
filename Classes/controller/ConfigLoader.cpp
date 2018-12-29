@@ -75,24 +75,19 @@ bool ConfigLoader::loadFromJson(const char* path)
 					}
 				}
 				else {
-					config->groundTiles.push_back(IViewData::createFromJson(&iTypes->value.FindMember("GroundTile")));
+					auto groundTilesMember = iTypes->value.FindMember("GroundTile");
+					config->groundTiles.push_back(IViewData::createFromJson(&groundTilesMember));
 				}
 
 				// sides (only for iso and 3D)
 				if (iTypes->value.HasMember("sides")) {
 					auto sides = iTypes->value.FindMember("sides");
 					if (sides->value.HasMember("left") && sides->value.HasMember("right")) {
-						config->leftSide = IViewData::createFromJson(&sides->value.FindMember("left"));
-						config->rightSide = IViewData::createFromJson(&sides->value.FindMember("right"));
+						auto leftMember = sides->value.FindMember("left");
+						auto rightMember = sides->value.FindMember("right");
+						config->leftSide = IViewData::createFromJson(&leftMember);
+						config->rightSide = IViewData::createFromJson(&rightMember);
 					}
-				}
-
-				// overlay
-				if (iTypes->value.HasMember("overlay")) {
-					config->overlay = IViewData::createFromJson(&iTypes->value.FindMember("overlay"));
-				}
-				if (iTypes->value.HasMember("overlay_small")) {
-					config->overlay_small = IViewData::createFromJson(&iTypes->value.FindMember("overlay_small"));
 				}
 
 				ressourcenManager->addGridConfig(config);

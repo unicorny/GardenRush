@@ -39,15 +39,13 @@ public:
 	static GridNodeType getGridNodeTypeFromString(const char* gridNodeTypeName);
 
 	struct GridGraphicsConfig {
-		GridGraphicsConfig() : type(GRID_NODE_NONE), leftSide(nullptr), rightSide(nullptr), overlay(nullptr), overlay_small(nullptr) {}
+		GridGraphicsConfig() : type(GRID_NODE_NONE), leftSide(nullptr), rightSide(nullptr) {}
 		~GridGraphicsConfig();
 
 		GridNodeType type;
 		std::vector<IViewData*> groundTiles;
 		IViewData* leftSide;
 		IViewData* rightSide;
-		IViewData* overlay;
-		IViewData* overlay_small;
 	};
 
 	struct SpriteAtlasConfig {
