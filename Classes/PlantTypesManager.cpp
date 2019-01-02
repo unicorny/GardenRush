@@ -150,3 +150,14 @@ bool PlantTypesManager::loadFromJson(const char* filename)
 
 	return true;
 }
+
+double PlantTypesManager::getMemoryConsumption()
+{
+	unsigned long memory = sizeof(PlantTypesManager);
+	memory += mPlantTypes.getNItems() * (sizeof(DRHashListItem) + sizeof(PlantType));
+
+	// neighbor fast access map
+	memory += mPlantTypes.getNItems() * mPlantTypes.getNItems();
+
+	return memory;
+}

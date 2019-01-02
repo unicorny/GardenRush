@@ -77,6 +77,17 @@ bool RessourcenManager::loadMaterial(const char* path, const char* name)
 	
 }
 
+bool RessourcenManager::addFont(const char* name, const char* path)
+{
+	DHASH id = DRMakeStringHash(name);
+	auto it = mFonts.find(id);
+	if (it != mFonts.end()) {
+		LOG_ERROR("font already exist", false);
+	}
+	mFonts.insert(std::pair<DHASH, std::string>(id, path));
+	return true;
+}
+
 bool RessourcenManager::addSpriteAtlas(const char* name, const char* plistFilename, const char* textureFilename)
 {
 	DHASH id = DRMakeStringHash(name);
@@ -140,4 +151,15 @@ bool RessourcenManager::addGridConfig(GridGraphicsConfig* config)
 	mGridConfigs.insert(std::pair < GridNodeType, GridGraphicsConfig*>(config->type, config));
 
 	return true;
+}
+
+double RessourcenManager::getMemoryConsumption()
+{
+	unsigned long memory = sizeof(RessourcenManager);
+	memory += mMaterials.getNItems() * (sizeof(DRHashListItem) + sizeof(Material));
+	memory += mSpriteAtlases.size() * (sizeof(DHASH) + sizeof(SpriteAtlasConfig) + sizeof(SpriteAtlasConfig*));
+	memory += mGridConfigs.size() * (sizeof(GridNodeType) + sizeof(GridGraphicsConfig) + sizeof(GridGraphicsConfig*));
+	memory += mFonts.size() * (sizeof(DHASH) + sizeof(std::string));
+
+	return memory;
 }

@@ -20,6 +20,8 @@ public:
 	inline void setMaxGrowthPhasis(int maxGrowthPhasis) { mMaxGrowthPhasis = maxGrowthPhasis; }
 	inline int getMaxGrowthPhasis() const { return mMaxGrowthPhasis; }
 
+	unsigned long getMemoryConsumption();
+
 protected:
 	// valid plant types for level
 	DHASH* mPlantTypes;

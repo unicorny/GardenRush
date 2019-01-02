@@ -33,6 +33,8 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/controller/RessourcenManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/DRHashList.cpp \
                    $(LOCAL_PATH)/../../../Classes/lib/TemplateMemoryManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/TimeProfiler.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/ProfilerManager.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
@@ -40,7 +42,6 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
                    $(LOCAL_PATH)/../../../Classes/model/Points.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
-                   $(LOCAL_PATH)/../../../Classes/nodes/GridNode.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/GridOverlay.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
                    $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \

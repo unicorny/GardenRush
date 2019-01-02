@@ -704,6 +704,27 @@ std::string TextureCache::getCachedTextureInfo() const
     return buffer;
 }
 
+bool TextureCache::getCachedTextureInfo(unsigned long& sumBytes, unsigned int& sumTextures) const
+{
+	unsigned int count = 0;
+	unsigned long totalBytes = 0;
+
+	for (auto& texture : _textures) {
+
+		Texture2D* tex = texture.second;
+		unsigned int bpp = tex->getBitsPerPixelForFormat();
+		// Each texture takes up width * height * bytesPerPixel bytes.
+		auto bytes = tex->getPixelsWide() * tex->getPixelsHigh() * bpp / 8;
+		totalBytes += bytes;
+		count++;
+	}
+	sumBytes = totalBytes;
+	sumTextures = count;
+
+	return true;
+}
+
+
 void TextureCache::renameTextureWithKey(const std::string& srcName, const std::string& dstName)
 {
     std::string key = srcName;

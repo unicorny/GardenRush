@@ -107,10 +107,12 @@ public:
 	cocos2d::Vec2 getWorldPositionForGridIndex(uint8_t x, uint8_t y);
 	cocos2d::Vec2 getLocalPositionForGridIndex(GridIndex index);
 	inline cocos2d::Vec2 getCellSize() const { return cocos2d::Vec2(mBoundingBoxSize.x / static_cast<float>(mWidth), mBoundingBoxSize.y / static_cast<float>(mHeight)); }
+
 	cocos2d::Vec2 fromWorldToLocal(cocos2d::Vec2 worldCoords) const;
 	cocos2d::Vec2 fromLocalToWorld(cocos2d::Vec2 localCoords) const;
 	bool isInsideGrid(const cocos2d::Vec2& worldCoords) const;
 	inline GridType getType() const { return mType; }
+	inline GridOverlay* getOverlay() const { return mGridOverlay; }
 	inline float getEdgeSize() const {return mBoundingBoxSize.x;}
 	
 	
@@ -120,6 +122,7 @@ public:
 	// rendering, called from cocos2d-x
 	virtual void draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags);
 
+	double getMemoryConsumption();
 	
 CC_CONSTRUCTOR_ACCESS:
 	// Nodes should be created using create();

@@ -21,3 +21,10 @@ bool LevelData::addPlantType(const char* name)
 
 	return true;
 }
+
+unsigned long LevelData::getMemoryConsumption()
+{
+	unsigned long memory = sizeof(LevelData);
+	memory += mPlantTypesSize * sizeof(DHASH);
+	return memory;
+}

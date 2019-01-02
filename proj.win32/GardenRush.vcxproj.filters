@@ -117,9 +117,6 @@
     <ClCompile Include="..\Classes\controller\RessourcenManager.cpp">
       <Filter>src\controller</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\nodes\GridNode.cpp">
-      <Filter>src\nodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\model\GridModel.cpp">
       <Filter>src\model</Filter>
     </ClCompile>
@@ -149,6 +146,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\nodes\GridOverlay.cpp">
       <Filter>src\nodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lib\ProfilerManager.cpp">
+      <Filter>src\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lib\TimeProfiler.cpp">
+      <Filter>src\lib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,9 +248,6 @@
     <ClInclude Include="..\Classes\controller\RessourcenManager.h">
       <Filter>src\controller</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\nodes\GridNode.h">
-      <Filter>src\nodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\model\GridModel.h">
       <Filter>src\model</Filter>
     </ClInclude>
@@ -277,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Config.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lib\ProfilerManager.h">
+      <Filter>src\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lib\TimeProfiler.h">
+      <Filter>src\lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

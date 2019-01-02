@@ -35,6 +35,11 @@ public:
 	const char* getSpriteAtlasPath(const char* name);
 	const char* getSpriteAtlasTexture(const char* name);
 
+	bool addFont(const char* name, const char* path);
+	inline const char* getFontPath(const char* name) {
+		DHASH id = DRMakeStringHash(name);
+		assert(mFonts.find(id) != mFonts.end()); return mFonts[id].data();
+	}
 	
 	static GridNodeType getGridNodeTypeFromString(const char* gridNodeTypeName);
 
@@ -57,12 +62,15 @@ public:
 
 	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
 
+	double getMemoryConsumption();
+
 protected:
 	RessourcenManager();
 
 	DRHashList		mMaterials;
 	std::map<DHASH, SpriteAtlasConfig*> mSpriteAtlases;
 	std::map<GridNodeType, GridGraphicsConfig*> mGridConfigs;
+	std::map<DHASH, std::string> mFonts;
 
 
 };

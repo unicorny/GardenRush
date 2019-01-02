@@ -26,6 +26,8 @@ public:
 	//! \return true if everything is okay
 	bool loadFromJson(const char* filename);
 
+	double getMemoryConsumption();
+
 protected:
 	DRHashList mPlantTypes;
 	u8* mNeigborFastAccessMap;

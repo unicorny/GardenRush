@@ -56,6 +56,8 @@ public:
 
 	virtual void draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags);	
 
+	double getMemoryConsumption();
+
 
 protected:
 	struct GridOverlaySubGrid
@@ -87,7 +89,6 @@ protected:
 	//cocos2d::VertexBuffer* mVertexBuffer;
 	//GLuint				   mIndexBuffer;
 	//cocos2d::CustomCommand mRenderCommand;
-	cocos2d::QuadCommand*   mRenderCommand;
 };
 
 #endif //__FAIRY_GAMES_GARDEN_RUSH_NODES_GRID_OVERLAY_H

@@ -163,6 +163,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseActionWithSeeded.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseCell.cpp" />
+    <ClCompile Include="..\Classes\lib\TimeProfiler.cpp" />
+    <ClCompile Include="..\Classes\lib\ProfilerManager.cpp" />
     <ClCompile Include="..\Classes\lib\TemplateMemoryManager.cpp" />
     <ClCompile Include="..\Classes\MainGameScene.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
@@ -179,7 +181,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\model\ViewData.cpp" />
     <ClCompile Include="..\Classes\nodes\CustomAnimationSprite.cpp" />
     <ClCompile Include="..\Classes\nodes\Grid.cpp" />
-    <ClCompile Include="..\Classes\nodes\GridNode.cpp" />
     <ClCompile Include="..\Classes\nodes\GridOverlay.cpp" />
     <ClCompile Include="..\Classes\nodes\PlantNode.cpp" />
     <ClCompile Include="..\Classes\PlantTypesManager.cpp" />
@@ -205,6 +206,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeed.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseActionWithSeeded.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseCell.h" />
+    <ClInclude Include="..\Classes\lib\TimeProfiler.h" />
+    <ClInclude Include="..\Classes\lib\ProfilerManager.h" />
     <ClInclude Include="..\Classes\lib\TemplateMemoryManager.h" />
     <ClInclude Include="..\Classes\MainGameScene.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
@@ -223,7 +226,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\model\ViewData.h" />
     <ClInclude Include="..\Classes\nodes\CustomAnimationSprite.h" />
     <ClInclude Include="..\Classes\nodes\Grid.h" />
-    <ClInclude Include="..\Classes\nodes\GridNode.h" />
     <ClInclude Include="..\Classes\nodes\GridOverlay.h" />
     <ClInclude Include="..\Classes\nodes\PlantNode.h" />
     <ClInclude Include="..\Classes\PlantTypesManager.h" />

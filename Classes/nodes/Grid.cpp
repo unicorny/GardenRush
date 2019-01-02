@@ -907,6 +907,18 @@ bool Grid::isCellEmptyAndFree(uint8_t x, uint8_t y) const
 	return true;
 
 }
+double Grid::getMemoryConsumption()
+{
+	unsigned long memory = sizeof(Grid);
+	memory += sizeof(QuadCommand);
+	memory += sizeof(V3F_C4B_T2F_Quad) * mWidth * mHeight;
+	// obstacle map
+	memory += mWidth * mHeight;
+	// plant node pointer
+	memory += mWidth * mHeight * sizeof(PlantNode*);
+
+	return memory;
+}
 
 // -------------------------------------------------------------------
 // rendering

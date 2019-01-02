@@ -44,8 +44,10 @@
 #include "model/Points.h"
 #include "ErrorLog.h"
 #include "controller/RessourcenManager.h"
-#include "nodes/GridNode.h"
 #include "nodes/GridOverlay.h"
+
+#include "lib/ProfilerManager.h"
+#include "lib/TimeProfiler.h"
 
 
 
@@ -55,25 +57,30 @@ USING_NS_CC;
 Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager)
 {
 	
-	cocos2d::Profiler* profiler = cocos2d::Profiler::getInstance();
-	profiler->displayTimers();
-	ProfilingBeginTimingBlock("initScene");
+	auto profilerManager = ProfilerManager::getInstance();
+
+	TimeProfiler time;
 	MainGameScene* result = MainGameScene::create();
-	ProfilingEndTimingBlock("initScene");
-	ProfilingTimer* timer = profiler->_activeTimers.at("initScene");
-	ErrorLog::printf("init Scene duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
-	ProfilingBeginTimingBlock("init plant types");
+	profilerManager->addTimeProfilerEntry("MainGameScene::create", time.seconds());
+	
 	result->mPlantTypesManager = plantTypesManager;
 	result->mPoints = points;
 	result->mAnimationStateMemoryManager = animationStateMemorymanager;
 	points->addPointChangeCallback(result, "main");
+
 	// init plant types manager
+	time.reset();
 	result->mPlantTypesManager->loadFromJson("graphics.json");
+	profilerManager->addTimeProfilerEntry("parse graphics.json", time.seconds());
+
+	time.reset();
 	result->mPlantTypesManager->makeFastAccessMap();
-	ProfilingEndTimingBlock("init plant types");
-	timer = profiler->_activeTimers.at("init plant types");
-	ErrorLog::printf("init plant types duration: %.4f ms\n", (double)timer->totalTime / 1000.0);
+	profilerManager->addTimeProfilerEntry("PlantTypesManager::makeFastAccessMap", time.seconds());
+
+	time.reset();
 	result->initAfterCreate();
+	profilerManager->addTimeProfilerEntry("MainGameScene::initAfterCreate", time.seconds());
+
 	result->transitTo("RandomSeed");
 
 	return result;
@@ -81,7 +88,7 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 
 MainGameScene::MainGameScene()
 	: mToogleStats(false), mPlantTypesManager(nullptr), mAnimationStateMemoryManager(nullptr), mPoints(nullptr),
- mLevelData(nullptr), mActiveLevelState(nullptr), mTargetPlantNode(nullptr), mEnabledTouchTypes(ENABLED_TOUCH_NONE)
+	mLevelData(nullptr), mActiveLevelState(nullptr), mTargetPlantNode(nullptr), mEnabledTouchTypes(ENABLED_TOUCH_NONE)
 {
 	memset(mGameGrids, 0, GRID_SIZE * sizeof(Grid*));
 	mLevelData = new LevelData(5);
@@ -102,11 +109,14 @@ MainGameScene::MainGameScene()
 
 MainGameScene::~MainGameScene() 
 {
+	ProfilerManager::getInstance()->printProfilingToFile("profiling.txt");
+
 	for (int i = 0; i < GRID_SIZE; i++) {
 		mGameGrids[i] = nullptr;
 	}
 
-	DR_SAVE_DELETE(mLevelData);	
+	DR_SAVE_DELETE(mLevelData);
+	
 }
 
 
@@ -238,11 +248,13 @@ bool MainGameScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
 #ifndef DISABLE_UI
-    auto label = Label::createWithTTF("Garden Rush Prototype", "fonts/Charmonman-Regular.ttf", 24);
+	const char* charmonmanFontPath = RessourcenManager::getInstance()->getFontPath("Charmonman-Regular");
+    //auto label = Label::createWithTTF("Garden Rush Prototype", "fonts/Charmonman-Regular.ttf", 24);
+	auto label = Label::createWithBMFont(charmonmanFontPath, "Garden Rush Prototype");
 	
     if (label == nullptr)
     {
-        problemLoading("'fonts/Charmonman-Regular.ttf'");
+        problemLoading(charmonmanFontPath);
     }
     else
     {
@@ -254,12 +266,13 @@ bool MainGameScene::init()
         // add the label as a child to this layer
         this->addChild(label, 2);
     }
-	auto fontCfg = label->getTTFConfig();
+	//auto fontCfg = label->getTTFConfig();
 
-	mPointsLabel = Label::createWithTTF(fontCfg, "Punkte: 0");
+	//mPointsLabel = Label::createWithTTF(fontCfg, "Punkte: 0");
+	mPointsLabel = Label::createWithBMFont(charmonmanFontPath, "Punkte: 0");
 	if (mPointsLabel == nullptr)
 	{
-		problemLoading("'fonts/Marker Felt.ttf'");
+		problemLoading(charmonmanFontPath);
 	}
 	else
 	{
@@ -272,7 +285,8 @@ bool MainGameScene::init()
 		// add the label as a child to this layer
 		this->addChild(mPointsLabel, 2);
 	}
-	mMovingPointsLabel = Label::createWithTTF(fontCfg, "");
+	mMovingPointsLabel = Label::createWithBMFont(charmonmanFontPath, "");
+	//mMovingPointsLabel = Label::createWithTTF(fontCfg, "");
 	if (mMovingPointsLabel) {
 		this->addChild(mMovingPointsLabel, 10);
 		mMovingPointsLabel->setGlobalZOrder(10.0f);
@@ -316,7 +330,8 @@ bool MainGameScene::init()
 	// mouse for debugging
 #ifndef DISABLE_UI
 #ifdef _MSC_VER
-	mMousePosLabel = Label::createWithTTF(fontCfg, "Mouse:");
+	//mMousePosLabel = Label::createWithTTF(fontCfg, "Mouse:");
+	mMousePosLabel = Label::createWithBMFont(charmonmanFontPath, "Mouse: ");
 	if (mMousePosLabel == nullptr)
 	{
 		problemLoading("mouse label 'fonts/Marker Felt.ttf'");
@@ -344,7 +359,8 @@ bool MainGameScene::init()
 
 	// label for debugging
 #ifdef _FAIRY_DEBUG_
-	mCurrentGameStateLabel = Label::createWithTTF(fontCfg, "RandomSeed");
+	//mCurrentGameStateLabel = Label::createWithTTF(fontCfg, "RandomSeed");
+	mCurrentGameStateLabel = Label::createWithBMFont(charmonmanFontPath, "RandomSeed");
 	if (mCurrentGameStateLabel == nullptr) {
 		problemLoading("current game state 'fonts/Marker Felt.ttf'");
 	}
@@ -521,6 +537,30 @@ void MainGameScene::update(float delta)
 	if (mActiveLevelState) {
 		mActiveLevelState->onUpdate(delta);
 	}
+
+	// texture cache size
+	static bool show = false;
+	if (!show) {
+		std::string textureCache = Director::getInstance()->getTextureCache()->getCachedTextureInfo();
+		//OutputDebugStringA(textureCache.data());
+		show = true;
+	}
+	
+}
+
+unsigned long MainGameScene::getMemoryConsumption()
+{
+	unsigned long memory = sizeof(MainGameScene);
+	for (int i = 0; i < GRID_SIZE; i++) {
+		if (0 == i) {
+			memory += mGameGrids[i]->getOverlay()->getMemoryConsumption();
+		}
+		memory += mGameGrids[i]->getMemoryConsumption();
+	}
+	memory += mLevelStates.getNItems() * sizeof(level_state::iLevelState);
+	memory += mLevelData->getMemoryConsumption();
+
+	return memory;
 }
 
 void MainGameScene::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags)

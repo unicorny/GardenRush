@@ -4,6 +4,9 @@
 #include "scenes/SpriteBatchNodesHolderScene.h"
 #include "json/document.h"
 #include "model/ViewData.h"
+
+#include "lib/TimeProfiler.h"
+#include "lib/ProfilerManager.h"
 //
 using namespace rapidjson;
 using namespace cocos2d;
@@ -21,12 +24,17 @@ ConfigLoader::~ConfigLoader()
 
 bool ConfigLoader::loadFromJson(const char* path)
 {
+	TimeProfiler time;
+	auto profiler = ProfilerManager::getInstance();
+
 	// load json from file and parse
 	std::string content = cocos2d::FileUtils::getInstance()->getStringFromFile(path);
 	Document document;
 	document.Parse(content.data());
 
+	profiler->addTimeProfilerEntry("parse json", time.seconds());
 	auto ressourcenManager = RessourcenManager::getInstance();
+	
 
 	// interpret json
 	assert(document.IsObject());
@@ -38,6 +46,7 @@ bool ConfigLoader::loadFromJson(const char* path)
 			LOG_ERROR("error, invalid index type(not a string)", false);
 		}
 		if (!strcmp(itr->name.GetString(), "materials")) {
+			time.reset();
 			for (auto iMaterials = itr->value.MemberBegin(); iMaterials != itr->value.MemberEnd(); ++iMaterials) {
 				if (iMaterials->value.IsString() && iMaterials->name.IsString()) {
 					if (!ressourcenManager->loadMaterial(iMaterials->value.GetString(), iMaterials->name.GetString())) {
@@ -48,10 +57,11 @@ bool ConfigLoader::loadFromJson(const char* path)
 					LOG_ERROR("[ConfigLoader::loadFromJson] error, material type or name invalid (expect both be string)", false);
 				}
 			}
+			profiler->addTimeProfilerEntry("loading material", time.seconds());
 
 		}
 		else if (!strcmp(itr->name.GetString(), "grid")) {
-
+			time.reset();
 
 			for (rapidjson::Value::ConstMemberIterator iTypes = itr->value["types"].MemberBegin();
 				iTypes != itr->value["types"].MemberEnd(); ++iTypes) {
@@ -92,8 +102,10 @@ bool ConfigLoader::loadFromJson(const char* path)
 
 				ressourcenManager->addGridConfig(config);
 			}
+			profiler->addTimeProfilerEntry("parse grid graphic infos", time.seconds());
 		}
 		else if (!strcmp(itr->name.GetString(), "spriteAtlas")) {
+			time.reset();
 			auto spriteFrameCache = cocos2d::SpriteFrameCache::getInstance();
 			for (auto iSpriteAtlas = itr->value.MemberBegin(); iSpriteAtlas != itr->value.MemberEnd(); ++iSpriteAtlas) {
 				if (iSpriteAtlas->name.IsString()) {
@@ -122,6 +134,21 @@ bool ConfigLoader::loadFromJson(const char* path)
 				}
 				
 			}
+			profiler->addTimeProfilerEntry("loading spriteAtlases", time.seconds());
+		}
+		else if (!strcmp(itr->name.GetString(), "fonts")) {
+			time.reset();
+			for (auto iFonts = itr->value.MemberBegin(); iFonts != itr->value.MemberEnd(); ++iFonts) {
+				if (iFonts->value.IsString() && iFonts->name.IsString()) {
+					if (!ressourcenManager->addFont(iFonts->name.GetString(), iFonts->value.GetString())) {
+						LOG_ERROR("error loading font", false);
+					}
+				}
+				else {
+					LOG_ERROR("[ConfigLoader::loadFromJson] error, font name invalid (expect both be string)", false);
+				}
+			}
+			profiler->addTimeProfilerEntry("parsing font infos", time.seconds());
 		}
 	}
 	return true;

@@ -196,6 +196,8 @@ public:
     */
     std::string getCachedTextureInfo() const;
 
+	bool getCachedTextureInfo(unsigned long& sumBytes, unsigned int& sumTextures) const;
+
     //Wait for texture cache to quit before destroy instance.
     /**Called by director, please do not called outside.*/
     void waitForQuit();

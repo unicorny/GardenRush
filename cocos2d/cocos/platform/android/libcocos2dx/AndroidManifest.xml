@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.cocos2dx.lib">
 
     <uses-permission android:name="android.permission.VIBRATE" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application android:allowBackup="true">
 
     </application>

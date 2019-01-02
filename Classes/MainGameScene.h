@@ -127,7 +127,7 @@ public:
 	bool transitTo(DHASH levelStateId);
 	inline bool transitTo(const char* levelStateName) { return transitTo(DRMakeStringHash(levelStateName)); }
 
-	
+	unsigned long getMemoryConsumption();
 
     // implement the "static create()" method manually
     CREATE_FUNC(MainGameScene);
@@ -146,7 +146,7 @@ protected:
 
 	Points*			   mPoints;
 	LevelData* mLevelData;
-	Grid* mGameGrids[GRID_SIZE];
+	Grid* mGameGrids[GRID_SIZE];	
 	cocos2d::Vec2 mCurrentTouchPosition;
 
 #ifdef _MSC_VER

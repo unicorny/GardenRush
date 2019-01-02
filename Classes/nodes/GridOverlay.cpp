@@ -159,3 +159,15 @@ void GridOverlay::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transfo
 		}
 	}
 }
+
+double GridOverlay::getMemoryConsumption()
+{
+	unsigned long memory = sizeof(GridOverlay);
+	memory += sizeof(Material);
+	for (uint8_t i = 0; i < GRID_SIZE; i++) {
+		memory += sizeof(QuadCommand);
+		memory += sizeof(V3F_C4B_T2F_Quad) * mSubGrids[i].mCellCount.x * mSubGrids[i].mCellCount.y;
+	}
+
+	return memory;
+}

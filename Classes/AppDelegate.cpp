@@ -26,6 +26,8 @@
 #include "MainGameScene.h"
 #include "controller/ConfigLoader.h"
 #include "nodes/Grid.h"
+#include "lib/TimeProfiler.h"
+#include "lib/ProfilerManager.h"
 //#include "HelloWorldScene.h"
 
 // #define USE_AUDIO_ENGINE 1
@@ -127,7 +129,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
 
 	// enable use of accelerometer
-	Device::setAccelerometerEnabled(true);
+	//Device::setAccelerometerEnabled(true);
 
     // create a scene. it's an autorelease object
 	// load needed stuff
@@ -136,11 +138,19 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	//mConfigLoader.loadShader("shaders/highlightGridCellIso.frag", "shaders/default_sprite.vert", "highlightGridCellIso");
 	//Grid::setHighlightCellShader(mConfigLoader.getShader("highlightGridCell"));
 	//Grid::setHighlightCellIsoShader(mConfigLoader.getShader("highlightGridCellIso"));
-	
+		
 	ConfigLoader::loadFromJson("ressources.json");
     MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager));
 
     //auto scene = HelloWorld::createScene();
+	unsigned long bytes = 0;
+	unsigned int textureCount = 0;
+	Director::getInstance()->getTextureCache()->getCachedTextureInfo(bytes, textureCount);
+	auto profiler = ProfilerManager::getInstance();
+	profiler->addMemoryProfilerEntry("Textures", bytes);
+	profiler->addMemoryProfilerEntry("Resources", RessourcenManager::getInstance()->getMemoryConsumption());
+	profiler->addMemoryProfilerEntry("PlantTypesManager", mPlantTypesManager.getMemoryConsumption());
+	profiler->addMemoryProfilerEntry("MainGameScene", scene->getMemoryConsumption());
 
     // run
     director->runWithScene(scene);

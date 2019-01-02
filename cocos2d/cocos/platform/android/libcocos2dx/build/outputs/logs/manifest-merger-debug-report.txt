@@ -25,6 +25,10 @@ uses-permission#android.permission.VIBRATE
 ADDED from I:\Code\C++\Eigene_Spiele\GardenRush\cocos2d\cocos\platform\android\libcocos2dx\AndroidManifest.xml:3:5-66
 	android:name
 		ADDED from I:\Code\C++\Eigene_Spiele\GardenRush\cocos2d\cocos\platform\android\libcocos2dx\AndroidManifest.xml:3:22-63
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from I:\Code\C++\Eigene_Spiele\GardenRush\cocos2d\cocos\platform\android\libcocos2dx\AndroidManifest.xml:4:5-81
+	android:name
+		ADDED from I:\Code\C++\Eigene_Spiele\GardenRush\cocos2d\cocos\platform\android\libcocos2dx\AndroidManifest.xml:4:22-78
 application
 ADDED from I:\Code\C++\Eigene_Spiele\GardenRush\cocos2d\cocos\platform\android\libcocos2dx\AndroidManifest.xml:5:5-7:19
 	android:allowBackup

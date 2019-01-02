@@ -24,5 +24,10 @@
 	"spriteAtlas" : {
 		"ground"  : {"plist": "spriteAtlas/ground1.plist", "texture" : "spriteAtlas/ground1.png"},
 		"plants1" : {"plist": "spriteAtlas/plants1.plist", "texture":"spriteAtlas/plants1.png"}
+	},
+	"fonts" : {
+		"Charmonman-Regular" : "fonts/Charmonman-Regular.fnt",
+		"Charmonman-Bold" : "fonts/Charmonman-Bold.fnt",
+		"arial" : "fonts/arial.fnt"
 	}
 }
