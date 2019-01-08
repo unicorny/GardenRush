@@ -35,13 +35,13 @@
 
 //#include "cocos2d.h"
 //#include "lib/DRHashList.hpp"
-#include "scenes/SpriteBatchNodesHolderScene.h"
+
 #include "nodes/Grid.h"
 
 #include "model/Points.h"
 #include "model/SpriteAnimationState.h"
 
-class PlantTypesManager;
+class PlantTypesAccess;
 class RessourcenManager;
 class LevelStateManager;
 class LevelData;
@@ -73,10 +73,10 @@ inline EnabledTouchType operator|(EnabledTouchType a, EnabledTouchType b)
 }
 
 
-class MainGameScene : public SpriteBatchNodesHolderScene, public iPointsUpdate
+class MainGameScene : public cocos2d::Scene, public iPointsUpdate
 {
 public:
-	static cocos2d::Scene* createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager);
+	static cocos2d::Scene* createScene(PlantTypesAccess* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager);
 	MainGameScene();
 	~MainGameScene();
 
@@ -115,7 +115,7 @@ public:
 	// getter for level state
 	inline Grid* getGrid(const GridType type) const { assert(type < GRID_SIZE); return mGameGrids[type]; }
 	inline const LevelData* getLevelData() const { return mLevelData; }
-	inline const PlantTypesManager* getPlantTypesManager() const { return mPlantTypesManager; }
+	inline const PlantTypesAccess* getPlantTypesManager() const { return mPlantTypesManager; }
 	inline TemplateMemoryManager<SpriteAnimationState>* getAnimationStateMemoryManager() { return mAnimationStateMemoryManager; }
 	inline Points* getPoints() { return mPoints; }
 
@@ -141,7 +141,7 @@ protected:
 	bool addLevelState(level_state::iLevelState* levelState);
 
 	bool mToogleStats;
-	PlantTypesManager* mPlantTypesManager;
+	PlantTypesAccess* mPlantTypesManager;
 	TemplateMemoryManager<SpriteAnimationState>* mAnimationStateMemoryManager;
 
 	Points*			   mPoints;

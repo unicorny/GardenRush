@@ -13,6 +13,7 @@ public:
 	bool addPlantType(const char* name);
 	inline size_t getPlantTypeCount() const { return mPlantTypesSize; }
 	inline DHASH getPlantType(size_t index) const { assert(index < mPlantTypesSize && index < mPlantTypeCursor); return mPlantTypes[index]; }
+
 	
 	inline void enableAutoHarvesting() { mAutoHarvesting = true; }
 	inline bool isAutoHarvesting() const { return mAutoHarvesting; }

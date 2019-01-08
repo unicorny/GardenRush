@@ -23,11 +23,8 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "MainGameScene.h"
-#include "controller/ConfigLoader.h"
-#include "nodes/Grid.h"
-#include "lib/TimeProfiler.h"
-#include "lib/ProfilerManager.h"
+#include "controller/GameStateManager.h"
+
 //#include "HelloWorldScene.h"
 
 // #define USE_AUDIO_ENGINE 1
@@ -56,7 +53,7 @@ static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 
 AppDelegate::AppDelegate()
 {
-	mAnimationStateMemoryManager.init(6);
+	//
 }
 
 AppDelegate::~AppDelegate() 
@@ -131,29 +128,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	// enable use of accelerometer
 	//Device::setAccelerometerEnabled(true);
 
-    // create a scene. it's an autorelease object
-	// load needed stuff
-	//mConfigLoader.loadMaterial("materials/highlightGridCell.material", "highlightGridCell");
-	//mConfigLoader.loadShader("shaders/highlightGridCell.frag", "shaders/default_sprite.vert", "highlightGridCell");
-	//mConfigLoader.loadShader("shaders/highlightGridCellIso.frag", "shaders/default_sprite.vert", "highlightGridCellIso");
-	//Grid::setHighlightCellShader(mConfigLoader.getShader("highlightGridCell"));
-	//Grid::setHighlightCellIsoShader(mConfigLoader.getShader("highlightGridCellIso"));
-		
-	ConfigLoader::loadFromJson("ressources.json");
-    MainGameScene* scene = static_cast<MainGameScene*>(MainGameScene::createScene(&mPlantTypesManager, &mPlayerPoints, &mAnimationStateMemoryManager));
-
-    //auto scene = HelloWorld::createScene();
-	unsigned long bytes = 0;
-	unsigned int textureCount = 0;
-	Director::getInstance()->getTextureCache()->getCachedTextureInfo(bytes, textureCount);
-	auto profiler = ProfilerManager::getInstance();
-	profiler->addMemoryProfilerEntry("Textures", bytes);
-	profiler->addMemoryProfilerEntry("Resources", RessourcenManager::getInstance()->getMemoryConsumption());
-	profiler->addMemoryProfilerEntry("PlantTypesManager", mPlantTypesManager.getMemoryConsumption());
-	profiler->addMemoryProfilerEntry("MainGameScene", scene->getMemoryConsumption());
+	GameStateManager::getInstance()->init();
+	
 
     // run
-    director->runWithScene(scene);
+    //director->runWithScene(scene);
 
     return true;
 }

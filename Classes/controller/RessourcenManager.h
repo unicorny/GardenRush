@@ -6,7 +6,8 @@
 
 #include "Enums.h"
 
-class PlantTypesManager;
+class PlantTypesAccess;
+class PlantType;
 class IViewData;
 /*
  * \author: einhornimmond
@@ -25,22 +26,31 @@ public:
 	static RessourcenManager* getInstance();
 	//bool initPlantTypes(PlantTypesManager* manager, )
 
+	// material
 	bool loadMaterial(const char* path, const char* name);
 	
 	inline cocos2d::Material* getMaterial(const char* name) const {
 		return (cocos2d::Material*)mMaterials.findByHash(DRMakeStringHash(name));
 	}
 
+	// Sprite Atlas
 	bool addSpriteAtlas(const char* name, const char* plistFilename, const char* textureFilename);
 	const char* getSpriteAtlasPath(const char* name);
 	const char* getSpriteAtlasTexture(const char* name);
 
+	// Font
 	bool addFont(const char* name, const char* path);
 	inline const char* getFontPath(const char* name) {
 		DHASH id = DRMakeStringHash(name);
 		assert(mFonts.find(id) != mFonts.end()); return mFonts[id].data();
 	}
 	
+	// Plant Types
+	bool addPlantType(PlantType* plantType);
+	inline PlantType* findPlantType(const char* name) const { return findPlantType(DRMakeStringHash(name)); }
+	inline PlantType* findPlantType(DHASH id) const { return static_cast<PlantType*>(mPlantTypes.findByHash(id)); }
+
+	// grid node graphics infos
 	static GridNodeType getGridNodeTypeFromString(const char* gridNodeTypeName);
 
 	struct GridGraphicsConfig {
@@ -52,19 +62,21 @@ public:
 		IViewData* leftSide;
 		IViewData* rightSide;
 	};
+	
 
+	bool addGridConfig(GridGraphicsConfig* config);
+	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
+
+
+
+	double getMemoryConsumption();
+
+protected:
 	struct SpriteAtlasConfig {
 		std::string plistName;
 		std::string textureName;
 	};
 
-	bool addGridConfig(GridGraphicsConfig* config);
-
-	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
-
-	double getMemoryConsumption();
-
-protected:
 	RessourcenManager();
 
 	DRHashList		mMaterials;
@@ -72,6 +84,7 @@ protected:
 	std::map<GridNodeType, GridGraphicsConfig*> mGridConfigs;
 	std::map<DHASH, std::string> mFonts;
 
+	DRHashList		mPlantTypes;
 
 };
 

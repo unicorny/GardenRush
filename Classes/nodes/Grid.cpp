@@ -3,7 +3,7 @@
 #include "model/LevelData.h"
 #include "model/Points.h"
 #include "ErrorLog.h"
-#include "PlantTypesManager.h"
+#include "fast/PlantTypesAccess.h"
 #include "controller/RessourcenManager.h"
 #include "MainGameScene.h"
 #include "GridOverlay.h"
@@ -143,7 +143,7 @@ bool Grid::addGridCell(PlantNode* viewData, uint8_t x, uint8_t y)
 }
 
 
-bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager, const LevelData* levelData, Points* points)
+bool Grid::updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesAccess* plantTypesManager, const LevelData* levelData, Points* points)
 {
 	assert(mType == GRID_MAIN);
 	assert(mPlantMap[index.x * mWidth + index.y]);
@@ -647,7 +647,7 @@ void Grid::disableAllGlowCells()
 
 }
 
-void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager)
+void Grid::glowAutoCells(const PlantType* type, const PlantTypesAccess* plantTypesManager)
 {
 	//glowEmptyCells(true);
 	assert(mGridOverlay);
@@ -672,7 +672,7 @@ void Grid::glowAutoCells(const PlantType* type, const PlantTypesManager* plantTy
 }
 
 
-void Grid::glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable/* = true*/)
+void Grid::glowNeighborCells(const PlantType* type, const PlantTypesAccess* plantTypesManager, bool enable/* = true*/)
 {
 	assert(mGridOverlay);
 

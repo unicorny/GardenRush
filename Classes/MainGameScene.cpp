@@ -26,7 +26,7 @@
 #include "SimpleAudioEngine.h"
 //#include "nodes/Grid.h"
 #include "model/ViewData.h"
-#include "PlantTypesManager.h"
+#include "fast/PlantTypesAccess.h"
 #include "levelStates/DisplayInfo.h"
 #include "levelStates/DragSeed.h"
 #include "levelStates/DropSeedInvalid.h"
@@ -49,12 +49,14 @@
 #include "lib/ProfilerManager.h"
 #include "lib/TimeProfiler.h"
 
+#include "ui/GuiManager.h"
+
 
 
 
 USING_NS_CC;
 
-Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager)
+Scene* MainGameScene::createScene(PlantTypesAccess* plantTypesManager, Points* points, TemplateMemoryManager<SpriteAnimationState>* animationStateMemorymanager)
 {
 	
 	auto profilerManager = ProfilerManager::getInstance();
@@ -69,10 +71,10 @@ Scene* MainGameScene::createScene(PlantTypesManager* plantTypesManager, Points* 
 	points->addPointChangeCallback(result, "main");
 
 	// init plant types manager
-	time.reset();
+/*	time.reset();
 	result->mPlantTypesManager->loadFromJson("graphics.json");
 	profilerManager->addTimeProfilerEntry("parse graphics.json", time.seconds());
-
+	*/
 	time.reset();
 	result->mPlantTypesManager->makeFastAccessMap();
 	profilerManager->addTimeProfilerEntry("PlantTypesManager::makeFastAccessMap", time.seconds());
@@ -511,6 +513,11 @@ bool MainGameScene::initAfterCreate()
 		mGameGrids[GRID_BUCKET] = bucket_grid;
 	}
 
+	// adding ui
+	auto guiManager = GuiManager::getInstance();
+	
+	addChild(guiManager);
+
 	return true;
 }
 
@@ -596,9 +603,9 @@ void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 wo
 	mPointsLabel->setString(sstream.str());
 	//sstream.
 	sstream2 << static_cast<int>(pointDifference);
-	mMovingPointsLabel->stopAllActions();
-	mMovingPointsLabel->setPosition(worldPosition);
-	mMovingPointsLabel->setString(sstream2.str());
+	//mMovingPointsLabel->stopAllActions();
+	//mMovingPointsLabel->setPosition(worldPosition);
+	//mMovingPointsLabel->setString(sstream2.str());
 	cocos2d::Color3B color(255, 0, 0);
 	if (pointDifference > 150) {
 		color = Color3B(0, 0, 255);
@@ -609,14 +616,22 @@ void MainGameScene::updatePoints(float pointDifference, float pointsSum, Vec2 wo
 	else if (pointDifference < 0) {
 		color = Color3B(255, 0, 0);
 	}
-	mMovingPointsLabel->setColor(color);
-	mMovingPointsLabel->setScale(2.0f);
+	auto gui = GuiManager::getInstance();
+	auto pointsLabel = gui->findLabel("points");
+
 	auto visibleSize = Director::getInstance()->getVisibleSize();
+	GuiManager::getInstance()->movingInfo(
+		worldPosition, Vec2(visibleSize.width / 2.0f, visibleSize.height + mMovingPointsLabel->getContentSize().height),
+			1.3f, color, sstream2.str().data());
+	//mMovingPointsLabel->setColor(color);
+	//mMovingPointsLabel->setScale(2.0f);
+	/*
 	auto sequence = cocos2d::Sequence::create(
 		cocos2d::EaseOut::create(MoveTo::create(1.3f, Vec2(visibleSize.width / 2.0f, visibleSize.height + mMovingPointsLabel->getContentSize().height)), 2.0f),
 		cocos2d::EaseSineInOut::create(ScaleTo::create(1.2f, 1.0f)),
 		nullptr);
 	mMovingPointsLabel->runAction(sequence);
+	*/
 #endif //DISABLE_UI
 }
 

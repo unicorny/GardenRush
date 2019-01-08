@@ -16,7 +16,7 @@
 
 #include "DRHashList.hpp"
 #include "ErrorLog.h"
-
+#include <assert.h>
 
 template<typename ObjectClass>
 class TemplateMemoryManager
@@ -71,6 +71,14 @@ public:
 		mFreePlaces[mFreePlaceCursor] = index;
 	}
 
+	unsigned long getMemoryConsumption() {
+		unsigned long memory = sizeof(TemplateMemoryManager);
+		// free places
+		memory += mMaxIndexCount;
+		// memory block
+		memory += sizeof(ObjectClass) * mMaxIndexCount;
+		return memory;
+	}
     
 private:
     

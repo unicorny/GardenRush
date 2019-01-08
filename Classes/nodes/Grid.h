@@ -17,7 +17,7 @@ class IViewData;
 class PlantNode;
 class PlantType;
 class LevelData;
-class PlantTypesManager;
+class PlantTypesAccess;
 class GridOverlay;
 
 class Points;
@@ -82,13 +82,13 @@ public:
 	}
 	void glowCell(const GridIndex& index, GridCellGlowType glowType);
 	void disableAllGlowCells();
-	void glowNeighborCells(const PlantType* type, const PlantTypesManager* plantTypesManager, bool enable = true);
-	void glowAutoCells(const PlantType* type, const PlantTypesManager* plantTypesManager);
+	void glowNeighborCells(const PlantType* type, const PlantTypesAccess* plantTypesManager, bool enable = true);
+	void glowAutoCells(const PlantType* type, const PlantTypesAccess* plantTypesManager);
 
 	//! \return false if an obstacle is at this position
 	bool addGridCell(PlantNode* viewNode, uint8_t x, uint8_t y);
 	
-	bool updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesManager* plantTypesManager, const LevelData* levelData, Points* points);
+	bool updateParentsOfPlantOnIndex(GridIndex index, const PlantTypesAccess* plantTypesManager, const LevelData* levelData, Points* points);
 
 	PlantNode* removeGridCell(uint8_t x, uint8_t y);
 	bool removeGridCell(PlantNode* plantNode);

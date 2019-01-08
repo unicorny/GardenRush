@@ -4,11 +4,11 @@
 #include "lib/DRHashList.hpp"
 #include "model/PlantType.h"
 
-class PlantTypesManager
+class PlantTypesAccess
 {
 public:
-	PlantTypesManager();
-	~PlantTypesManager();
+	PlantTypesAccess();
+	~PlantTypesAccess();
 
 	// adding and getting plant types
 	void allocateMemoryForNPlantTypes(u32 N);
@@ -23,8 +23,6 @@ public:
 		return (PlantTypeNeighborType)mNeigborFastAccessMap[mPlantTypes.getNItems()*mainPlantIndex + neighborPlantIndex];
 	};
 
-	//! \return true if everything is okay
-	bool loadFromJson(const char* filename);
 
 	double getMemoryConsumption();
 

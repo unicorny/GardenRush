@@ -1,6 +1,6 @@
 #include "PlantSeed.h"
 
-#include "PlantTypesManager.h"
+#include "fast/PlantTypesAccess.h"
 #include "nodes/PlantNode.h"
 
 using namespace cocos2d;

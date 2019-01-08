@@ -1,3 +1,5 @@
+#ifndef __FAIRY_GAMES_GARDEN_RUSH_MODEL_PLAYER_H
+#define __FAIRY_GAMES_GARDEN_RUSH_MODEL_PLAYER_H
 /*!
  *
  * \author: einhornimmond
@@ -7,6 +9,8 @@
  * \brief: Singleton Class for player relevant stuff, like savegame, points and settings
  *
 */
+
+class Savegame;
 
 enum PlayerSettings {
 	SETTINGS_NONE = 0,
@@ -20,11 +24,25 @@ class Player
 public:
 	static Player* getInstance();
 
+	bool load(Savegame* savegame);
+
 	inline bool isGrid3D() { return (mSettings & SETTINGS_GRID_3D) == SETTINGS_GRID_3D; }
 	inline bool isGridIso() { return (mSettings & SETTINGS_GRID_ISO) == SETTINGS_GRID_ISO; }
+
+	inline bool isNewPlayer() { return mIsNewPlayer; }
 protected:
+
+	bool initNewPlayer();
+
 	Player();
+
+	// not to save
+	bool mIsNewPlayer;
+
+	// to save
 
 	PlayerSettings mSettings;
 	
 };
+
+#endif //__FAIRY_GAMES_GARDEN_RUSH_MODEL_PLAYER_H

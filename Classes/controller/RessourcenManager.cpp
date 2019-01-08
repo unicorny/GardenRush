@@ -1,6 +1,7 @@
 #include "controller/RessourcenManager.h"
 #include "ErrorLog.h"
 #include "model/ViewData.h"
+#include "model/PlantType.h"
 
 using namespace cocos2d;
 
@@ -82,7 +83,12 @@ bool RessourcenManager::addFont(const char* name, const char* path)
 	DHASH id = DRMakeStringHash(name);
 	auto it = mFonts.find(id);
 	if (it != mFonts.end()) {
-		LOG_ERROR("font already exist", false);
+		if (it->second == std::string(path)) {
+			return true;
+		}
+		else {
+			LOG_ERROR("hash collision by font", false);
+		}
 	}
 	mFonts.insert(std::pair<DHASH, std::string>(id, path));
 	return true;
@@ -126,6 +132,17 @@ const char* RessourcenManager::getSpriteAtlasTexture(const char* name)
 	return mSpriteAtlases[id]->textureName.data();
 }
 
+bool RessourcenManager::addPlantType(PlantType* plantType)
+{
+	assert(plantType);
+	HASH id = plantType->getNameHash();
+	if (mPlantTypes.findByHash(id)) {
+		LOG_ERROR("plantType already exist", false);
+	}
+	mPlantTypes.addByHash(id, plantType);
+	return true;
+}
+
 // grid
 GridNodeType RessourcenManager::getGridNodeTypeFromString(const char* gridNodeTypeName)
 {
@@ -160,6 +177,7 @@ double RessourcenManager::getMemoryConsumption()
 	memory += mSpriteAtlases.size() * (sizeof(DHASH) + sizeof(SpriteAtlasConfig) + sizeof(SpriteAtlasConfig*));
 	memory += mGridConfigs.size() * (sizeof(GridNodeType) + sizeof(GridGraphicsConfig) + sizeof(GridGraphicsConfig*));
 	memory += mFonts.size() * (sizeof(DHASH) + sizeof(std::string));
+	memory += mPlantTypes.getNItems() * (sizeof(DRHashListItem) + sizeof(PlantType));
 
 	return memory;
 }

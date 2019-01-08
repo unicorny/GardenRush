@@ -1,5 +1,5 @@
 #include "model/ViewData.h"
-#include "scenes/SpriteBatchNodesHolderScene.h"
+
 
 #include "cocos2d.h"
 #include "ErrorLog.h"

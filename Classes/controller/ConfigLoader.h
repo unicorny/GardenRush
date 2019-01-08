@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "lib/DRHashList.hpp"
 
-class PlantTypesManager;
+class PlantTypesAccess;
 class RessourcenManager;
 class SpriteBatchNodesHolderScene;
 
@@ -22,6 +22,7 @@ public:
 	static bool loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects);
 
 protected:
+	static bool loadPlantTypesFromJson(const char* path);
 
 };
 

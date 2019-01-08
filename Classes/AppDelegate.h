@@ -26,7 +26,7 @@
 #define  _APP_DELEGATE_H_
 
 #include "cocos2d.h"
-#include "PlantTypesManager.h"
+#include "fast/PlantTypesAccess.h"
 #include "model/SpriteAnimationState.h"
 #include "lib/TemplateMemoryManager.h"
 #include "controller/RessourcenManager.h"
@@ -65,9 +65,7 @@ public:
     virtual void applicationWillEnterForeground();
 
 protected:
-	PlantTypesManager mPlantTypesManager;
-	TemplateMemoryManager<SpriteAnimationState> mAnimationStateMemoryManager;
-	Points			  mPlayerPoints;
+	
 };
 
 #endif // _APP_DELEGATE_H_

@@ -31,6 +31,9 @@
     <Filter Include="src\ui">
       <UniqueIdentifier>{feed646a-a49e-4e91-b091-f481e9a6a8c8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\fast">
+      <UniqueIdentifier>{47e439dd-26c5-47a8-83e5-048e5995a0e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -43,9 +46,6 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\ErrorLog.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\PlantTypesManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\controller\ConfigLoader.cpp">
@@ -141,9 +141,6 @@
     <ClCompile Include="..\Classes\levelStates\iLevelState.cpp">
       <Filter>src\levelStates</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\scenes\SpriteBatchNodesHolderScene.cpp">
-      <Filter>src\scenes</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\nodes\GridOverlay.cpp">
       <Filter>src\nodes</Filter>
     </ClCompile>
@@ -152,6 +149,33 @@
     </ClCompile>
     <ClCompile Include="..\Classes\lib\TimeProfiler.cpp">
       <Filter>src\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\ui\GuiManager.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\ui\GuiLayout.cpp">
+      <Filter>src\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\controller\GameStateManager.cpp">
+      <Filter>src\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\fast\PlantTypesAccess.cpp">
+      <Filter>src\fast</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\scenes\GameScene.cpp">
+      <Filter>src\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\scenes\MainMenuScene.cpp">
+      <Filter>src\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\scenes\StoryScene.cpp">
+      <Filter>src\scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\controller\SavegameManager.cpp">
+      <Filter>src\controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\model\Savegame.cpp">
+      <Filter>src\model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -165,9 +189,6 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\ErrorLog.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\PlantTypesManager.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\controller\ConfigLoader.h">
@@ -269,9 +290,6 @@
     <ClInclude Include="..\Classes\levelStates\HarvestPlant.h">
       <Filter>src\levelStates</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\scenes\SpriteBatchNodesHolderScene.h">
-      <Filter>src\scenes</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\nodes\GridOverlay.h">
       <Filter>src\nodes</Filter>
     </ClInclude>
@@ -283,6 +301,36 @@
     </ClInclude>
     <ClInclude Include="..\Classes\lib\TimeProfiler.h">
       <Filter>src\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\ui\GuiManager.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\ui\GuiLayout.h">
+      <Filter>src\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\controller\GameStateManager.h">
+      <Filter>src\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\fast\PlantTypesAccess.h">
+      <Filter>src\fast</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\scenes\GameScene.h">
+      <Filter>src\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\scenes\MainMenuScene.h">
+      <Filter>src\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\scenes\StoryScene.h">
+      <Filter>src\scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\controller\SavegameManager.h">
+      <Filter>src\controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\model\Savegame.h">
+      <Filter>src\model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\scenes\iScene.h">
+      <Filter>src\scenes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

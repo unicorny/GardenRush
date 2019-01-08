@@ -4,7 +4,7 @@
 #include "model/PlantType.h"
 #include "nodes/Grid.h"
 #include "nodes/PlantNode.h"
-#include "PlantTypesManager.h"
+#include "fast/PlantTypesAccess.h"
 #include "MainGameScene.h"
 
 using namespace cocos2d;

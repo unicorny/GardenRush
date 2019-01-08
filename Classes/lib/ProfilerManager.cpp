@@ -19,7 +19,7 @@ ProfilerManager::ProfilerManager()
 
 ProfilerManager::~ProfilerManager()
 {
-
+	printProfilingToFile("profiling.txt");
 }
 
 std::string ProfilerManager::getTimeProfilerEntrysString() const
@@ -96,7 +96,7 @@ bool ProfilerManager::printProfilingToFile(const char* filename)
 std::string ProfilerManager::makeStringFromBytes(double bytes)
 {
 	std::stringstream ss;
-	ss.precision(3);
+	ss.precision(4);
 
 	if (bytes < 1024) {
 		ss << bytes << " Bytes";
