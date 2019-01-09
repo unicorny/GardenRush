@@ -39,6 +39,9 @@
     <content url="file://$MODULE_DIR$/../../Classes/controller">
       <sourceFolder url="file://$MODULE_DIR$/../../Classes/controller" isTestSource="false" />
     </content>
+    <content url="file://$MODULE_DIR$/../../Classes/fast">
+      <sourceFolder url="file://$MODULE_DIR$/../../Classes/fast" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$/../../Classes/levelStates">
       <sourceFolder url="file://$MODULE_DIR$/../../Classes/levelStates" isTestSource="false" />
     </content>
@@ -53,6 +56,9 @@
     </content>
     <content url="file://$MODULE_DIR$/../../Classes/scenes">
       <sourceFolder url="file://$MODULE_DIR$/../../Classes/scenes" isTestSource="false" />
+    </content>
+    <content url="file://$MODULE_DIR$/../../Classes/ui">
+      <sourceFolder url="file://$MODULE_DIR$/../../Classes/ui" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$/../../Resources">
       <sourceFolder url="file://$MODULE_DIR$/../../Resources" type="java-resource" />

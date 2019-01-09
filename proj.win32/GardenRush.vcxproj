@@ -75,7 +75,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(EngineRoot);$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot);$(EngineRoot)external;$(EngineRoot)external\lua\luajit\include;$(EngineRoot)external\lua\tolua;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -88,7 +88,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libcurl.lib;%(AdditionalDependencies);$(_COCOS_LIB_WIN32_BEGIN);$(_COCOS_LIB_WIN32_END)</AdditionalDependencies>
+      <AdditionalDependencies>libcurl.lib;lua51.lib;%(AdditionalDependencies);$(_COCOS_LIB_WIN32_BEGIN);$(_COCOS_LIB_WIN32_END)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories);$(_COCOS_LIB_PATH_WIN32_BEGIN);$(_COCOS_LIB_PATH_WIN32_END)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -117,7 +117,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(EngineRoot);$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot);$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\lua\lua;$(EngineRoot)external\lua\tolua;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -151,6 +151,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\controller\ConfigLoader.cpp" />
     <ClCompile Include="..\Classes\controller\GameStateManager.cpp" />
+    <ClCompile Include="..\Classes\controller\LuaScripting.cpp" />
     <ClCompile Include="..\Classes\controller\RessourcenManager.cpp" />
     <ClCompile Include="..\Classes\controller\SavegameManager.cpp" />
     <ClCompile Include="..\Classes\ErrorLog.cpp" />
@@ -170,12 +171,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\lib\ProfilerManager.cpp" />
     <ClCompile Include="..\Classes\lib\TemplateMemoryManager.cpp" />
     <ClCompile Include="..\Classes\MainGameScene.cpp" />
-    <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="..\Classes\levelStates\PlayerChooseSeed.cpp" />
     <ClCompile Include="..\Classes\levelStates\RandomSeed.cpp" />
     <ClCompile Include="..\Classes\lib\DRHashList.cpp" />
-    <ClCompile Include="..\Classes\model\GridDecoration.cpp" />
-    <ClCompile Include="..\Classes\model\GridModel.cpp" />
     <ClCompile Include="..\Classes\model\LevelData.cpp" />
     <ClCompile Include="..\Classes\model\PlantType.cpp" />
     <ClCompile Include="..\Classes\model\Player.cpp" />
@@ -190,10 +188,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\scenes\GameScene.cpp" />
     <ClCompile Include="..\Classes\scenes\MainMenuScene.cpp" />
     <ClCompile Include="..\Classes\scenes\StoryScene.cpp" />
+    <ClCompile Include="..\Classes\ui\Button9.cpp" />
     <ClCompile Include="..\Classes\ui\GuiLayout.cpp" />
     <ClCompile Include="..\Classes\ui\GuiManager.cpp" />
+    <ClCompile Include="..\Classes\ui\IntroLayout.cpp" />
+    <ClCompile Include="..\Classes\ui\LevelLayout.cpp" />
+    <ClCompile Include="..\Classes\ui\MainMenuLayout.cpp" />
     <ClCompile Include="..\Classes\ui\SwitchButton.cpp" />
-    <ClCompile Include="..\Classes\ViewDataManager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -201,6 +202,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Config.h" />
     <ClInclude Include="..\Classes\controller\ConfigLoader.h" />
     <ClInclude Include="..\Classes\controller\GameStateManager.h" />
+    <ClInclude Include="..\Classes\controller\LuaScripting.h" />
     <ClInclude Include="..\Classes\controller\RessourcenManager.h" />
     <ClInclude Include="..\Classes\controller\SavegameManager.h" />
     <ClInclude Include="..\Classes\Enums.h" />
@@ -220,14 +222,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\lib\ProfilerManager.h" />
     <ClInclude Include="..\Classes\lib\TemplateMemoryManager.h" />
     <ClInclude Include="..\Classes\MainGameScene.h" />
-    <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="..\Classes\levelStates\iLevelState.h" />
     <ClInclude Include="..\Classes\levelStates\PlayerChooseSeed.h" />
     <ClInclude Include="..\Classes\levelStates\RandomSeed.h" />
     <ClInclude Include="..\Classes\lib\DRHash.hpp" />
     <ClInclude Include="..\Classes\lib\DRHashList.hpp" />
-    <ClInclude Include="..\Classes\model\GridDecoration.h" />
-    <ClInclude Include="..\Classes\model\GridModel.h" />
     <ClInclude Include="..\Classes\model\LevelData.h" />
     <ClInclude Include="..\Classes\model\PlantType.h" />
     <ClInclude Include="..\Classes\model\Player.h" />
@@ -243,10 +242,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\scenes\iScene.h" />
     <ClInclude Include="..\Classes\scenes\MainMenuScene.h" />
     <ClInclude Include="..\Classes\scenes\StoryScene.h" />
+    <ClInclude Include="..\Classes\ui\Button9.h" />
     <ClInclude Include="..\Classes\ui\GuiLayout.h" />
     <ClInclude Include="..\Classes\ui\GuiManager.h" />
+    <ClInclude Include="..\Classes\ui\IntroLayout.h" />
+    <ClInclude Include="..\Classes\ui\LevelLayout.h" />
+    <ClInclude Include="..\Classes\ui\MainMenuLayout.h" />
     <ClInclude Include="..\Classes\ui\SwitchButton.h" />
-    <ClInclude Include="..\Classes\ViewDataManager.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

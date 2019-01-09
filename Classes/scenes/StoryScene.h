@@ -13,6 +13,9 @@ public:
 	virtual bool init();
 	virtual bool reset();
 
+	// updated called every frame
+	virtual void update(float delta);
+
 	// profiling
 	virtual unsigned long getMemoryConsumption();
 	

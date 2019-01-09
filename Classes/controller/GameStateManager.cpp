@@ -2,6 +2,7 @@
 #include "model/Player.h"
 #include "controller/SavegameManager.h"
 #include "controller/ConfigLoader.h"
+#include "controller/LuaScripting.h"
 
 #include "lib/ProfilerManager.h"
 #include "lib/TimeProfiler.h"
@@ -9,6 +10,9 @@
 #include "scenes/GameScene.h"
 #include "scenes/MainMenuScene.h"
 #include "scenes/StoryScene.h"
+
+//#include "lua.hpp"
+
 
 GameStateManager* GameStateManager::getInstance()
 {
@@ -37,12 +41,19 @@ GameStateManager::~GameStateManager()
 
 bool GameStateManager::init()
 {
+
+	if (!LuaScripting::getInstance()->init()) {
+		LOG_ERROR("error loading lua", false);
+	}
+
+	ConfigLoader::loadJsonStory("story/story.json");
+
 	auto player = Player::getInstance();
 	SavegameManager savegames;
 	if (!savegames.init()) {
 		LOG_ERROR("error loading savegames", false);
 	}
-	if (false && savegames.getSavegameCount() == 0) {
+	if (savegames.getSavegameCount() == 0) {
 		if (!player->load(nullptr)) {
 			LOG_ERROR("error loading player", false);
 		}

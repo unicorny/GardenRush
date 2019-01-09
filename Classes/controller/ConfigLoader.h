@@ -18,8 +18,12 @@ public:
 
 	static bool loadFromJson(const char* path);
 
+	static bool loadJsonStory(const char* path);
+
 	// mResultRects pointer at memory allocated, caller must free memory after use
-	static bool loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects);
+	//static bool loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects);
+
+	
 
 protected:
 	static bool loadPlantTypesFromJson(const char* path);

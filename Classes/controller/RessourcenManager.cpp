@@ -27,6 +27,7 @@ RessourcenManager::GridGraphicsConfig::~GridGraphicsConfig()
 // --------------------------------- Ressourcen Manager ----------------------------------------
 
 RessourcenManager::RessourcenManager()
+	: mStoryParts(nullptr), mStoryPartCount(0)
 {
 
 }
@@ -167,6 +168,65 @@ bool RessourcenManager::addGridConfig(GridGraphicsConfig* config)
 	}
 	mGridConfigs.insert(std::pair < GridNodeType, GridGraphicsConfig*>(config->type, config));
 
+	return true;
+}
+
+
+bool RessourcenManager::initStoryPart(size_t storyPartCount)
+{
+	assert(storyPartCount > 0);
+
+	mStoryPartCount = storyPartCount;
+	if (mStoryParts) {
+		delete[] mStoryParts;
+	}
+	mStoryParts = new StoryConfig[storyPartCount];
+	if (!mStoryParts) {
+		LOG_ERROR("not enough memory", false);
+	}
+	return true;
+}
+
+const char* RessourcenManager::getStoryLuaByName(const char* name)
+{
+	assert(mStoryParts && mStoryPartCount > 0);
+	for (size_t i = 0; i < mStoryPartCount; i++) {
+		if (mStoryParts[i].name == std::string(name)) {
+			return mStoryParts[i].luaPath.data();
+		}
+	}
+	return nullptr;
+}
+
+const char* RessourcenManager::getNextStoryName(const char* name)
+{
+	assert(mStoryParts && mStoryPartCount > 0);
+	for (size_t i = 0; i < mStoryPartCount; i++) {
+		if (mStoryParts[i].name == std::string(name)) {
+			if (i + 1 < mStoryPartCount) {
+				return mStoryParts[i + 1].name.data();
+			}
+			break;
+		}
+	}
+	return nullptr;
+}
+
+bool RessourcenManager::checkStoryPartNameDoublette()
+{
+	assert(mStoryParts && mStoryPartCount > 0);
+	std::list<std::string> mCompareList;
+	for (size_t i = 0; i < mStoryPartCount; i++) {
+		mCompareList.push_back(mStoryParts[i].name);
+	}
+	mCompareList.sort();
+	const char* lastName = nullptr;
+	for (auto it = mCompareList.begin(); it != mCompareList.end(); it++) {
+		if (lastName) {
+			if (*it == std::string(lastName)) return false;
+		}
+		lastName = it->data();
+	}
 	return true;
 }
 

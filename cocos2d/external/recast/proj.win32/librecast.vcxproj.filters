@@ -132,4 +132,7 @@
       <Filter>fastlz</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\cocos\scripting\lua-bindings\proj.win32\libluacocos2d.vcxproj" />
+  </ItemGroup>
 </Project>

@@ -22,6 +22,14 @@ public:
 
 	//! \param filePath complete path
 	bool loadFromFile(const char* filePath);
+
+	// values
+	inline void setValuePair(const char* name, const char* value) {
+		mSavegameData[name] = std::string(value);
+	}
+	inline const char* getValueForName(const char* name) {
+		return mSavegameData[name].asString().data();
+	}
 protected:
 
 	cocos2d::ValueMap mSavegameData;

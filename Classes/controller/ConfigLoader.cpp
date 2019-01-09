@@ -264,26 +264,38 @@ bool ConfigLoader::loadPlantTypesFromJson(const char* path)
 	return true;
 }
 
-bool ConfigLoader::loadJsonSpriteAtlas(const char* path, cocos2d::Rect** mResultRects)
+bool ConfigLoader::loadJsonStory(const char* path)
 {
+	TimeProfiler time;
+	auto profiler = ProfilerManager::getInstance();
+
 	// load json from file and parse
 	std::string content = cocos2d::FileUtils::getInstance()->getStringFromFile(path);
 	Document document;
 	document.Parse(content.data());
 
-	// interpret json
-	assert(document.IsArray());
-	auto rectCount = document.Capacity();
-	*mResultRects = new cocos2d::Rect[rectCount];
-	int cursor = 0;
-	for (auto itr = document.Begin(); itr != document.End(); ++itr)
-	{
-		(*mResultRects)[cursor] = Rect(
-			itr['x'].GetInt(),
-			itr['y'].GetInt(),
-			itr['w'].GetInt(),
-			itr['h'].GetInt()
-		);
+	profiler->addTimeProfilerEntry("parse story json", time.seconds());
+	time.reset();
+	auto ressourcenManager = RessourcenManager::getInstance();
+
+	auto size = document.Capacity();
+	ressourcenManager->initStoryPart(size);
+	size_t cursor = 0;
+	for (rapidjson::Value::ConstValueIterator itr = document.Begin(); itr != document.End(); ++itr) {
+		
+		if (itr->HasMember("name") && itr->HasMember("path")) {
+			ressourcenManager->setStoryPart(
+				itr->FindMember("name")->value.GetString(),
+				itr->FindMember("path")->value.GetString(),
+				cursor++
+			);
+		}
+		else {
+			LOG_ERROR("story.json has invalid entrys", false);
+		}
 	}
+	ressourcenManager->checkStoryPartNameDoublette();
+	profiler->addTimeProfilerEntry("loading story.json into ressourcenManager", time.seconds());
+
 	return true;
 }

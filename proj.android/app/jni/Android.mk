@@ -4,6 +4,7 @@ include $(CLEAR_VARS)
 
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d)
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/external)
+$(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/external/lua/luajit/include)
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/cocos)
 $(call import-add-path,$(LOCAL_PATH)/../../../cocos2d/cocos/audio/include)
 
@@ -30,25 +31,11 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/AppDelegate.cpp \
                    $(LOCAL_PATH)/../../../Classes/ErrorLog.cpp \
                    $(LOCAL_PATH)/../../../Classes/controller/ConfigLoader.cpp \
+                   $(LOCAL_PATH)/../../../Classes/controller/GameStateManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/controller/LuaScripting.cpp \
                    $(LOCAL_PATH)/../../../Classes/controller/RessourcenManager.cpp \
-                   $(LOCAL_PATH)/../../../Classes/ui/GuiManager.cpp \
-                   $(LOCAL_PATH)/../../../Classes/lib/DRHashList.cpp \
-                   $(LOCAL_PATH)/../../../Classes/lib/TemplateMemoryManager.cpp \
-                   $(LOCAL_PATH)/../../../Classes/lib/TimeProfiler.cpp \
-                   $(LOCAL_PATH)/../../../Classes/lib/ProfilerManager.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
-                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp \
-                   $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
-                   $(LOCAL_PATH)/../../../Classes/nodes/GridOverlay.cpp \
-                   $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
-                   $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
-                   $(LOCAL_PATH)/../../../Classes/scenes/SpriteBatchNodesHolderScene.cpp \
-                   $(LOCAL_PATH)/../../../Classes/PlantTypesManager.cpp \
-                   $(LOCAL_PATH)/../../../Classes/MainGameScene.cpp \
+                   $(LOCAL_PATH)/../../../Classes/controller/SavegameManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/fast/PlantTypesAccess.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DisplayInfo.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DragSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/DropSeedInvalid.cpp \
@@ -62,16 +49,45 @@ LOCAL_SRC_FILES := $(LOCAL_PATH)/hellocpp/main.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeed.cpp \
                    $(LOCAL_PATH)/../../../Classes/levelStates/PlayerChooseActionWithSeeded.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/DRHashList.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/ProfilerManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/TemplateMemoryManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/lib/TimeProfiler.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/LevelData.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/PlantType.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Player.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Points.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/Savegame.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/SpriteAnimationState.cpp \
+                   $(LOCAL_PATH)/../../../Classes/model/ViewData.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/CustomAnimationSprite.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/Grid.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/GridOverlay.cpp \
+                   $(LOCAL_PATH)/../../../Classes/nodes/PlantNode.cpp \
+                   $(LOCAL_PATH)/../../../Classes/scenes/GameScene.cpp \
+                   $(LOCAL_PATH)/../../../Classes/scenes/MainMenuScene.cpp \
+                   $(LOCAL_PATH)/../../../Classes/scenes/StoryScene.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/Button9.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/GuiLayout.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/GuiManager.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/IntroLayout.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/LevelLayout.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/MainMenuLayout.cpp \
+                   $(LOCAL_PATH)/../../../Classes/ui/SwitchButton.cpp \
+                   $(LOCAL_PATH)/../../../Classes/MainGameScene.cpp \
+
                    
 
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../Classes \
+                    $(LOCAL_PATH)/../../../cocos2d/external/lua/luajit/include
 
 # _COCOS_HEADER_ANDROID_BEGIN
 # _COCOS_HEADER_ANDROID_END
 
 
 LOCAL_STATIC_LIBRARIES := cocos2dx_static
+LOCAL_STATIC_LIBRARIES += luajit_static
 
 # _COCOS_LIB_ANDROID_BEGIN
 # _COCOS_LIB_ANDROID_END
@@ -80,6 +96,9 @@ include $(BUILD_SHARED_LIBRARY)
 
 $(call import-add-path, $(LOCAL_PATH)/../../../cocos2d)
 $(call import-module, cocos)
+$(call import-module, cocos/scripting/lua-bindings/proj.android)
+#$(call import-module, external/lua/luajit/prebuilt/android)
+
 
 # _COCOS_LIB_IMPORT_ANDROID_BEGIN
 # _COCOS_LIB_IMPORT_ANDROID_END

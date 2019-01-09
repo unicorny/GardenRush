@@ -30,6 +30,8 @@ public:
 	inline bool isGridIso() { return (mSettings & SETTINGS_GRID_ISO) == SETTINGS_GRID_ISO; }
 
 	inline bool isNewPlayer() { return mIsNewPlayer; }
+
+	inline Savegame* getSavegame() { return mSavegame; }
 protected:
 
 	bool initNewPlayer();
@@ -38,7 +40,7 @@ protected:
 
 	// not to save
 	bool mIsNewPlayer;
-
+	Savegame* mSavegame;
 	// to save
 
 	PlayerSettings mSettings;

@@ -67,7 +67,19 @@ public:
 	bool addGridConfig(GridGraphicsConfig* config);
 	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
 
+	bool initStoryPart(size_t storyPartCount);
+	inline void setStoryPart(const char* name, const char* luaPath, size_t index) { 
+		assert(index >= 0 && index < mStoryPartCount); 
+		mStoryParts[index].name = name;
+		mStoryParts[index].luaPath = luaPath;
+	}
+	// \return false if at least one name exist more than once
+	bool checkStoryPartNameDoublette();
 
+	inline size_t getStoryPartCount() { return mStoryPartCount; }
+	const char* getStoryLuaByName(const char* name);
+	const char* getNextStoryName(const char* name);
+	inline const char* getStoryNameByIndex(size_t index) { assert(index >= 0 && index < mStoryPartCount); return mStoryParts[index].name.data(); }
 
 	double getMemoryConsumption();
 
@@ -75,6 +87,11 @@ protected:
 	struct SpriteAtlasConfig {
 		std::string plistName;
 		std::string textureName;
+	};
+
+	struct StoryConfig {
+		std::string name;
+		std::string luaPath;
 	};
 
 	RessourcenManager();
@@ -85,6 +102,10 @@ protected:
 	std::map<DHASH, std::string> mFonts;
 
 	DRHashList		mPlantTypes;
+
+	// Story relevant stuff
+	StoryConfig*	mStoryParts;
+	size_t			mStoryPartCount;
 
 };
 

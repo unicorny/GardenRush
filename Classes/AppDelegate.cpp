@@ -23,6 +23,9 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
+//#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+//#include "cocos2d.h"
+//#include "scripting/lua-bindings/manual/lua_module_register.h"
 #include "controller/GameStateManager.h"
 
 //#include "HelloWorldScene.h"
@@ -122,8 +125,19 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
     }
 
+/*	// register lua module
+	auto engine = LuaEngine::getInstance();
+	ScriptEngineManager::getInstance()->setScriptEngine(engine);
+	lua_State* L = engine->getLuaStack()->getLuaState();
+	lua_module_register(L);
+
     register_all_packages();
 
+	LuaStack* stack = engine->getLuaStack();
+	stack->setXXTEAKeyAndSign("2dxLua", strlen("2dxLua"), "XXTEA", strlen("XXTEA"));
+
+	FileUtils::getInstance()->addSearchPath("scripts");
+	*/
 
 	// enable use of accelerometer
 	//Device::setAccelerometerEnabled(true);
