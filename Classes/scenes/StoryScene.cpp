@@ -10,7 +10,7 @@
 
 StoryScene::StoryScene()
 {
-
+	scheduleUpdate();
 }
 
 StoryScene::~StoryScene()
@@ -36,7 +36,7 @@ bool StoryScene::reset()
 {
 	// load correct story script
 	auto storyScriptName = Player::getInstance()->getSavegame()->getValueForName("story");
-	auto storyScript = RessourcenManager::getInstance()->getStoryLuaByName(storyScriptName);
+	auto storyScript = RessourcenManager::getInstance()->getStoryLuaByName(storyScriptName.data());
 	LuaScripting::getInstance()->startScript(storyScript);
 	return true;
 }

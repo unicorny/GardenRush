@@ -1,6 +1,5 @@
 #include "controller/RessourcenManager.h"
 #include "model/Player.h"
-#include "model/Savegame.h"
 #include "cocos2d.h"
 
 Player::Player()
@@ -18,16 +17,16 @@ Player* Player::getInstance()
 bool Player::initNewPlayer()
 {
 	mIsNewPlayer = true;
-	mSavegame = new Savegame;
+	//mSavegame = new Savegame;
 	auto firstStoryName = RessourcenManager::getInstance()->getStoryNameByIndex(0);
-	mSavegame->setValuePair("story", firstStoryName);
+	mSavegame.setValuePair("story", firstStoryName);
 	return true;
 }
 
 bool Player::load(Savegame* savegame)
 {
 	if (!savegame) return initNewPlayer();
-	mSavegame = savegame;
+	mSavegame = *savegame;
 
 	return true;
 }

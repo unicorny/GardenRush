@@ -10,7 +10,7 @@
  *
 */
 
-class Savegame;
+#include "model/Savegame.h"
 
 enum PlayerSettings {
 	SETTINGS_NONE = 0,
@@ -31,7 +31,7 @@ public:
 
 	inline bool isNewPlayer() { return mIsNewPlayer; }
 
-	inline Savegame* getSavegame() { return mSavegame; }
+	inline Savegame* getSavegame() { return &mSavegame; }
 protected:
 
 	bool initNewPlayer();
@@ -40,7 +40,7 @@ protected:
 
 	// not to save
 	bool mIsNewPlayer;
-	Savegame* mSavegame;
+	Savegame mSavegame;
 	// to save
 
 	PlayerSettings mSettings;

@@ -3,6 +3,7 @@
 #include "controller/SavegameManager.h"
 #include "controller/ConfigLoader.h"
 #include "controller/LuaScripting.h"
+#include "controller/RessourcenManager.h"
 
 #include "lib/ProfilerManager.h"
 #include "lib/TimeProfiler.h"
@@ -10,6 +11,8 @@
 #include "scenes/GameScene.h"
 #include "scenes/MainMenuScene.h"
 #include "scenes/StoryScene.h"
+
+#include "ui/GuiManager.h"
 
 //#include "lua.hpp"
 
@@ -53,7 +56,7 @@ bool GameStateManager::init()
 	if (!savegames.init()) {
 		LOG_ERROR("error loading savegames", false);
 	}
-	if (savegames.getSavegameCount() == 0) {
+	if (false && savegames.getSavegameCount() == 0) {
 		if (!player->load(nullptr)) {
 			LOG_ERROR("error loading player", false);
 		}
@@ -65,10 +68,10 @@ bool GameStateManager::init()
 	}
 	else {
 		// start with main menu for savegame choosing
-		if (!ConfigLoader::loadFromJson("graphicsConfig/ressources.json")) {
-			LOG_ERROR("loading ressources", false);
+		if (!ConfigLoader::loadFromJson("graphicsConfig/mainMenuRessources.json")) {
+			LOG_ERROR("loading main menu ressources", false);
 		}
-		switchToScene(GAME_SCENE_MAIN_GAME);
+		switchToScene(GAME_SCENE_MAIN_MENU);
 	}
 
 	return true;
@@ -109,12 +112,15 @@ bool GameStateManager::switchToScene(GameSceneTypes type)
 			LOG_ERROR(errorString.data(), false);
 		}
 	}
-
+	TimeProfiler time;
 	if (!mScenes[type]->reset()) {
 		std::string errorString = "error resetting ";
 		errorString += gameSceneTypeToString(type);
 		LOG_ERROR(errorString.data(), false);
 	}
+	std::string entryName = gameSceneTypeToString(type);
+	entryName += "::reset";
+	profiler->addTimeProfilerEntry(entryName.data(), time.seconds());
 
 	auto director = cocos2d::Director::getInstance();
 
@@ -123,9 +129,11 @@ bool GameStateManager::switchToScene(GameSceneTypes type)
 	director->getTextureCache()->getCachedTextureInfo(bytes, textureCount);
 	
 	profiler->addMemoryProfilerEntry("Textures", bytes);
+	profiler->addMemoryProfilerEntry("RessourcenManager", RessourcenManager::getInstance()->getMemoryConsumption());
 	profiler->addMemoryProfilerEntry(gameSceneTypeToString(type), mScenes[type]->getMemoryConsumption());
 
 	// run
+	auto guiManager = GuiManager::getInstance();
 	if (director->getRunningScene() != mScenes[type]) {
 		if (mFirstScene) {
 			director->runWithScene(mScenes[type]);
@@ -134,6 +142,8 @@ bool GameStateManager::switchToScene(GameSceneTypes type)
 		else {
 			director->replaceScene(mScenes[type]);
 		}
+		guiManager->unChild();
+		mScenes[type]->addChild(guiManager);
 	}
 	else {
 		ErrorLog::printf("[GameStateManager::switchToScene] Warning, scene already running");

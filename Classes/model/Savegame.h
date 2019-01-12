@@ -27,8 +27,8 @@ public:
 	inline void setValuePair(const char* name, const char* value) {
 		mSavegameData[name] = std::string(value);
 	}
-	inline const char* getValueForName(const char* name) {
-		return mSavegameData[name].asString().data();
+	inline std::string getValueForName(const char* name) {
+		return mSavegameData[name].asString();
 	}
 protected:
 

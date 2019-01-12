@@ -59,8 +59,11 @@ bool LuaScripting::init()
 
 	mCoroutineLuaState = lua_newthread(mLuaState);
 	luaL_openlibs(mCoroutineLuaState);
+	lua_getglobal(mCoroutineLuaState, "_G");
+	luaL_register(mCoroutineLuaState, NULL, printlib);
+	lua_pop(mCoroutineLuaState, 1);
 
-	luaL_dostring(mLuaState, "print(\"Hello World\\n\")");
+	//luaL_dostring(mLuaState, "print(\"Hello World\\n\")");
 	
 #endif //FG_USING_LUA
 	profiler->addTimeProfilerEntry("LuaScripting::init", time.seconds());
@@ -88,7 +91,7 @@ bool LuaScripting::yieldLuaState()
 {
 	int status = lua_resume(mCoroutineLuaState, 0);
 	if (status == LUA_YIELD) {
-		double seconds = lua_tonumber(mCoroutineLuaState, 0);
+		double seconds = lua_tonumber(mCoroutineLuaState, 1);
 		mLuaResumeTime = now() + seconds;
 	}
 	else {

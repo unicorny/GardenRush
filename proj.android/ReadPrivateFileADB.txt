@@ -1,7 +1,9 @@
 https://stackoverflow.com/questions/15558353/how-can-one-pull-the-private-data-of-ones-own-android-app
 
-$ adb shell
-$ run-as {app-package-name}
-$ cd /data/data/{app-package-name}
-$ chmod 777 {file}
-$ cp {file} /mnt/sdcard/
+adb shell
+run-as de.fairy_garden_games.garden_rush
+cd /data/data/de.fairy_garden_games.garden_rush/files
+cat profiling.txt
+
+chmod 777 {file}
+cp {file} /mnt/sdcard/

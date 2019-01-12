@@ -1,4 +1,7 @@
 #include "GuiManager.h"
+#include "IntroLayout.h"
+#include "LevelLayout.h"
+#include "MainMenuLayout.h"
 
 #include "ErrorLog.h"
 
@@ -11,8 +14,9 @@ GuiManager* GuiManager::getInstance()
 }
 
 GuiManager::GuiManager()
+	: mEnabledLayout(nullptr)
 {
-
+	memset(mGuiLayouts, 0, sizeof(GuiLayout*) * GUI_LAYOUT_SIZE);
 }
 
 GuiManager::~GuiManager()
@@ -20,6 +24,16 @@ GuiManager::~GuiManager()
 	while (mMovingInfos.size() > 0) {
 		mMovingInfos.front()->release();
 		mMovingInfos.pop();
+	}
+	if (mEnabledLayout) {
+		removeChild(mEnabledLayout);
+		mEnabledLayout = nullptr;
+	}
+	for (int i = 0; i < GUI_LAYOUT_SIZE; i++) {
+		if (mGuiLayouts[i]) {
+			delete mGuiLayouts[i];
+			mGuiLayouts[i] = nullptr;
+		}
 	}
 }
 
@@ -81,4 +95,51 @@ void GuiManager::setMovingLabelFont(const char* movingLabelFont)
 		LOG_ERROR_VOID("warning, movingLabel has already a font");
 	}
 	mMovingLabelFont = movingLabelFont;
+}
+
+bool GuiManager::switchToGuiLayout(GuiLayoutType type)
+{
+	if (!mGuiLayouts[type]) {
+		switch (type) {
+		case GUI_LAYOUT_INTRO: mGuiLayouts[type] = new IntroLayout; break;
+		case GUI_LAYOUT_LEVEL: mGuiLayouts[type] = new LevelLayout; break;
+		case GUI_LAYOUT_MAIN_MENU: mGuiLayouts[type] = new MainMenuLayout; break;
+		default: 
+			ErrorLog::printf("Gui Layout Type int: %d", type);
+			LOG_ERROR("error, gui with type didn't exist or not implemented yet", false);
+		}
+		if(!mGuiLayouts[type]->init()) {
+			ErrorLog::printf("error with gui layout type: %s", guiLayoutTypeString(type));
+			LOG_ERROR("error loading gui layout", false);
+		}
+	}
+	removeChild(mEnabledLayout);
+	if (!mGuiLayouts[type]->enable()) {
+		ErrorLog::printf("error with gui layout type: %s", guiLayoutTypeString(type));
+		LOG_ERROR("error enabling gui layout", false);
+	}
+	addChild(mGuiLayouts[type]);
+	mEnabledLayout = mGuiLayouts[type];
+
+	return true;
+}
+
+const char* GuiManager::guiLayoutTypeString(GuiLayoutType type)
+{
+	switch (type) {
+	case GUI_LAYOUT_INTRO: return "GUI_LAYOUT_INTRO";
+	case GUI_LAYOUT_LEVEL: return "GUI_LAYOUT_LEVEL";
+	case GUI_LAYOUT_MAIN_MENU: return "GUI_LAYOUT_MAIN_MENU";
+	default: return "unknown gui Layout";
+	}
+
+	return "- error -";
+}
+
+void GuiManager::unChild()
+{
+	if (getParent()) {
+		auto parent = getParent();
+		parent->removeChild(this);
+	}
 }

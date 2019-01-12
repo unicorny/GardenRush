@@ -239,5 +239,12 @@ double RessourcenManager::getMemoryConsumption()
 	memory += mFonts.size() * (sizeof(DHASH) + sizeof(std::string));
 	memory += mPlantTypes.getNItems() * (sizeof(DRHashListItem) + sizeof(PlantType));
 
+	if (mStoryParts && mStoryPartCount > 0) {
+		for (int i = 0; i < mStoryPartCount; i++)  {
+			memory += mStoryParts[i].luaPath.size() + mStoryParts[i].name.size();
+		}
+		memory += mStoryPartCount * sizeof(StoryConfig);
+	}
+
 	return memory;
 }

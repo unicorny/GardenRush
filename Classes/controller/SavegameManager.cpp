@@ -14,13 +14,7 @@ SavegameManager::~SavegameManager()
 		mSavegames = nullptr;
 	}
 }
-/*
-SavegameManager* SavegameManager::getInstance()
-{
-	static SavegameManager theOneAndOnly;
-	return &theOneAndOnly;
-}
-*/
+
 bool SavegameManager::init()
 {
 	auto fileUtils = cocos2d::FileUtils::getInstance();

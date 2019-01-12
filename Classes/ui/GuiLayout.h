@@ -14,11 +14,14 @@
 */
 
 
-class GuiLayout 
+class GuiLayout : public cocos2d::Node
 {
 public:
 	GuiLayout();
-	~GuiLayout();	
+	virtual ~GuiLayout();	
+
+	virtual bool enable() = 0;
+	virtual bool init() = 0;
 
 protected:
 	
