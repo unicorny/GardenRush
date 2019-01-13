@@ -62,10 +62,24 @@ public:
 		IViewData* leftSide;
 		IViewData* rightSide;
 	};
+
+	struct ButtonConfig {
+		ButtonConfig(ButtonConfig* ins);
+		ButtonConfig();
+		std::string name;
+		std::string font;
+		std::string pressedImg;
+		std::string disabledImg;
+		std::string defaultImg;
+		cocos2d::Rect sprite9Rect;
+	};
 	
 
 	bool addGridConfig(GridGraphicsConfig* config);
 	inline GridGraphicsConfig* getGridConfig(GridNodeType type) { assert(mGridConfigs.find(type) != mGridConfigs.end()); return mGridConfigs[type]; }
+
+	inline void setButtonConfig(ButtonConfig* btnCfg) { DR_SAVE_DELETE(mButtonConfig); mButtonConfig = btnCfg; }
+	inline ButtonConfig* getButtonConfig() { return mButtonConfig; }
 
 	bool initStoryPart(size_t storyPartCount);
 	inline void setStoryPart(const char* name, const char* luaPath, size_t index) { 
@@ -94,12 +108,16 @@ protected:
 		std::string luaPath;
 	};
 
+	
+
 	RessourcenManager();
 
 	DRHashList		mMaterials;
 	std::map<DHASH, SpriteAtlasConfig*> mSpriteAtlases;
 	std::map<GridNodeType, GridGraphicsConfig*> mGridConfigs;
 	std::map<DHASH, std::string> mFonts;
+
+	ButtonConfig*	mButtonConfig;
 
 	DRHashList		mPlantTypes;
 

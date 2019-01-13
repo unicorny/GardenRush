@@ -53,7 +53,7 @@ protected:
 	std::queue<cocos2d::Label*> mMovingInfos;
 	DRHashList mLabels;
 
-	std::string mMovingLabelFont;
+	std::string mMovingLabelFont;	
 
 	GuiLayout* mEnabledLayout;
 	GuiLayout* mGuiLayouts[GUI_LAYOUT_SIZE];

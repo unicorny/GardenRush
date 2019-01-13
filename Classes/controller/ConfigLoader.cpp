@@ -163,6 +163,42 @@ bool ConfigLoader::loadFromJson(const char* path)
 			auto fontPath = ressourcenManager->getFontPath(itr->value.GetString());
 			GuiManager::getInstance()->setMovingLabelFont(fontPath);
 		}
+		else if (!strcmp(itr->name.GetString(), "buttonConfig")) {
+			if (itr->value.IsObject()) {
+				auto btnCfg = new RessourcenManager::ButtonConfig;
+				if (itr->value.HasMember("name")) {
+					btnCfg->name = itr->value["name"].GetString();
+				}
+				if (itr->value.HasMember("font")) {
+					btnCfg->font = itr->value["font"].GetString();
+				}
+				if (itr->value.HasMember("pressedImg")) {
+					btnCfg->pressedImg = itr->value["pressedImg"].GetString();
+				}
+				if (itr->value.HasMember("disabledImg")) {
+					btnCfg->disabledImg = itr->value["disabledImg"].GetString();
+				}
+				if (itr->value.HasMember("defaultImg")) {
+					btnCfg->defaultImg = itr->value["defaultImg"].GetString();
+				}
+				if (itr->value.HasMember("sprite9Rect")) {
+					auto rect = itr->value.FindMember("sprite9Rect");
+					if (rect->value.HasMember("x") && rect->value.HasMember("y") &&
+						rect->value.HasMember("width") && rect->value.HasMember("height")) {
+						btnCfg->sprite9Rect.setRect(
+							rect->value["x"].GetInt(),
+							rect->value["y"].GetInt(),
+							rect->value["width"].GetInt(),
+							rect->value["height"].GetInt()
+						);
+					}
+					else {
+						ErrorLog::printf("sprite9Rect declaration from ButtonConfig %s is invalid", btnCfg->name.data());
+					}
+				}
+				ressourcenManager->setButtonConfig(btnCfg);
+			}
+		}
 	}
 	return true;
 

@@ -21,13 +21,29 @@ RessourcenManager::GridGraphicsConfig::~GridGraphicsConfig()
 		DR_SAVE_DELETE(*it);
 	}
 	groundTiles.clear();
+	
+}
+
+
+RessourcenManager::ButtonConfig::ButtonConfig()
+{
 
 }
+
+RessourcenManager::ButtonConfig::ButtonConfig(ButtonConfig* ins) 
+{
+	name = ins->name;
+	font = ins->font;
+	pressedImg = ins->pressedImg;
+	disabledImg = ins->disabledImg;
+	defaultImg = ins->defaultImg;
+	sprite9Rect = ins->sprite9Rect;
+};
 
 // --------------------------------- Ressourcen Manager ----------------------------------------
 
 RessourcenManager::RessourcenManager()
-	: mStoryParts(nullptr), mStoryPartCount(0)
+	: mButtonConfig(nullptr), mStoryParts(nullptr), mStoryPartCount(0)
 {
 
 }
@@ -50,6 +66,11 @@ RessourcenManager::~RessourcenManager()
 	}
 
 	mGridConfigs.clear();
+
+	if (mButtonConfig) {
+		DR_SAVE_DELETE(mButtonConfig);
+	}
+
 }
 
 bool RessourcenManager::loadMaterial(const char* path, const char* name)

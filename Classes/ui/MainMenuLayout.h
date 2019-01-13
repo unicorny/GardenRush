@@ -13,6 +13,17 @@
 *
 */
 
+enum MainMenuButtoType {
+	MAIN_MENU_BUTTON_PLAY_ON,
+	MAIN_MENU_BUTTON_NEW_GAME,
+	MAIN_MENU_BUTTON_LOAD_GAME,
+	MAIN_MENU_BUTTON_SETTINGS,
+	MAIN_MENU_BUTTON_LIBRARY,
+	MAIN_MENU_BUTTON_SIZE
+};
+
+class SwitchButton;
+
 class MainMenuLayout : public GuiLayout
 {
 public:
@@ -23,6 +34,7 @@ public:
 	virtual bool init();
 
 protected:
+	SwitchButton* mButtons[MAIN_MENU_BUTTON_SIZE];
 };
 
 
