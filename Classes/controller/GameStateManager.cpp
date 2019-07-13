@@ -52,6 +52,15 @@ bool GameStateManager::init()
 	ConfigLoader::loadJsonStory("story/story.json");
 
 	auto player = Player::getInstance();
+
+	// drop in main game for demo
+	if (!ConfigLoader::loadFromJson("graphicsConfig/ressources.json")) {
+		LOG_ERROR("error loading ressources", false);
+		switchToScene(GAME_SCENE_MAIN_GAME);
+		return true;
+	}
+	//
+
 	SavegameManager savegames;
 	if (!savegames.init()) {
 		LOG_ERROR("error loading savegames", false);
